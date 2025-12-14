@@ -1,0 +1,16 @@
+[package]
+name = "MOSAIC"
+version = "0.2.0-alpha"
+edition = "2024"
+authors = ["Harry Woodhouse <jgf526@york.ac.uk>"]
+description = "Motor Oral Speech and Integrated Computation (MOSAIC)"
+
+[dependencies]
+clap = { version = "4.4", features = ["derive"] } 
+
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+csv = "1.2"
+uuid = { version = "1.6", features = ["v4", "serde"] }
+
+thiserror = "1.0"

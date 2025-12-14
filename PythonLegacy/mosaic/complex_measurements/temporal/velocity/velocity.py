@@ -58,7 +58,6 @@ class run:
         df = pd.read_csv(input_file)
 
         # CURVE VELOCITY:
-        curves = CurveVelocity(df)
         print("RUNNING CURVE VELOCITY - RUN PAGE")
 
         total = len(df)
@@ -73,8 +72,9 @@ class run:
         curve_velo = []
 
         for row in tqdm(range(start, end), desc="Curve Velocity", unit="frame"):
+            curves = CurveVelocity(df, OUTER_BEZ_CURVE_LIST, row)
             try:
-                curve_velocity = curves.curve_velocity(row)
+                curves._cubic_coeffs()
 
             except Exception as e:
                 print(f"Unknown error: - HELLO {e}\n")
