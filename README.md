@@ -3,6 +3,11 @@
 
 Motor-Oral Speech Analysis & Integrated Computation (MOSAIC) is a mathematical system which tracks mouth and jaw movement and correlates those measurements to a [parselmouth/praat](https://parselmouth.readthedocs.io/en/stable/#) analysis. MOSAIC has three measurement "units": core measurements, complex measurements, and praat based measurements. 
 
+## UPDATE:
+For the one or two people who may be watching this project, you may notice the absence of code. All Python code which contributed to the backend of this project is being re-written in Rust. This is done because A) it gives me an oppurtunity to re-write this project cleaner, and B) I am re-programming MOSAIC with the idea of using "drivers" so researchers can use different types of data sets from different machines/software. 
+
+I am still learning Rust so this development will take some time.
+
 ## Core measurements
 Core measurements serve as the backbone for the higher-level measurements used in facial tracking. It follows a simple pipiline.
 ```mermaid
