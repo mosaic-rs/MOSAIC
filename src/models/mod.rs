@@ -68,5 +68,5 @@ lip curvature regardless of the amount of points (of course, a minimum amount of
         i.e. URt1/10x, URt1/10y, URt1/10z,... URt10/10x, URt10/10y, URt10/10z
         i.e. URt1/10xunc, URt1/10yunc, URt1/10zunc,... URt10/10xunc, URt10/10yunc, URt10/10zunc
             
-            
+I think a hasmap is best for this type of variable dataset
 */
