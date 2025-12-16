@@ -12,3 +12,12 @@ PURPOSE. See the GNU General Public License for more details.
 You should have received a copy of the GNU General Public License along with 
 MOSAIC. If not, see <https://www.gnu.org/licenses/>.
 */
+
+/*
+This file calls all the other files in ./models to construct the coreMeasurement file, complexMeasurement file,
+praatAnalysis file, and userOutputFile.
+*/
+
+fn coreMeausrementFile(){
+    println!("Core MeausermentFile!")
+}
