@@ -13,5 +13,53 @@ You should have received a copy of the GNU General Public License along with
 MOSAIC. If not, see <https://www.gnu.org/licenses/>.
 */
 
+/*
+core shell file which parses commands and allocates them to seperate files which exeute the command
+
+shell.rs sort of acts like a receptionist
+*/
+
 use std::process::Command;
+use rustyline::error::ReadlineError;
+use rustyline::{DefaultEditor, Result};
+
+use crate::shell::statefulCLI::session_manager::{SessionData};
+
+pub fn shell_initiation() -> Result<()> {
+    println!("MOSAIC -- v0.2.0 pre-release (GLPv3)\n"); // opening message
+    let mut rl = DefaultEditor::new()?;
+
+    loop {
+        let readline = rl.readline("MOSAIC >> ");
+        match readline {
+            Ok(line) => {
+                if line.trim() == "quit"{
+                    break;
+                }
+
+                if line.trim() == "session"{
+                    let data = SessionData::read_session_data();
+
+                    println!("Session Data:\n{:#?}", data);
+                    
+                }
+            }
+            Err(ReadlineError::Interrupted) => { // Handles Ctrl-C
+                println!("CTRL-C");
+                break
+            },
+            Err(ReadlineError::Eof) => { // Handles Ctrl-D
+                println!("CTRL-D");
+                break
+            },
+            Err(err) => {
+                eprintln!("Error: {:?}", err);
+                break
+            }
+        }
+
+        
+    }
+    Ok(())
+}
 

@@ -19,7 +19,7 @@ MOSAIC. If not, see <https://www.gnu.org/licenses/>.
 
 // test path for now
 
-const PATH: &str = "path/file.txt"; // this will be replaced by an arg passed through CLI
+// const PATH: &str = "path/file.txt"; // this will be replaced by an arg passed through CLI
 
 // Session Data Structure:
 

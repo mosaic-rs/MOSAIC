@@ -17,10 +17,25 @@ MOSAIC. If not, see <https://www.gnu.org/licenses/>.
 use MOSAIC::coreMeasurements::anchor::anchor::Anchor;
 
 // SHELL
-use MOSAIC::shell::statefulCLI::session_manager::{DirectoryVerifiers};
+use MOSAIC::shell::statefulCLI::session_manager::{DirectoryVerifiers, SessionData};
+use MOSAIC::shell::shell::{shell_initiation};
 
 fn main(){
 
+    /*
     println!("MOSAIC -- v0.2.0 pre-release (GLPv3)");
     Anchor();
+    println!("");
+    DirectoryVerifiers::check_project_directory("Hello World");
+
+    let data = SessionData::read_session_data();
+
+    println!("Session data below: \n\n{:#?}", data);
+
+    */
+
+    // running cli
+
+    shell_initiation();
+
 }
