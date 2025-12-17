@@ -24,7 +24,6 @@ pub struct SessionStructure {
     pub trial_directory: String,
 }
 
-// 2. ADDED DERIVES: Debug allows you to use {:#?} in println
 #[derive(Debug, Serialize, Deserialize)] 
 pub struct SessionData {
     pub data: SessionStructure,
@@ -70,7 +69,7 @@ impl SessionData {
 
         SessionData {
             data: SessionStructure {
-                project_directory: String::from("None"),
+                project_directory: String::from("None"), //Path/supermegapath/file.mosaicproj
                 participant_directory: String::from("None"),
                 trial_directory: String::from("None"),
             }
@@ -85,9 +84,57 @@ impl SessionData {
     }
 }
 
+pub struct SystemVerifier;
+impl SystemVerifier {
+    pub fn project(){
+        let session_info = SessionData::read_session_data();
+        let project_path = session_info.data.project_directory;
+        
+        if project_path == "None" {
+            println!("[MOSAIC ERROR] You are not in a project directory.\n")
+
+        }else if project_path != "None" {
+            println!("Project Path: {}", project_path)
+
+        }else {
+            println!("[MOSAIC ERROR] An unknown error occured reading the path content in .mosaic")
+        }
+    }
+
+    pub fn participant(){
+        let session_info = SessionData::read_session_data();
+        let participant_path = session_info.data.project_directory;
+        
+        if participant_path == "None" {
+            println!("[MOSAIC ERROR] You are not in a participant directory.\n")
+            
+        }else if participant_path != "None" {
+            println!("Participant Path: {}", participant_path)
+
+        }else {
+            println!("[MOSAIC ERROR] An unknown error occured reading the path content in .mosaic")
+        }
+    }
+
+    pub fn trial(){
+        let session_info = SessionData::read_session_data();
+        let trial_path = session_info.data.project_directory;
+        
+        if trial_path == "None" {
+            println!("[MOSAIC ERROR] You are not in a trial directory.\n")
+            
+        }else if trial_path != "None" {
+            println!("Trial Path: {}", trial_path)
+
+        }else {
+            println!("[MOSAIC ERROR] An unknown error occured reading the path content in .mosaic")
+        }
+    }
+}
+
 pub struct SessionUpdate;
 impl SessionUpdate {
-    pub fn update_project_directory(path: &str) {
+    pub fn update_project_directory(path: &str){
         DirectoryVerifiers::check_any_directory(path);
 
         let updated_project_directory = SessionData {
@@ -102,4 +149,15 @@ impl SessionUpdate {
 
         println!("Opened project path: '{}'.", path)
     }
+
+    pub fn update_participant_directory(path: &str){
+        // we need to make sure they are actually in a project dir
+        println!("Updating participant directory!")
+    }
+
+    pub fn update_trial_directory(path: &str){
+        // need to confirm they are in project and participant dir
+        println!("Updating project directory!")
+    }
 }
+

@@ -23,7 +23,7 @@ use std::process::Command;
 use rustyline::error::ReadlineError;
 use rustyline::{DefaultEditor, Result};
 
-use crate::shell::projectManager::session::{SessionData, DirectoryVerifiers};
+use crate::shell::projectManager::session::{SessionData, DirectoryVerifiers, SystemVerifier};
 
 pub fn shell_initiation(session: &mut SessionData) -> Result<()> {
     println!("MOSAIC -- v0.2.0 pre-release (GLPv3)\n"); // opening message
@@ -45,6 +45,10 @@ pub fn shell_initiation(session: &mut SessionData) -> Result<()> {
 
                     println!("Session Data:\n{:#?}", data);
                     
+                }
+
+                if line.trim() == "project"{
+                    SystemVerifier::project();                    
                 }
             }
             Err(ReadlineError::Interrupted) => { // Handles Ctrl-C
