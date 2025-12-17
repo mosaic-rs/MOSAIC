@@ -14,6 +14,7 @@ MOSAIC. If not, see <https://www.gnu.org/licenses/>.
 */
 
 use serde::{Deserialize, Serialize};
+use crate::errors::{MosaicError, ProjectError};
 
 const SESSION_FILE: &str = ".mosaic";
 
@@ -86,19 +87,20 @@ impl SessionData {
 
 pub struct SystemVerifier;
 impl SystemVerifier {
-    pub fn project(){
+    pub fn project() -> Result<(), MosaicError>{
         let session_info = SessionData::read_session_data();
         let project_path = session_info.data.project_directory;
         
-        if project_path == "None" {
-            println!("[MOSAIC ERROR] You are not in a project directory.\n")
-
-        }else if project_path != "None" {
+        if project_path != "None" {
             println!("Project Path: {}", project_path)
 
+        }else if project_path == "None" {
+            return Err(MosaicError::Project(ProjectError::RequireProject))
+
         }else {
-            println!("[MOSAIC ERROR] An unknown error occured reading the path content in .mosaic")
+            return Err(MosaicError::Project(ProjectError::RequireProject))
         }
+        Ok(())
     }
 
     pub fn participant(){
@@ -109,7 +111,7 @@ impl SystemVerifier {
             println!("[MOSAIC ERROR] You are not in a participant directory.\n")
             
         }else if participant_path != "None" {
-            println!("Participant Path: {}", participant_path)
+            // return Err(MosaicError::Project(ProjectError::RequireProject))
 
         }else {
             println!("[MOSAIC ERROR] An unknown error occured reading the path content in .mosaic")

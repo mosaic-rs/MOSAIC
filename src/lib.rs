@@ -10,4 +10,6 @@ You should have received a copy of the GNU General Public License along with Foo
 */
 
 pub mod coreMeasurements;
+
 pub mod shell;
+pub mod errors;

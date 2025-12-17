@@ -1,0 +1,4 @@
+## THESE ARE THE STANDARDS FOR MOSAIC SO I CAN REMEMBER
+
+# SHELL
+- All shell outputs MUST preceed and end with "\n" to seperate MOSAIC outputs from user input

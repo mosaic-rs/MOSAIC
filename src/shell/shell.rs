@@ -31,6 +31,7 @@ pub fn shell_initiation(session: &mut SessionData) -> Result<()> {
 
     loop {
         let readline = rl.readline("MOSAIC >> ");
+        println!(""); // adding space before shell output
         match readline {
             Ok(line) => {
                 if line.trim() == "quit"{
@@ -48,7 +49,14 @@ pub fn shell_initiation(session: &mut SessionData) -> Result<()> {
                 }
 
                 if line.trim() == "project"{
-                    SystemVerifier::project();                    
+                    match SystemVerifier::project() {
+                        Ok(_) => {}
+
+                        Err(err) => {
+                            eprintln!("[MOSAIC ERROR] {}", err)
+                        }
+
+                    }               
                 }
             }
             Err(ReadlineError::Interrupted) => { // Handles Ctrl-C
@@ -60,10 +68,10 @@ pub fn shell_initiation(session: &mut SessionData) -> Result<()> {
                 break
             },
             Err(err) => {
-                eprintln!("Error: {:?}", err);
-                break
+                eprintln!("Something went wrong: {:?}", err); // Note when coming back: Find out why this error is not printing
             }
         }
+        println!(""); // adding space after shell output
 
         
     }
