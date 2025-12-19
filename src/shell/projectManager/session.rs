@@ -70,9 +70,9 @@ impl SessionData {
 
         SessionData {
             data: SessionStructure {
-                project_directory: String::from("None"), //Path/supermegapath/file.mosaicproj
-                participant_directory: String::from("Path/supermegapath/participant.mosaicproj"),
-                trial_directory: String::from("Path/supermegapath/trial.mosaicproj"),
+                project_directory: String::from("None"), //Path/supermegapath/project.mosaicproj
+                participant_directory: String::from("None"), //Path/supermegapath/participant.mosaicproj
+                trial_directory: String::from("None"), //Path/supermegapath/trial.mosaicproj
             }
         }
     }
