@@ -18,12 +18,13 @@ use std::fmt;
 // MOSAIC LEVEL ERRORS
 #[derive(Debug)]
 pub enum MosaicError {
-    InvalidPath,
+    InvalidPath(String),
     Project(ProjectError),
     Participant(ParticipantError),
     Trial(TrialError),
     UMD(UMDError),
     Io(std::io::Error),
+    File(FileError),
 }
 
 // PORJECT LEVEL ERRORS
@@ -53,6 +54,14 @@ pub enum TrialError{
     InvalideGrandparentUUIDError,
 }
 
+// FILE ERRORS
+#[derive(Debug)]
+pub enum FileError{
+    // CSV ERRORS
+    MalformedCSV,
+    MissingColumn,
+}
+
 // UMD ERRORS
 #[derive(Debug)]
 pub enum UMDError{
@@ -75,12 +84,26 @@ pub enum UMDError{
 
 }
 
+impl From<FileError> for MosaicError {
+    fn from(error: FileError) -> Self {
+        MosaicError::File(error)
+    }
+}
+
 impl fmt::Display for MosaicError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result{
         match self{
             // MOSAIC/HIGHER LEVEL ERRORS
-            MosaicError::InvalidPath => write!(f, "Missing path"),
+            MosaicError::InvalidPath(p) => write!(f, "Path provided '{}' is invalid. ", p),
             MosaicError::Io(e) => write!(f, "System Error: {}", e),
+
+            // FILE ERRORS
+            // CSV
+            MosaicError::File(FileError::MalformedCSV) =>
+                write!(f, "Malformed CSV. Please check CSV file to ensure it is properly formatted."),
+            
+            MosaicError::File(FileError::MissingColumn) =>
+                write!(f, "CSV File missing column. Please verify your csv has correct formatting for the selected driver."),
 
             // PROJECT ERRORS
             MosaicError::Project(ProjectError::MissingMetaData) => 

@@ -14,12 +14,13 @@ MOSAIC. If not, see <https://www.gnu.org/licenses/>.
 */
 
 // This will act as an API for the drivers so they can append data properly
+use crate::drivers::OpenFace::openface::{OpenFaceLandmarkType};
 
 pub struct UMD {
     frame: Vec<u32>,
     timestamp: Vec<f32>,
     coordinate_number: Vec<u32>,
-    types: Vec<LandmarkType>, // we need to know whether or not this point was a commissure, philtrum, etc - defulat lip points can just be called "point"
+    types: Vec<String>, // we need to know whether or not this point was a commissure, philtrum, etc - defulat lip points can just be called "point"
     x: Vec<f64>,
     y: Vec<f64>,
     z: Vec<f64>,
@@ -27,43 +28,7 @@ pub struct UMD {
 
 // POINT ORDER:
 // LIPS (CLOCKWISE ALWAYS) -> TONGUE -> JAW -> OTHERS
-
-pub enum LandmarkType{
-    LeftCommissure,
-    RightCommissure,
-    Philtrum,
-    LowerVermillionBorder, // middle of the lip
-    UpperLip, // all other points along the lip
-    LowerLip, // all other points along the lip
-
-    // Software like openface has outer and inner coordinates
-    OuterLeftCommissure,
-    OuterRightCommissure,
-    InnerLeftCommissure,
-    InnerRightCommissure,
-    OuterPhiltrum,
-    InnerPhiltrum,
-    InnerLowerVermillionBorder,
-    OuterLowerVermillionBorder,
-    InnerUpperLip, 
-    InnerLowerLip,
-    OuterUpperLip,
-    OuterLowerLip,
-
-    // Tongue
-    Apex,
-    Root,
-
-    // OTHER POINTS
-    LeftJaw,
-    RightJaw,
-    CentreJaw, // chin
-    NsalaBridge,
-    LeftNasalTip,
-    RightNasalTip,
-
-
-}
+// LANDMARK TYPE STRUCTURE HAS BEEN MOVED TO BE DRIVER SPECIFIC
 
 // UMD STRUCTURE:
 
@@ -93,7 +58,7 @@ impl UMD{
 
     }
 
-    pub fn add_point(&mut self, frame: u32, time: f32, number: u32, types: LandmarkType, x: f64, y: f64, z: f64) {
+    pub fn add_point(&mut self, frame: u32, time: f32, number: u32, types: String, x: f64, y: f64, z: f64) {
         
         self.frame.push(frame);
         self.timestamp.push(time);

@@ -19,6 +19,7 @@ ENV/
 data/
 outputs/
 test/
+test_data/
 
 .idea/
 .vscode/

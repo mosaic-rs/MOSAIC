@@ -1,5 +1,8 @@
-[![Rust](https://img.shields.io/badge/language-Rust-orange.svg)](https://www.rust-lang.org/)
+[![Rust, Python](https://img.shields.io/badge/languages-Rust%2C_Python-Blue
+)](https://www.rust-lang.org/)
 [![Topic](https://img.shields.io/badge/field-Phonetics-blue.svg)]()
+![GitHub Tag](https://img.shields.io/github/v/tag/Harry-S-W/MOSAIC)
+
 
 # Motor-Oral Speech Analysis & Integrated Computation (MOSAIC)
 

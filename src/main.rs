@@ -12,6 +12,8 @@ PURPOSE. See the GNU General Public License for more details.
 You should have received a copy of the GNU General Public License along with 
 MOSAIC. If not, see <https://www.gnu.org/licenses/>.
 */
+use std::path::Path;
+
 
 // CORE MEASUREMENTS
 use MOSAIC::coreMeasurements::anchor::anchor::Anchor;
@@ -19,6 +21,7 @@ use MOSAIC::coreMeasurements::anchor::anchor::Anchor;
 // SHELL
 use MOSAIC::shell::projectManager::session::{DirectoryVerifiers, SessionData};
 use MOSAIC::shell::shell::{shell_initiation};
+use MOSAIC::drivers::OpenFace::openface::{parse_openface_data};
 
 fn main(){
 
@@ -34,7 +37,13 @@ fn main(){
 
     */
 
+    // testing func
+    // const PATH_TEMP: &str = "/Users/harrywoodhouse/Desktop/MOSAIC/MOSAIC-Engine/test_data/v15044gf0000d1dlc67og65r2deqmhd0.csv";
+    // parse_openface_data(Path::new(PATH_TEMP)).expect("Failed to parse data");
+
+
     // running cli
+    
 
     let mut session = SessionData::read_session_data();
 
