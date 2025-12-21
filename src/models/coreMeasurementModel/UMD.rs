@@ -48,7 +48,6 @@ pub struct UMD {
 // 1        0.01        1      ...        ...        ...         5                   ...                  ...         ...         ...
 // 1        0.01        1      ...        ...        ...         6                   ...                  ...         ...         ...
 
-
 impl UMD{
     pub fn construction(total_frames: u32, points_per_frame: u32)-> Self{
         // reserves the memory needed based on the frame count and the points per frame
@@ -84,5 +83,51 @@ impl UMD{
         self.z.push(z);
         self.y.push(y);
         
+    }
+}
+
+// ANCHOR UMD
+// Defining a point anchor is essential to centering the points to (0,0,0)
+
+pub struct UMDAnchor {
+    // adming info
+    frame: Vec<u32>,
+    timestamp: Vec<f32>,
+
+    // anchor values
+    x_anchor: Vec<f64>,
+    y_anchor: Vec<f64>,
+    z_anchor: Vec<f64>,
+
+    // uncertainty
+    x_anchor_uncertainty: Vec<f64>,
+    y_anchor_uncertainty: Vec<f64>,
+    z_anchor_uncertainty: Vec<f64>,
+}
+
+impl UMDAnchor{
+    fn construction(total_frames: u32) -> Self{
+        let mut total_entries = total_frames;
+        Self {
+            frame: Vec::with_capacity(total_entries.try_into().unwrap()),
+            timestamp: Vec::with_capacity(total_entries.try_into().unwrap()), 
+            x_anchor: Vec::with_capacity(total_entries.try_into().unwrap()),
+            y_anchor: Vec::with_capacity(total_entries.try_into().unwrap()),
+            z_anchor: Vec::with_capacity(total_entries.try_into().unwrap()),
+            x_anchor_uncertainty: Vec::with_capacity(total_entries.try_into().unwrap()),
+            y_anchor_uncertainty: Vec::with_capacity(total_entries.try_into().unwrap()),
+            z_anchor_uncertainty: Vec::with_capacity(total_entries.try_into().unwrap()),
+        }
+    }
+
+    fn add_anchor(&mut self, frame: u32, timestamp: f32, x_anchor: f64, y_anchor: f64, z_anchor: f64, x_anchor_uncertainty: f64, y_anchor_uncertainty: f64, z_anchor_uncertainty: f64) {
+        self.frame.push(frame);
+        self.timestamp.push(timestamp);
+        self.x_anchor.push(x_anchor);
+        self.y_anchor.push(y_anchor);
+        self.z_anchor.push(z_anchor);
+        self.x_anchor_uncertainty.push(x_anchor_uncertainty);
+        self.y_anchor_uncertainty.push(y_anchor_uncertainty);
+        self.z_anchor_uncertainty.push(z_anchor_uncertainty);
     }
 }
