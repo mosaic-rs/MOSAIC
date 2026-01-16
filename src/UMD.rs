@@ -19,20 +19,20 @@ use polars::prelude::*;
 
 pub struct UMD {
     // admin info
-    frame: Vec<u32>,
-    timestamp: Vec<f32>,
-    pose: Vec<bool>, // Because some pose values might be 0, we need a seperate bool value to determine if we are processing 
+    pub frame: Vec<u32>,
+    pub timestamp: Vec<f32>,
+    pub pose: Vec<bool>, // Because some pose values might be 0, we need a seperate bool value to determine if we are processing 
 
     // pose values
-    pose_x: Vec<f64>,
-    pose_y: Vec<f64>,
-    pose_z: Vec<f64>,
+    pub pose_x: Vec<f64>,
+    pub pose_y: Vec<f64>,
+    pub pose_z: Vec<f64>,
 
-    coordinate_number: Vec<u32>,
-    types: Vec<String>, // we need to know whether or not this point was a commissure, philtrum, etc - defulat lip points can just be called "point"
-    x: Vec<f64>,
-    y: Vec<f64>,
-    z: Vec<f64>,
+    pub coordinate_number: Vec<u32>,
+    pub types: Vec<String>, // we need to know whether or not this point was a commissure, philtrum, etc - defulat lip points can just be called "point"
+    pub x: Vec<f64>,
+    pub y: Vec<f64>,
+    pub z: Vec<f64>,
 }
 
 // POINT ORDER:
@@ -93,6 +93,7 @@ impl UMD{
 // ANCHOR UMD
 // Defining a point anchor is essential to centering the points to (0,0,0)
 
+
 pub struct UMDAnchor {
     // adming info
     frame: Vec<u32>,
@@ -110,7 +111,7 @@ pub struct UMDAnchor {
 }
 
 impl UMDAnchor{
-    fn construction(total_frames: u32) -> Self{
+    pub fn construction(total_frames: u32) -> Self{
         let mut total_entries = total_frames;
         Self {
             frame: Vec::with_capacity(total_entries.try_into().unwrap()),
@@ -124,7 +125,7 @@ impl UMDAnchor{
         }
     }
 
-    fn add_anchor(&mut self, frame: u32, timestamp: f32, x_anchor: f64, y_anchor: f64, z_anchor: f64, x_anchor_uncertainty: f64, y_anchor_uncertainty: f64, z_anchor_uncertainty: f64) {
+    pub fn add_anchor(&mut self, frame: u32, timestamp: f32, x_anchor: f64, y_anchor: f64, z_anchor: f64) { //, x_anchor_uncertainty: f64, y_anchor_uncertainty: f64, z_anchor_uncertainty: f64
         self.frame.push(frame);
         self.timestamp.push(timestamp);
         self.x_anchor.push(x_anchor);

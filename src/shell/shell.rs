@@ -26,6 +26,7 @@ use rustyline::{DefaultEditor, Result};
 
 use crate::shell::projectManager::session::{SessionData, DirectoryVerifiers, SystemVerifier};
 use crate::drivers::OpenFace::openface::{parse_openface_data};
+use crate::coreMeasurements::anchor::anchor::{AnchorProcessor};
 
 pub fn shell_initiation(session: &mut SessionData) -> Result<()> {
     println!("MOSAIC -- v0.2.0 pre-release (GLPv3)\n"); // opening message
@@ -88,8 +89,15 @@ pub fn shell_initiation(session: &mut SessionData) -> Result<()> {
                 }
 
                 if line.trim() == "UMD"{
-                    let PATH_TEMP: &str = "/Users/harrywoodhouse/Desktop/MOSAIC/MOSAIC-Engine/test_data/v15044gf0000d1dlc67og65r2deqmhd0.csv";
+                    let PATH_TEMP: &str = "test_data/v15044gf0000d1dlc67og65r2deqmhd0.csv";
                     parse_openface_data(Path::new(PATH_TEMP)).expect("Failed to parse data");
+                }
+
+                if line.trim() == "UMD-Anchor"{
+                    let PATH_TEMP: &str = "test_data/v15044gf0000d1dlc67og65r2deqmhd0.csv";
+                    let umd_data = parse_openface_data(Path::new(PATH_TEMP)).expect("Failed to parse data");
+
+                    let anchor_results = AnchorProcessor::calculate_umd_anchors(&umd_data);
                 }
             }
             Err(ReadlineError::Interrupted) => { // Handles Ctrl-C

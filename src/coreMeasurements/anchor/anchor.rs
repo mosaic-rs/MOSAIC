@@ -21,60 +21,88 @@ This file calculates the anchor as a reference point in the mouth by taking the 
 of points across the mouth and defining a centralised anchor point
 */
 
-use crate::errors::{MosaicError, AnchorError, FileError};
-use crate::UMD::{UMDAnchor};
+use crate::errors::{MosaicError};
+use crate::UMD::{UMD, UMDAnchor};
 
+pub struct AnchorProcessor;
 
-#[derive(Debug)]
-pub struct AnchorCoordinate {
-    timestamp: f32,
-    x_anchor: f64,
-    y_anchor: f64,
-    z_anchor: f64,
-    //Uncertainty to be added later:
-    //x_anchor_uncertainty: Vec<f64>, 
-    //y_anchor_uncertainty: Vec<f64>,
-    //z_anchor_uncertainty: Vec<f64>,
-}
-
-impl AnchorCoordinate{
-    /*pub fn construction(frame_count: u32) ->Self{
-        // reserves space required for this data in the memory
-        Self {
-            timestamp: Vec::with_capacity(frame_count.try_into().unwrap()),
-            x_anchor: Vec::with_capacity(frame_count.try_into().unwrap()),
-            y_anchor: Vec::with_capacity(frame_count.try_into().unwrap()),
-            z_anchor: Vec::with_capacity(frame_count.try_into().unwrap()),
-            //x_anchor_uncertainty: Vec::with_capacity(frame_count.try_into().unwrap()),
-            //y_anchor_uncertainty: Vec::with_capacity(frame_count.try_into().unwrap()),
-            //z_anchor_uncertainty: Vec::with_capacity(frame_count.try_into().unwrap()),
-
+impl AnchorProcessor {
+    /// We take the extracted coords from the UMD file 
+    pub fn calculate_umd_anchors(raw_data: &UMD) -> Result<UMDAnchor, MosaicError> {
+        // 
+        let total_points = raw_data.frame.len();
+        if total_points == 0 {
+            return Ok(UMDAnchor::construction(0));
         }
-    }*/
+        
+        let estimated_frames = (total_points / 68) + 1;
+        let mut anchors = UMDAnchor::construction(estimated_frames as u32);
 
-    pub fn anchor(time: f32, coordinate_list: &[[f64; 3]]) -> Result<UMD, MosaicError> {
-        let mut x_sum: f64 = 0.0; //place holder for adding x vals
-        let mut y_sum: f64 = 0.0; // place holder for adding y vals
-        let mut z_sum: f64 = 0.0; // place holder for adding z vals
+        let mut current_frame = raw_data.frame[0];
+        let mut current_timestamp = raw_data.timestamp[0];
+        let mut x_sum = 0.0;
+        let mut y_sum = 0.0;
+        let mut z_sum = 0.0;
+        let mut point_count = 0;
 
+        // We iterate through every point within every frame in UMD
+        for i in 0..total_points {
+            let frame = raw_data.frame[i];
 
-        for i in coordinate_list { // getting points
-            println!("{:?}", i);
-            x_sum += i[0];
-            y_sum += i[1];
-            z_sum += i[2];
+            // If we detect a new frame, save the average of the PREVIOUS frame
+            if frame != current_frame {
+                let count_f = point_count as f64;
+                anchors.add_anchor(
+                    current_frame,
+                    current_timestamp,
+                    x_sum / count_f,
+                    y_sum / count_f,
+                    z_sum / count_f,
 
+                    // wcount_f is the ammount of points
+                );
+                println!("Frame: {} X: {:.3}, Y: {:.3}, Z: {:.3}", current_frame, x_sum / count_f, y_sum / count_f, z_sum / count_f);
+
+                /*if current_frame == 10 {
+                    let avg_x = x_sum / count_f;
+                    let avg_y = y_sum / count_f;
+                    let avg_z = z_sum / count_f;
+
+                    println!("--- ANCHOR CALCULATION [Frame {}] ---", current_frame);
+                    println!("Points Averaged: {}", point_count);
+                    println!("Resulting Anchor: X: {:.3}, Y: {:.3}, Z: {:.3}", avg_x, avg_y, avg_z);
+                    println!("--------------------------------------");
+                }*/
+
+                // makes the points = 0 for new frame
+                current_frame = frame;
+                current_timestamp = raw_data.timestamp[i];
+                x_sum = 0.0;
+                y_sum = 0.0;
+                z_sum = 0.0;
+                point_count = 0;
+            }
+
+            x_sum += raw_data.x[i];
+            y_sum += raw_data.y[i];
+            z_sum += raw_data.z[i];
+            point_count += 1;
         }
 
-        let x = x_sum / coordinate_list.len() as f64;
-        let y = y_sum / coordinate_list.len() as f64;
-        let z = z_sum / coordinate_list.len() as f64;
+        if point_count > 0 {
+            let count_f = point_count as f64;
+            anchors.add_anchor(
+                current_frame,
+                current_timestamp,
+                x_sum / count_f,
+                y_sum / count_f,
+                z_sum / count_f,
+            );
+            
+        }
 
-        // then we just call the add_anchor function in UMD
-        //&mut self, frame: u32, timestamp: f32, x_anchor: f64, y_anchor: f64, z_anchor: f64, x_anchor_uncertainty: f64, y_anchor_uncertainty: f64, z_anchor_uncertainty: f64
-        UMDAnchor::add_anchor()
+        
 
-        //println!("X sum: {}\nY sum: {}\nZ sum: {}", x_sum, y_sum, z_sum);
-        //println!("Anchor Coordinate: ({}, {}, {})", x_anchor, y_anchor, z_anchor);
+        Ok(anchors)
     }
 }

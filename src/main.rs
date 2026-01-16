@@ -16,7 +16,7 @@ use std::path::Path;
 
 
 // CORE MEASUREMENTS
-use MOSAIC::coreMeasurements::anchor::anchor::{AnchorCoordinate};
+//use MOSAIC::coreMeasurements::anchor::anchor::{AnchorCoordinate};
 
 // SHELL
 use MOSAIC::shell::projectManager::session::{DirectoryVerifiers, SessionData};
@@ -44,10 +44,10 @@ fn main(){
 
     // running cli
 
-    let test_coords = [[12.5, 45.0, 0.1], [34.2, 88.9, 1.5], [102.3, 14.7, -5.2], [110.0, 20.1, -4.8], [255.0, 512.0, 10.0], [260.5, 515.2, 11.2], [7.0, 3.1, 0.0], [9.4, 2.8, 0.2]];
-    let time: f32 = 3.4;
-    let anchor = AnchorCoordinate::anchor(time, &test_coords);
-    println!("Anchor: {:?}", anchor);
+    //let test_coords = [[12.5, 45.0, 0.1], [34.2, 88.9, 1.5], [102.3, 14.7, -5.2], [110.0, 20.1, -4.8], [255.0, 512.0, 10.0], [260.5, 515.2, 11.2], [7.0, 3.1, 0.0], [9.4, 2.8, 0.2]];
+    //let time: f32 = 3.4;
+    //let anchor = AnchorCoordinate::anchor(time, &test_coords);
+    //println!("Anchor: {:?}", anchor);
     
 
     let mut session = SessionData::read_session_data();
