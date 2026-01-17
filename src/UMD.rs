@@ -141,11 +141,58 @@ impl UMDAnchor{
 }
 
 
-// GLOBAL COORDINATES UMD
-pub struct UMDGlobalCoordinates {
-    
+// CENTERED POINTS UMD
+// Same struct as UMD but for centered points
+
+#[derive(Debug)]
+pub struct CenteredUMD {
+    pub frame: Vec<u32>,
+    pub timestamp: Vec<f32>,
+    pub pose: Vec<bool>, // Because some pose values might be 0, we need a seperate bool value to determine if we are processing 
+
+    // pose values
+    pub pose_x: Vec<f64>,
+    pub pose_y: Vec<f64>,
+    pub pose_z: Vec<f64>,
+
+    pub coordinate_number: Vec<u32>,
+    pub types: Vec<String>, // we need to know whether or not this point was a commissure, philtrum, etc - defulat lip points can just be called "point"
+    pub x: Vec<f64>,
+    pub y: Vec<f64>,
+    pub z: Vec<f64>,
 }
 
-// POSE CORRECTED COORDINATES
-pub struct UMDPoseCorrectedCoordinates {
+impl CenteredUMD {
+    pub fn construction(total_frames: u32, points_per_frame: u32) -> Self {
+        // reserving space for data in memory
+        // the same as the UMD struct
+        
+        frame: Vec::with_capacity(total_entries.try_into().unwrap()),
+        timestamp: Vec::with_capacity(total_entries.try_into().unwrap()),
+        pose: Vec::with_capacity(total_entries.try_into().unwrap()),
+        pose_x: Vec::with_capacity(total_entries.try_into().unwrap()),
+        pose_y: Vec::with_capacity(total_entries.try_into().unwrap()),
+        pose_z: Vec::with_capacity(total_entries.try_into().unwrap()),
+        coordinate_number: Vec::with_capacity(total_entries.try_into().unwrap()),
+        types: Vec::with_capacity(total_entries.try_into().unwrap()),
+        x: Vec::with_capacity(total_entries.try_into().unwrap()),
+        y: Vec::with_capacity(total_entries.try_into().unwrap()),
+        z: Vec::with_capacity(total_entries.try_into().unwrap()),
+    }
+
+    pub fn add_point(&mut self, frame: u32, time: f32, confidence: f32, pose: bool, pose_x: f64, pose_y: f64, pose_z: f64, number: u32, types: String, x: f64, y: f64, z: f64) {
+        
+        self.frame.push(frame);
+        self.timestamp.push(time);
+        self.pose.push(pose);
+        self.pose_x.push(pose_x);
+        self.pose_y.push(pose_y);
+        self.pose_z.push(pose_z);
+        self.coordinate_number.push(number);
+        self.types.push(types);
+        self.x.push(x);
+        self.z.push(z);
+        self.y.push(y);
+
+    }
 }
