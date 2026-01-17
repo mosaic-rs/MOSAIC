@@ -32,13 +32,16 @@ impl run {
     // currently very simple as we aren't passing complex arguments
     // rn it is just for testing stuff
 
-    pub fn init() {
+    pub fn init() -> Result<(), Box<dyn std::error::Error>> {
         // init is a general run command
         // we can edit it to pass paremeters through later
         let PATH_TEMP: &str = "test_data/v15044gf0000d1dlc67og65r2deqmhd0.csv";
         let umd_data = parse_openface_data(Path::new(PATH_TEMP)).expect("Failed to parse data");
 
-        let anchor_results = AnchorProcessor::calculate_umd_anchors(&umd_data);
+        let anchor_results = AnchorProcessor::calculate_umd_anchors(&umd_data)?;
+        AnchorProcessor::save_anchors_to_parquet(&anchor_results, "output_anchors.parquet")?;
+
+        Ok(())
     }
 
 }

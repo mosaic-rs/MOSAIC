@@ -21,8 +21,17 @@ This file calculates the anchor as a reference point in the mouth by taking the 
 of points across the mouth and defining a centralised anchor point
 */
 
+// FOR NOW - X/Y/Z SD WILL BE HARDCODED AT 0.5
+// ONCE WE ESTABLISH A CALIBRATION SYSTEM, THIS WILL CHANGE
+const x_sd: f64 = 0.5;
+const y_sd: f64 = 0.5;
+const z_sd: f64 = 0.5;
+
 use crate::errors::{MosaicError};
 use crate::UMD::{UMD, UMDAnchor};
+
+use polars::prelude::*;
+use std::fs::File;
 
 pub struct AnchorProcessor;
 
@@ -58,10 +67,13 @@ impl AnchorProcessor {
                     x_sum / count_f,
                     y_sum / count_f,
                     z_sum / count_f,
+                    x_sd,
+                    y_sd,
+                    z_sd,
 
                     // wcount_f is the ammount of points
                 );
-                println!("Frame: {} X: {:.3}, Y: {:.3}, Z: {:.3}", current_frame, x_sum / count_f, y_sum / count_f, z_sum / count_f);
+                //println!("Frame: {} X: {:.3}, Y: {:.3}, Z: {:.3}", current_frame, x_sum / count_f, y_sum / count_f, z_sum / count_f);
 
                 /*if current_frame == 10 {
                     let avg_x = x_sum / count_f;
@@ -97,6 +109,9 @@ impl AnchorProcessor {
                 x_sum / count_f,
                 y_sum / count_f,
                 z_sum / count_f,
+                x_sd,
+                y_sd,
+                z_sd,
             );
             
         }
@@ -105,4 +120,27 @@ impl AnchorProcessor {
 
         Ok(anchors)
     }
+
+    pub fn save_anchors_to_parquet(data: &UMDAnchor, file_path: &str) -> PolarsResult<()> {
+    // 1. Create Series from your vectors
+    // This "wraps" your Rust vectors into Polars columns
+    let s0 = Series::new("frame", &data.frame);
+    let s1 = Series::new("timestamp", &data.timestamp);
+    let s2 = Series::new("x_anchor", &data.x_anchor);
+    let s3 = Series::new("y_anchor", &data.y_anchor);
+    let s4 = Series::new("z_anchor", &data.z_anchor);
+    let s5 = Series::new("x_uncertainty", &data.x_anchor_uncertainty);
+    let s6 = Series::new("y_uncertainty", &data.y_anchor_uncertainty);
+    let s7 = Series::new("z_uncertainty", &data.z_anchor_uncertainty);
+
+    // 2. Assemble into a DataFrame
+    let mut df = DataFrame::new(vec![s0, s1, s2, s3, s4, s5, s6, s7])?;
+
+    // 3. Create the file and write it
+    let file = File::create(file_path).map_err(PolarsError::from)?;
+    ParquetWriter::new(file).finish(&mut df)?;
+
+    println!("Saved anchors to {}", file_path);
+    Ok(())
+}
 }

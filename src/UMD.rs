@@ -94,20 +94,21 @@ impl UMD{
 // Defining a point anchor is essential to centering the points to (0,0,0)
 
 
+#[derive(Debug)]
 pub struct UMDAnchor {
     // adming info
-    frame: Vec<u32>,
-    timestamp: Vec<f32>,
+    pub frame: Vec<u32>,
+    pub timestamp: Vec<f32>,
 
     // anchor values
-    x_anchor: Vec<f64>,
-    y_anchor: Vec<f64>,
-    z_anchor: Vec<f64>,
+    pub x_anchor: Vec<f64>,
+    pub y_anchor: Vec<f64>,
+    pub z_anchor: Vec<f64>,
 
     // uncertainty
-    x_anchor_uncertainty: Vec<f64>,
-    y_anchor_uncertainty: Vec<f64>,
-    z_anchor_uncertainty: Vec<f64>,
+    pub x_anchor_uncertainty: Vec<f64>,
+    pub y_anchor_uncertainty: Vec<f64>,
+    pub z_anchor_uncertainty: Vec<f64>,
 }
 
 impl UMDAnchor{
@@ -125,17 +126,20 @@ impl UMDAnchor{
         }
     }
 
-    pub fn add_anchor(&mut self, frame: u32, timestamp: f32, x_anchor: f64, y_anchor: f64, z_anchor: f64) { //, x_anchor_uncertainty: f64, y_anchor_uncertainty: f64, z_anchor_uncertainty: f64
+    pub fn add_anchor(&mut self, frame: u32, timestamp: f32, x_anchor: f64, y_anchor: f64, z_anchor: f64, x_anchor_uncertainty: f64, y_anchor_uncertainty: f64, z_anchor_uncertainty: f64) { //, x_anchor_uncertainty: f64, y_anchor_uncertainty: f64, z_anchor_uncertainty: f64
         self.frame.push(frame);
         self.timestamp.push(timestamp);
         self.x_anchor.push(x_anchor);
         self.y_anchor.push(y_anchor);
         self.z_anchor.push(z_anchor);
-        //self.x_anchor_uncertainty.push(x_anchor_uncertainty);
-        //self.y_anchor_uncertainty.push(y_anchor_uncertainty);
-        //self.z_anchor_uncertainty.push(z_anchor_uncertainty);
+        self.x_anchor_uncertainty.push(x_anchor_uncertainty);
+        self.y_anchor_uncertainty.push(y_anchor_uncertainty);
+        self.z_anchor_uncertainty.push(z_anchor_uncertainty);
+
+        // println!("{:?}", self);
     }
 }
+
 
 // GLOBAL COORDINATES UMD
 pub struct UMDGlobalCoordinates {

@@ -24,6 +24,7 @@ use std::path::Path;
 use rustyline::error::ReadlineError;
 use rustyline::{DefaultEditor, Result};
 
+use crate::shell::projectManager::session::{SessionData, DirectoryVerifiers, SystemVerifier};
 use crate::analysis::{run};
 
 pub fn shell_initiation(session: &mut SessionData) -> Result<()> {
@@ -87,8 +88,8 @@ pub fn shell_initiation(session: &mut SessionData) -> Result<()> {
                 }
 
                 if line.trim() == "UMD"{
-                    let PATH_TEMP: &str = "test_data/v15044gf0000d1dlc67og65r2deqmhd0.csv";
-                    parse_openface_data(Path::new(PATH_TEMP)).expect("Failed to parse data");
+                    //let PATH_TEMP: &str = "test_data/v15044gf0000d1dlc67og65r2deqmhd0.csv";
+                    //parse_openface_data(Path::new(PATH_TEMP)).expect("Failed to parse data");
                 }
 
                 if line.trim() == "UMD-Anchor"{
