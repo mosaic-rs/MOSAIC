@@ -23,6 +23,7 @@ use crate::shell::projectManager::session::{SessionData, DirectoryVerifiers, Sys
 use crate::drivers::OpenFace::openface::{parse_openface_data};
 use crate::coreMeasurements::anchor::anchor::{AnchorProcessor};
 use crate::coreMeasurements::centering::centering::{CenteringProcessor};
+use crate::UMD::{UMD};
 
 
 use std::path::Path;
@@ -38,12 +39,14 @@ impl run {
         // we can edit it to pass paremeters through later
         let PATH_TEMP: &str = "test_data/v15044gf0000d1dlc67og65r2deqmhd0.csv";
         let umd_data = parse_openface_data(Path::new(PATH_TEMP)).expect("Failed to parse data");
+        UMD::save_umd_to_parquet(&umd_data, "data/output_umd.parquet");
+        
 
         let anchor_results = AnchorProcessor::calculate_umd_anchors(&umd_data)?;
-        //AnchorProcessor::save_anchors_to_parquet(&anchor_results, "output_anchors.parquet")?;
+        AnchorProcessor::save_anchors_to_parquet(&anchor_results, "data/output_anchors.parquet")?;
 
         let centering_results = CenteringProcessor::calculate_centering(&umd_data, &anchor_results)?;
-        CenteringProcessor::save_centered_to_parquet(&centering_results, "centered_points.parquet")?;
+        CenteringProcessor::save_centered_to_parquet(&centering_results, "data/output_centering.parquet")?;
         Ok(())
     }
 

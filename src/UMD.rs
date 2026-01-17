@@ -16,6 +16,7 @@ MOSAIC. If not, see <https://www.gnu.org/licenses/>.
 // This will act as an API for the drivers so they can append data properly
 use crate::drivers::OpenFace::openface::{OpenFaceLandmarkType};
 use polars::prelude::*;
+use std::fs::File;
 
 pub struct UMD {
     // admin info
@@ -85,10 +86,39 @@ impl UMD{
         self.y.push(y);
         
     }
+
+    // writing UMD to parquet (this logic is really just for testing so I can visualize the testing data better)
+
+    pub fn save_umd_to_parquet(data: &UMD, file_path: &str) -> PolarsResult<()> {
+        let s_frame = Series::new("frame", &data.frame);
+        let s_time = Series::new("timestamp", &data.timestamp);
+        let s_pose = Series::new("pose_detected", &data.pose);
+        
+        let s_px = Series::new("pose_Rx", &data.pose_x);
+        let s_py = Series::new("pose_Ry", &data.pose_y);
+        let s_pz = Series::new("pose_Rz", &data.pose_z);
+
+        let s_num = Series::new("point_id", &data.coordinate_number);
+        let s_type = Series::new("label", &data.types);
+
+        let s_x = Series::new("x_raw", &data.x);
+        let s_y = Series::new("y_raw", &data.y);
+        let s_z = Series::new("z_raw", &data.z);
+
+        let mut df = DataFrame::new(vec![
+            s_frame, s_time, /*s_conf,*/s_pose, // I will add  confidence later
+            s_px, s_py, s_pz, 
+            s_num, s_type, 
+            s_x, s_y, s_z
+        ])?;
+
+        let file = File::create(file_path).map_err(PolarsError::from)?;
+        ParquetWriter::new(file).finish(&mut df)?;
+
+        println!("Successfully exported raw UMD data to: {}", file_path);
+        Ok(())
+    }
 }
-
-// saving to UMD parquet
-
 
 // ANCHOR UMD
 // Defining a point anchor is essential to centering the points to (0,0,0)
