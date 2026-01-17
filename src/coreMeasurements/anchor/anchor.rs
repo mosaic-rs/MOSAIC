@@ -122,22 +122,22 @@ impl AnchorProcessor {
     }
 
     pub fn save_anchors_to_parquet(data: &UMDAnchor, file_path: &str) -> PolarsResult<()> {
-    let s0 = Series::new("frame", &data.frame);
-    let s1 = Series::new("timestamp", &data.timestamp);
-    let s2 = Series::new("x_anchor", &data.x_anchor);
-    let s3 = Series::new("y_anchor", &data.y_anchor);
-    let s4 = Series::new("z_anchor", &data.z_anchor);
-    let s5 = Series::new("x_uncertainty", &data.x_anchor_uncertainty);
-    let s6 = Series::new("y_uncertainty", &data.y_anchor_uncertainty);
-    let s7 = Series::new("z_uncertainty", &data.z_anchor_uncertainty);
+        let s0 = Series::new("frame", &data.frame);
+        let s1 = Series::new("timestamp", &data.timestamp);
+        let s2 = Series::new("x_anchor", &data.x_anchor);
+        let s3 = Series::new("y_anchor", &data.y_anchor);
+        let s4 = Series::new("z_anchor", &data.z_anchor);
+        let s5 = Series::new("x_uncertainty", &data.x_anchor_uncertainty);
+        let s6 = Series::new("y_uncertainty", &data.y_anchor_uncertainty);
+        let s7 = Series::new("z_uncertainty", &data.z_anchor_uncertainty);
 
-    // Making the df
-    let mut df = DataFrame::new(vec![s0, s1, s2, s3, s4, s5, s6, s7])?;
+        // Making the df
+        let mut df = DataFrame::new(vec![s0, s1, s2, s3, s4, s5, s6, s7])?;
 
-    let file = File::create(file_path).map_err(PolarsError::from)?;
-    ParquetWriter::new(file).finish(&mut df)?;
+        let file = File::create(file_path).map_err(PolarsError::from)?;
+        ParquetWriter::new(file).finish(&mut df)?;
 
-    println!("Saved anchors to {}", file_path);
-    Ok(())
+        println!("Saved anchors to {}", file_path);
+        Ok(())
 }
 }

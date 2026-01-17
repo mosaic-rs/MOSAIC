@@ -145,7 +145,7 @@ impl UMDAnchor{
 // Same struct as UMD but for centered points
 
 #[derive(Debug)]
-pub struct CenteredUMD {
+pub struct UMDCentered {
     pub frame: Vec<u32>,
     pub timestamp: Vec<f32>,
     pub pose: Vec<bool>, // Because some pose values might be 0, we need a seperate bool value to determine if we are processing 
@@ -162,22 +162,25 @@ pub struct CenteredUMD {
     pub z: Vec<f64>,
 }
 
-impl CenteredUMD {
+
+impl UMDCentered{
     pub fn construction(total_frames: u32, points_per_frame: u32) -> Self {
         // reserving space for data in memory
         // the same as the UMD struct
-        
-        frame: Vec::with_capacity(total_entries.try_into().unwrap()),
-        timestamp: Vec::with_capacity(total_entries.try_into().unwrap()),
-        pose: Vec::with_capacity(total_entries.try_into().unwrap()),
-        pose_x: Vec::with_capacity(total_entries.try_into().unwrap()),
-        pose_y: Vec::with_capacity(total_entries.try_into().unwrap()),
-        pose_z: Vec::with_capacity(total_entries.try_into().unwrap()),
-        coordinate_number: Vec::with_capacity(total_entries.try_into().unwrap()),
-        types: Vec::with_capacity(total_entries.try_into().unwrap()),
-        x: Vec::with_capacity(total_entries.try_into().unwrap()),
-        y: Vec::with_capacity(total_entries.try_into().unwrap()),
-        z: Vec::with_capacity(total_entries.try_into().unwrap()),
+        let total_entries = total_frames * points_per_frame;
+        Self {
+            frame: Vec::with_capacity(total_entries.try_into().unwrap()),
+            timestamp: Vec::with_capacity(total_entries.try_into().unwrap()),
+            pose: Vec::with_capacity(total_entries.try_into().unwrap()),
+            pose_x: Vec::with_capacity(total_entries.try_into().unwrap()),
+            pose_y: Vec::with_capacity(total_entries.try_into().unwrap()),
+            pose_z: Vec::with_capacity(total_entries.try_into().unwrap()),
+            coordinate_number: Vec::with_capacity(total_entries.try_into().unwrap()),
+            types: Vec::with_capacity(total_entries.try_into().unwrap()),
+            x: Vec::with_capacity(total_entries.try_into().unwrap()),
+            y: Vec::with_capacity(total_entries.try_into().unwrap()),
+            z: Vec::with_capacity(total_entries.try_into().unwrap()),
+        }
     }
 
     pub fn add_point(&mut self, frame: u32, time: f32, confidence: f32, pose: bool, pose_x: f64, pose_y: f64, pose_z: f64, number: u32, types: String, x: f64, y: f64, z: f64) {

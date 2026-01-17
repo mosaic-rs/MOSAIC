@@ -214,7 +214,7 @@ pub fn parse_openface_data(path: &Path) -> Result<UMD, MosaicError> {
     }
 
     let total_frames = count_csv_rows(path)?; 
-    let points_per_frame = 20;
+    let points_per_frame = 20; // we should not hardcode this
 
     let mut umd = UMD::construction(total_frames, points_per_frame);
 

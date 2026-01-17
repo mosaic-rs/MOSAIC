@@ -22,6 +22,7 @@ MOSAIC. If not, see <https://www.gnu.org/licenses/>.
 use crate::shell::projectManager::session::{SessionData, DirectoryVerifiers, SystemVerifier};
 use crate::drivers::OpenFace::openface::{parse_openface_data};
 use crate::coreMeasurements::anchor::anchor::{AnchorProcessor};
+use crate::coreMeasurements::centering::centering::{CenteringProcessor};
 
 
 use std::path::Path;
@@ -39,8 +40,10 @@ impl run {
         let umd_data = parse_openface_data(Path::new(PATH_TEMP)).expect("Failed to parse data");
 
         let anchor_results = AnchorProcessor::calculate_umd_anchors(&umd_data)?;
-        AnchorProcessor::save_anchors_to_parquet(&anchor_results, "output_anchors.parquet")?;
+        //AnchorProcessor::save_anchors_to_parquet(&anchor_results, "output_anchors.parquet")?;
 
+        let centering_results = CenteringProcessor::calculate_centering(&umd_data, &anchor_results)?;
+        CenteringProcessor::save_centered_to_parquet(&centering_results, "centered_points.parquet")?;
         Ok(())
     }
 
