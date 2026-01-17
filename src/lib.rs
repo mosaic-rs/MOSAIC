@@ -17,3 +17,5 @@ pub mod errors;
 pub mod UMD;
 
 pub mod drivers;
+
+pub mod analysis;

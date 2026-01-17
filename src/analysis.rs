@@ -13,50 +13,33 @@ You should have received a copy of the GNU General Public License along with
 MOSAIC. If not, see <https://www.gnu.org/licenses/>.
 */
 
-// ANALYSIS ACTS AS THE CONDUCTOR FOR MOSAIC
-// Once the relevent data has been extracted into the UMD - we then "run MOSAIC" which includes:
+/// ANALYSIS
+// Acts as a conductor for mosaic
+// Keeps shell lean
 
-// 1. Anchor calculation
-// 2. Centering landmarks
-// 3. Pose correction
-// 4. Landmark euclidean distance (from origin)
-// 5. Landmark angle distance
-// 6. Curvature calculation
-// 7. Area calculation (bio and quadrant)
 
-use crate::coreMeasurements::anchor::anchor::{AnchorCoordinate};
+// module imports:
+use crate::shell::projectManager::session::{SessionData, DirectoryVerifiers, SystemVerifier};
+use crate::drivers::OpenFace::openface::{parse_openface_data};
+use crate::coreMeasurements::anchor::anchor::{AnchorProcessor};
 
-use std::path::Path
 
-pub struct Anchor {
-    x: Vec<f64>,
-    y: Vec<f64>,
-    z: Vec<f64>,
-    //x_uncertainty: Vec<f64>, will add when we add calibration 
-    //y_uncertainty: Vec<f64>,
-    //z_uncertainty: Vec<f64>,
-}
+use std::path::Path;
 
-fn run_anchor(coordinate_data) -> AnchorCoordinate{
-    // we pass a list of points and return that
-}
+pub struct run;
 
-pub struct CoreMeasurementsData {
-    anchor: Anchor,
-    // we will add the other modules to the struct as they are made
-}
+impl run {
+    // currently very simple as we aren't passing complex arguments
+    // rn it is just for testing stuff
 
-impl CoreMeasurementsData {
-    fn Anchor(UMD_path) {
-        prinln!("Hello")
-        // we use a for loop to calculate the anchor points per frame and then return that to the Anchor struct
+    pub fn init() {
+        // init is a general run command
+        // we can edit it to pass paremeters through later
+        let PATH_TEMP: &str = "test_data/v15044gf0000d1dlc67og65r2deqmhd0.csv";
+        let umd_data = parse_openface_data(Path::new(PATH_TEMP)).expect("Failed to parse data");
 
-        // definine vector sizes
-        
+        let anchor_results = AnchorProcessor::calculate_umd_anchors(&umd_data);
     }
+
 }
-
-
-
-// ANCHOR 
 
