@@ -122,8 +122,6 @@ impl AnchorProcessor {
     }
 
     pub fn save_anchors_to_parquet(data: &UMDAnchor, file_path: &str) -> PolarsResult<()> {
-    // 1. Create Series from your vectors
-    // This "wraps" your Rust vectors into Polars columns
     let s0 = Series::new("frame", &data.frame);
     let s1 = Series::new("timestamp", &data.timestamp);
     let s2 = Series::new("x_anchor", &data.x_anchor);
@@ -133,10 +131,9 @@ impl AnchorProcessor {
     let s6 = Series::new("y_uncertainty", &data.y_anchor_uncertainty);
     let s7 = Series::new("z_uncertainty", &data.z_anchor_uncertainty);
 
-    // 2. Assemble into a DataFrame
+    // Making the df
     let mut df = DataFrame::new(vec![s0, s1, s2, s3, s4, s5, s6, s7])?;
 
-    // 3. Create the file and write it
     let file = File::create(file_path).map_err(PolarsError::from)?;
     ParquetWriter::new(file).finish(&mut df)?;
 
