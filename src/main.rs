@@ -26,7 +26,7 @@ use MOSAIC::drivers::OpenFace::openface::{parse_openface_data};
 fn main(){
 
     /*
-    println!("MOSAIC -- v0.2.0 pre-release (GLPv3)");
+    println!("MOSAIC -- v0.2.1 pre-release (GLPv3)");
     Anchor();
     println!("");
     DirectoryVerifiers::check_project_directory("Hello World");
