@@ -257,9 +257,9 @@ pub fn parse_openface_data(path: &Path) -> Result<UMD, MosaicError> {
             // temp making pose bool = true
             let pose = true;
 
-            if frame_val == 10 { // Just check frame 10
+            /* if frame_val == 10 { // Just check frame 10
             println!("Frame: {} - Timestamp: {} - Confidence: {} - Pose: {} - Pose_X: {} - Pose_Y: {} - Pose_Z: {} - Point #: {} - Label: {} - X: {} - Y: {} - Z: {}", frame_val, timestamp, confidence, pose, pose_x, pose_y, pose_z, i, label, x, y, z);
-            }
+            }*/
             
             umd.add_point(frame_val, timestamp, confidence, pose, pose_x, pose_y, pose_z, i as u32, label, x, y, z);
     
