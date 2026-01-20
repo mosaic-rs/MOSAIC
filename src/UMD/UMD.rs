@@ -62,7 +62,7 @@ pub struct UMD {
     pub x_rotated: Vec<f64>,
     pub y_rotated: Vec<f64>,
     pub z_rotated: Vec<f64>, // OPTIONAL (i.e. z axis is optional)
-    // I suspect centering which combines the x/y/z_centered_uncertainty and anchor_uncertainty will change uncertainty for x/y/z_rotated
+    // I suspect centering which combines the x/y/z_centered_uncertainty and pose_uncertainty will change uncertainty for x/y/z_rotated
     pub x_rotated_uncertainty: Vec<f64>, // data from calibration process - OPTIONAL (i.e. calibration is not required)
     pub y_rotated_uncertainty: Vec<f64>, // data from calibration process - OPTIONAL (i.e. calibration is not required)
     pub z_rotated_uncertainty: Vec<f64>, // data from calibration process - OPTIONAL (i.e. calibration is not required & z axis is optional)
