@@ -13,6 +13,7 @@ You should have received a copy of the GNU General Public License along with
 MOSAIC. If not, see <https://www.gnu.org/licenses/>.
 */
 
-// pub mod anchor; - Moved to UMD/anchor
-// pub mod centering; - Moved to UMD/centering
-// pub mod pose; - Moved to UMD/pose
+pub mod UMD;
+pub mod anchor;
+pub mod centering;
+pub mod pose;

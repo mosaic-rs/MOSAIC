@@ -13,7 +13,7 @@ You should have received a copy of the GNU General Public License along with
 MOSAIC. If not, see <https://www.gnu.org/licenses/>.
 */
 
-use crate::UMD::{UMD};
+use crate::UMD::UMD::{UMD};
 use crate::errors::{MosaicError, UMDError, FileError};
 
 use std::path::Path;

@@ -18,13 +18,17 @@ MOSAIC. If not, see <https://www.gnu.org/licenses/>.
 // Keeps shell lean
 
 
-// module imports:
+// Session info:
 use crate::shell::projectManager::session::{SessionData, DirectoryVerifiers, SystemVerifier};
+
+// Drivers
 use crate::drivers::OpenFace::openface::{parse_openface_data};
-use crate::coreMeasurements::anchor::anchor::{AnchorProcessor};
-use crate::coreMeasurements::centering::centering::{CenteringProcessor};
-use crate::coreMeasurements::pose::pose::{PoseProcessor};
-use crate::UMD::{UMD};
+
+// UMD
+use crate::UMD::anchor::anchor::{AnchorProcessor};
+use crate::UMD::centering::centering::{CenteringProcessor};
+use crate::UMD::pose::pose::{PoseProcessor};
+use crate::UMD::UMD::{UMD};
 
 
 use std::path::Path;

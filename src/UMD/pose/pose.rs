@@ -22,7 +22,7 @@ MOSAIC. If not, see <https://www.gnu.org/licenses/>.
 // MOSAIC 0.2.1 is sort of made with OpenFace in mind but there will be changes to the UMD 
 // make it general purpose by v1.0.0
 
-use crate::UMD::{UMDCentered, UMDPose};
+use crate::UMD::UMD::{UMDCentered, UMDPose};
 use crate::errors::{MosaicError};
 use polars::prelude::*;
 use std::fs::File;

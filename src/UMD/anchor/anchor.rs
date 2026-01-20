@@ -28,7 +28,7 @@ const y_sd: f64 = 0.5;
 const z_sd: f64 = 0.5;
 
 use crate::errors::{MosaicError};
-use crate::UMD::{UMD, UMDAnchor};
+use crate::UMD::UMD::{UMD, UMDAnchor};
 
 use polars::prelude::*;
 use std::fs::File;

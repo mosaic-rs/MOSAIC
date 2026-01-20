@@ -19,7 +19,7 @@ MOSAIC. If not, see <https://www.gnu.org/licenses/>.
 // Accesses the UMD and Anchor data to center all points to the origin
 
 use crate::errors::{MosaicError};
-use crate::UMD::{UMD, UMDAnchor, UMDCentered};
+use crate::UMD::UMD::{UMD, UMDAnchor, UMDCentered};
 
 use polars::prelude::*;
 use std::fs::File;
