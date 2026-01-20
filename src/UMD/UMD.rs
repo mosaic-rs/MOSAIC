@@ -23,7 +23,24 @@ As a note, this file is quite grandiose as it is helpful in visualising exactly 
 is happening to the data. This is not a finished product.
 */
 
-pub struct UMD {
+// POINT ORDER:
+// LIPS (CLOCKWISE ALWAYS) -> TONGUE -> JAW -> OTHERS
+// LANDMARK TYPE STRUCTURE HAS BEEN MOVED TO BE DRIVER SPECIFIC
+
+// UMD STRUCTURE:
+// u32      f32          bool    f64        f64        f64        u32                        u32/String       f64         f64         f64  
+// frame: | time_stamp | pose |  pose_x  |  pose_y  |  pose_z  |  coordinate_number |        type        |     x     |     y     |     z    
+// 1        0.01        1      0.235      ...        ...         1                   InnerLeftCommissure  0.0234      323.3276    10942
+// 1        0.01        1      4.252      ...        ...         2                   InnerUpperLip        2.3234      323.3276    10942
+// 1        0.01        1      ...        ...        ...         3                   ...                  ...         ...         ...
+// 1        0.01        1      ...        ...        ...         4                   ...                  ...         ...         ...
+// 1        0.01        1      ...        ...        ...         5                   ...                  ...         ...         ...
+// 1        0.01        1      ...        ...        ...         6                   ...                  ...         ...         ...
+
+// DRIVER UMD
+// Communicates with the driver to extract raw data
+
+pub struct UMDDriver {
     // admin info
     pub frame: Vec<u32>,
     pub timestamp: Vec<f32>,
@@ -41,21 +58,7 @@ pub struct UMD {
     pub z: Vec<f64>,
 }
 
-// POINT ORDER:
-// LIPS (CLOCKWISE ALWAYS) -> TONGUE -> JAW -> OTHERS
-// LANDMARK TYPE STRUCTURE HAS BEEN MOVED TO BE DRIVER SPECIFIC
-
-// UMD STRUCTURE:
-// u32      f32          bool    f64        f64        f64        u32                        u32/String       f64         f64         f64  
-// frame: | time_stamp | pose |  pose_x  |  pose_y  |  pose_z  |  coordinate_number |        type        |     x     |     y     |     z    
-// 1        0.01        1      0.235      ...        ...         1                   InnerLeftCommissure  0.0234      323.3276    10942
-// 1        0.01        1      4.252      ...        ...         2                   InnerUpperLip        2.3234      323.3276    10942
-// 1        0.01        1      ...        ...        ...         3                   ...                  ...         ...         ...
-// 1        0.01        1      ...        ...        ...         4                   ...                  ...         ...         ...
-// 1        0.01        1      ...        ...        ...         5                   ...                  ...         ...         ...
-// 1        0.01        1      ...        ...        ...         6                   ...                  ...         ...         ...
-
-impl UMD{
+impl UMDDriver{
     pub fn construction(total_frames: u32, points_per_frame: u32)-> Self{
         // reserves the memory needed based on the frame count and the points per frame
         let mut total_entries = total_frames * points_per_frame;
@@ -92,9 +95,9 @@ impl UMD{
         
     }
 
-    // writing UMD to parquet (this logic is really just for testing so I can visualize the testing data better)
+    // writing UMDDriver to parquet (this logic is really just for testing so I can visualize the testing data better)
 
-    pub fn save_umd_to_parquet(data: &UMD, file_path: &str) -> PolarsResult<()> {
+    pub fn save_umd_driver_to_parquet(data: &UMDDriver, file_path: &str) -> PolarsResult<()> {
         let s_frame = Series::new("frame", &data.frame);
         let s_time = Series::new("timestamp", &data.timestamp);
         let s_pose = Series::new("pose_detected", &data.pose);

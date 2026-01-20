@@ -28,7 +28,7 @@ use crate::drivers::OpenFace::openface::{parse_openface_data};
 use crate::UMD::anchor::anchor::{AnchorProcessor};
 use crate::UMD::centering::centering::{CenteringProcessor};
 use crate::UMD::pose::pose::{PoseProcessor};
-use crate::UMD::UMD::{UMD};
+use crate::UMD::UMD::{UMDDriver};
 
 
 use std::path::Path;
@@ -44,22 +44,22 @@ impl run {
         // we can edit it to pass paremeters through later
         let PATH_TEMP: &str = "test_data/v15044gf0000d1dlc67og65r2deqmhd0.csv";
         let umd_data = parse_openface_data(Path::new(PATH_TEMP)).expect("Failed to parse data");
-        UMD::save_umd_to_parquet(&umd_data, "/Users/harrywoodhouse/MOSAIC/MOSAIC/MOSAIC-Engine/data/output_umd.parquet");
+        UMDDriver::save_umd_driver_to_parquet(&umd_data, "data/output_umd.parquet");
 
         // anchor testing
 
         let anchor_results = AnchorProcessor::calculate_umd_anchors(&umd_data)?;
-        AnchorProcessor::save_anchors_to_parquet(&anchor_results, "/Users/harrywoodhouse/MOSAIC/MOSAIC/MOSAIC-Engine/data/output_anchors.parquet")?;
+        AnchorProcessor::save_anchors_to_parquet(&anchor_results, "data/output_anchors.parquet")?;
 
         // centering testing
 
         let centering_results = CenteringProcessor::calculate_centering(&umd_data, &anchor_results)?;
-        CenteringProcessor::save_centered_to_parquet(&centering_results, "/Users/harrywoodhouse/MOSAIC/MOSAIC/MOSAIC-Engine/data/output_centering.parquet")?;
+        CenteringProcessor::save_centered_to_parquet(&centering_results, "data/output_centering.parquet")?;
 
         // pose correction testing
 
         let pose_correction_results = PoseProcessor::calculate_pose_corr(&centering_results)?;
-        PoseProcessor::save_pose_to_parquet(&pose_correction_results, "/Users/harrywoodhouse/MOSAIC/MOSAIC/MOSAIC-Engine/data/output_pose_correction.parquet")?;
+        PoseProcessor::save_pose_to_parquet(&pose_correction_results, "data/output_pose_correction.parquet")?;
         Ok(())
     }
 

@@ -19,7 +19,7 @@ MOSAIC. If not, see <https://www.gnu.org/licenses/>.
 // Accesses the UMD and Anchor data to center all points to the origin
 
 use crate::errors::{MosaicError};
-use crate::UMD::UMD::{UMD, UMDAnchor, UMDCentered};
+use crate::UMD::UMD::{UMDDriver, UMDAnchor, UMDCentered};
 
 use polars::prelude::*;
 use std::fs::File;
@@ -27,7 +27,7 @@ use std::fs::File;
 pub struct CenteringProcessor;
 
 impl CenteringProcessor {
-    pub fn calculate_centering(raw_coord_data: &UMD, raw_anchor_data: &UMDAnchor) -> Result<UMDCentered, MosaicError>{
+    pub fn calculate_centering(raw_coord_data: &UMDDriver, raw_anchor_data: &UMDAnchor) -> Result<UMDCentered, MosaicError>{
         let total_points = raw_coord_data.frame.len();
         if total_points == 0 {
             return Ok(UMDCentered::construction(0, 0));

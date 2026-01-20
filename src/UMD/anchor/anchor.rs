@@ -28,7 +28,7 @@ const y_sd: f64 = 0.5;
 const z_sd: f64 = 0.5;
 
 use crate::errors::{MosaicError};
-use crate::UMD::UMD::{UMD, UMDAnchor};
+use crate::UMD::UMD::{UMDDriver, UMDAnchor};
 
 use polars::prelude::*;
 use std::fs::File;
@@ -37,7 +37,7 @@ pub struct AnchorProcessor;
 
 impl AnchorProcessor {
     /// We take the extracted coords from the UMD file 
-    pub fn calculate_umd_anchors(raw_data: &UMD) -> Result<UMDAnchor, MosaicError> {
+    pub fn calculate_umd_anchors(raw_data: &UMDDriver) -> Result<UMDAnchor, MosaicError> {
         // 
         let total_points = raw_data.frame.len();
         if total_points == 0 {
