@@ -27,7 +27,57 @@ is happening to the data. This is not a finished product.
 // LIPS (CLOCKWISE ALWAYS) -> TONGUE -> JAW -> OTHERS
 // LANDMARK TYPE STRUCTURE HAS BEEN MOVED TO BE DRIVER SPECIFIC
 
-// UMD STRUCTURE:
+pub struct UMD {
+    pub frame: Vec<u32>,
+    pub timestamp: Vec<f32>,
+    pub confidence: Vec<u32>,
+    pub pose: Vec<bool>,
+
+    // pose
+    pub pose_x: Vec<f64>,
+    pub pose_y: Vec<f64>,
+    pub pose_z: Vec<f64>,
+    pub pose_x_uncertainty: Vec<f64>, // data from calibration process - OPTIONAL (i.e. calibration is not required)
+    pub pose_y_uncertainty: Vec<f64>, // data from calibration process - OPTIONAL (i.e. calibration is not required)
+    pub pose_z_uncertainty: Vec<f64>, // data from calibration process - OPTIONAL (i.e. calibration is not required & z axis is optional)
+
+    // raw coordinates
+    pub x_raw: Vec<f64>,
+    pub y_raw: Vec<f64>,
+    pub z_raw: Vec<f64>, // OPTIONAL (i.e. z axis is optional)
+    pub x_raw_uncertainty: Vec<f64>, // data from calibration process - OPTIONAL (i.e. calibration is not required)
+    pub y_raw_uncertainty: Vec<f64>, // data from calibration process - OPTIONAL (i.e. calibration is not required)
+    pub z_raw_uncertainty: Vec<f64>, // data from calibration process - OPTIONAL (i.e. calibration is not required & z axis is optional)
+
+    // centered coordinates
+    pub x_centered: Vec<f64>,
+    pub y_centered: Vec<f64>,
+    pub z_centered: Vec<f64>, // OPTIONAL (i.e. z axis is optional)
+    // I suspect centering which combines the raw_uncertainty and anchor_uncertainty will change uncertainty for x/y/z_centered
+    pub x_centered_uncertainty: Vec<f64>,
+    pub y_centered_uncertainty: Vec<f64>,
+    pub z_centered_uncertainty: Vec<f64>,
+
+    // pose corrected coordinates
+    pub x_rotated: Vec<f64>,
+    pub y_rotated: Vec<f64>,
+    pub z_rotated: Vec<f64>, // OPTIONAL (i.e. z axis is optional)
+    // I suspect centering which combines the x/y/z_centered_uncertainty and anchor_uncertainty will change uncertainty for x/y/z_rotated
+    pub x_rotated_uncertainty: Vec<f64>, // data from calibration process - OPTIONAL (i.e. calibration is not required)
+    pub y_rotated_uncertainty: Vec<f64>, // data from calibration process - OPTIONAL (i.e. calibration is not required)
+    pub z_rotated_uncertainty: Vec<f64>, // data from calibration process - OPTIONAL (i.e. calibration is not required & z axis is optional)
+
+
+    // anchor
+    pub x_anchor: Vec<f64>,
+    pub y_anchor: Vec<f64>,
+    pub z_anchor: Vec<f64>, // OPTIONAL (i.e. z axis is optional)
+    pub x_anchor_uncertainty: Vec<f64>, // data from calibration process - OPTIONAL (i.e. calibration is not required)
+    pub y_anchor_uncertainty: Vec<f64>, // data from calibration process - OPTIONAL (i.e. calibration is not required)
+    pub z_anchor_uncertainty: Vec<f64>, // data from calibration process - OPTIONAL (i.e. calibration is not required & z axis is optional)
+}
+
+// UMDDriver STRUCTURE: (Also the same for UMDCenter and UMDPose)
 // u32      f32          bool    f64        f64        f64        u32                        u32/String       f64         f64         f64  
 // frame: | time_stamp | pose |  pose_x  |  pose_y  |  pose_z  |  coordinate_number |        type        |     x     |     y     |     z    
 // 1        0.01        1      0.235      ...        ...         1                   InnerLeftCommissure  0.0234      323.3276    10942

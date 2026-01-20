@@ -28,7 +28,7 @@ use crate::drivers::OpenFace::openface::{parse_openface_data};
 use crate::UMD::anchor::anchor::{AnchorProcessor};
 use crate::UMD::centering::centering::{CenteringProcessor};
 use crate::UMD::pose::pose::{PoseProcessor};
-use crate::UMD::UMD::{UMDDriver};
+use crate::UMD::UMD::{UMD, UMDDriver};
 
 
 use std::path::Path;
