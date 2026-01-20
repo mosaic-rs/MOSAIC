@@ -295,3 +295,9 @@ impl UMDPose {
 
     }
 }
+
+/*
+End of the core UMD functionality. 
+
+The next work will introduce a cohesive file structure through an io
+*/
