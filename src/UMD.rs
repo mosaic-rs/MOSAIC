@@ -18,6 +18,11 @@ use crate::drivers::OpenFace::openface::{OpenFaceLandmarkType};
 use polars::prelude::*;
 use std::fs::File;
 
+/*
+As a note, this file is quite grandiose as it is helpful in visualising exactly what
+is happening to the data. This is not a finished product.
+*/
+
 pub struct UMD {
     // admin info
     pub frame: Vec<u32>,
@@ -252,6 +257,8 @@ pub struct UMDPose{
     pub y: Vec<f64>,
     pub z: Vec<f64>,
 }
+
+// again, quite similar to UMD and UMDCenter
 
 impl UMDPose {
     pub fn construction(total_frames: u32, points_per_frame: u32) -> Self{

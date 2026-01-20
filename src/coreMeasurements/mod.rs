@@ -15,3 +15,4 @@ MOSAIC. If not, see <https://www.gnu.org/licenses/>.
 
 pub mod anchor;
 pub mod centering;
+pub mod pose;
