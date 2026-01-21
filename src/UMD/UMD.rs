@@ -27,11 +27,14 @@ is happening to the data. This is not a finished product.
 // LIPS (CLOCKWISE ALWAYS) -> TONGUE -> JAW -> OTHERS
 // LANDMARK TYPE STRUCTURE HAS BEEN MOVED TO BE DRIVER SPECIFIC
 
+#[derive(Debug)]
 pub struct UMD {
     pub frame: Vec<u32>,
     pub timestamp: Vec<f32>,
-    pub confidence: Vec<u32>,
+    pub confidence: Vec<f32>, // openface confidence value between 0-1
     pub pose: Vec<bool>,
+    pub coordinate_number: Vec<u32>,
+    pub types: Vec<String>,
 
     // pose
     pub pose_x: Vec<f64>,
@@ -75,6 +78,173 @@ pub struct UMD {
     pub x_anchor_uncertainty: Vec<f64>, // data from calibration process - OPTIONAL (i.e. calibration is not required)
     pub y_anchor_uncertainty: Vec<f64>, // data from calibration process - OPTIONAL (i.e. calibration is not required)
     pub z_anchor_uncertainty: Vec<f64>, // data from calibration process - OPTIONAL (i.e. calibration is not required & z axis is optional)
+}
+
+impl UMD {
+    pub fn construction(total_frames: u32, points_per_frame: u32)-> Self{
+        // reserves the memory needed based on the frame count and the points per frame
+        let mut total_entries = total_frames * points_per_frame;
+
+        Self {
+            frame: Vec::with_capacity(total_entries.try_into().unwrap()),
+            timestamp: Vec::with_capacity(total_entries.try_into().unwrap()),
+            confidence: Vec::with_capacity(total_entries.try_into().unwrap()),
+            pose: Vec::with_capacity(total_entries.try_into().unwrap()),
+            coordinate_number: Vec::with_capacity(total_entries.try_into().unwrap()),
+            types: Vec::with_capacity(total_entries.try_into().unwrap()),
+
+            // pose
+            pose_x: Vec::with_capacity(total_entries.try_into().unwrap()),
+            pose_y: Vec::with_capacity(total_entries.try_into().unwrap()),
+            pose_z: Vec::with_capacity(total_entries.try_into().unwrap()),
+            pose_x_uncertainty: Vec::with_capacity(total_entries.try_into().unwrap()),
+            pose_y_uncertainty: Vec::with_capacity(total_entries.try_into().unwrap()),
+            pose_z_uncertainty: Vec::with_capacity(total_entries.try_into().unwrap()),
+
+            // raw coordinates
+            x_raw: Vec::with_capacity(total_entries.try_into().unwrap()),
+            y_raw: Vec::with_capacity(total_entries.try_into().unwrap()),
+            z_raw: Vec::with_capacity(total_entries.try_into().unwrap()),
+            x_raw_uncertainty: Vec::with_capacity(total_entries.try_into().unwrap()),
+            y_raw_uncertainty: Vec::with_capacity(total_entries.try_into().unwrap()),
+            z_raw_uncertainty: Vec::with_capacity(total_entries.try_into().unwrap()),
+
+            // centered coordinates
+            x_centered: Vec::with_capacity(total_entries.try_into().unwrap()),
+            y_centered: Vec::with_capacity(total_entries.try_into().unwrap()),
+            z_centered: Vec::with_capacity(total_entries.try_into().unwrap()),
+            x_centered_uncertainty: Vec::with_capacity(total_entries.try_into().unwrap()),
+            y_centered_uncertainty: Vec::with_capacity(total_entries.try_into().unwrap()),
+            z_centered_uncertainty: Vec::with_capacity(total_entries.try_into().unwrap()),
+
+            x_rotated: Vec::with_capacity(total_entries.try_into().unwrap()),
+            y_rotated: Vec::with_capacity(total_entries.try_into().unwrap()),
+            z_rotated: Vec::with_capacity(total_entries.try_into().unwrap()),
+            x_rotated_uncertainty: Vec::with_capacity(total_entries.try_into().unwrap()),
+            y_rotated_uncertainty: Vec::with_capacity(total_entries.try_into().unwrap()),
+            z_rotated_uncertainty: Vec::with_capacity(total_entries.try_into().unwrap()),
+
+
+            // anchor
+            x_anchor: Vec::with_capacity(total_entries.try_into().unwrap()),
+            y_anchor: Vec::with_capacity(total_entries.try_into().unwrap()),
+            z_anchor: Vec::with_capacity(total_entries.try_into().unwrap()),
+            x_anchor_uncertainty: Vec::with_capacity(total_entries.try_into().unwrap()),
+            y_anchor_uncertainty: Vec::with_capacity(total_entries.try_into().unwrap()),
+            z_anchor_uncertainty: Vec::with_capacity(total_entries.try_into().unwrap()),
+        }
+
+    }
+
+    pub fn add_point(&mut self, raw: &UMDDriver, anchor: &UMDAnchor, centered: &UMDCenter, rotated: &UMDPose) {
+        
+            self.frame.push(raw.frame);
+            self.timestamp.push(raw.timestamp);
+            self.confidence.push(raw.confidence); // needs adding
+            self.pose.push(raw.pose);
+            self.coordinate_number.push(raw.coordinate_number);
+            self.types.push(raw.types);
+
+            // pose
+            self.pose_x.push(raw.pose_x);
+            self.pose_y.push(raw.pose_y);
+            self.pose_z.push(raw.pose_z);
+            self.pose_x_uncertainty.push(raw.pose_x_uncertainty); // needs adding
+            self.pose_y_uncertainty.push(raw.pose_y_uncertainty); // needs adding
+            self.pose_z_uncertainty.push(raw.pose_z_uncertainty); // needs adding
+
+            // raw coordinates
+            self.x_raw.push(raw.x);
+            self.y_raw.push(raw.y);
+            self.z_raw.push(raw.z);
+            self.x_raw_uncertainty.push(raw.x_uncertainty); // needs adding
+            self.y_raw_uncertainty.push(raw.y_uncertainty); // needs adding
+            self.z_raw_uncertainty.push(raw.z_uncertainty); // needs adding
+
+            // centered coordinates
+            self.x_centered.push(centered.x);
+            self.y_centered.push(centered.y);
+            self.z_centered.push(centered.z);
+            self.x_centered_uncertainty.push(centered.x_uncertainty); // needs adding
+            self.y_centered_uncertainty.push(centered.y_uncertainty); // needs adding
+            self.z_centered_uncertainty.push(centered.z_uncertainty); // needs adding
+
+            // pose corrected coordinates
+            self.x_rotated.push(rotated.x);
+            self.y_rotated.push(rotated.y);
+            self.z_rotated.push(rotated.z);
+            self.x_rotated_uncertainty.push(rotated.x_uncertainty); // needs adding
+            self.y_rotated_uncertainty.push(rotated.y_uncertainty); // needs adding
+            self.z_rotated_uncertainty.push(rotated.z_uncertainty); // needs adding
+
+            // anchor
+            self.x_anchor.push(anchor.x_anchor);
+            self.y_anchor.push(anchor.y_anchor);
+            self.z_anchor.push(anchor.z_anchor);
+            self.x_anchor_uncertainty.push(anchor.x_anchor_uncertainty); // needs adding
+            self.y_anchor_uncertainty.push(anchor.y_anchor_uncertainty); // needs adding
+            self.z_anchor_uncertainty.push(anchor.z_anchor_uncertainty); // needs adding
+    }
+
+    pub fn save_umd_driver_to_parquet(data: &UMD, file_path: &str) -> PolarsResult<()> {
+        let s_frame = Series::new("frame", &data.frame);
+        let s_timestamp = Series::new("timestamp", &data.timestamp);
+        let s_confidence = Series::new("confidence", &data.confidence); // needs adding
+        let s_pose = Series::new("pose", &data.pose);
+        let s_coordinate_number = Series::new("coordinate_number", &data.coordinate_number);
+        let s_type = Series::new("type", &data.types);
+        
+        let s_pose_x = Series::new("pose_x", &data.pose_x);
+        let s_pose_y = Series::new("pose_y", &data.pose_y);
+        let s_pose_z = Series::new("pose_z", &data.pose_z);
+        let s_pose_x_uncertainty = Series::new("pose_x_uncertainty", &data.pose_x_uncertainty); // needs adding
+        let s_pose_y_uncertainty = Series::new("pose_y_uncertainty", &data.pose_y_uncertainty); // needs adding
+        let s_pose_z_uncertainty = Series::new("pose_z_uncertainty", &data.pose_z_uncertainty); // needs adding
+
+        let s_x_raw = Series::new("x_raw", &data.x_raw);
+        let s_y_raw = Series::new("y_raw", &data.y_raw);
+        let s_z_raw = Series::new("z_raw", &data.z_raw);
+        let s_x_raw_uncertainty = Series::new("x_raw_uncertainty", &data.x_raw_uncertainty); // needs adding
+        let s_y_raw_uncertainty = Series::new("y_raw_uncertainty", &data.y_raw_uncertainty); // needs adding
+        let s_z_raw_uncertainty = Series::new("z_raw_uncertainty", &data.z_raw_uncertainty); // needs adding
+
+        let s_x_centered = Series::new("x_centered", &data.x_centered);
+        let s_y_centered = Series::new("y_centered", &data.y_centered);
+        let s_z_centered = Series::new("z_centered", &data.z_centered);
+        let s_x_centered_uncertainty = Series::new("x_centered_uncertainty", &data.x_centered_uncertainty); // needs adding
+        let s_y_centered_uncertainty = Series::new("y_centered_uncertainty", &data.y_centered_uncertainty); // needs adding
+        let s_z_centered_uncertainty = Series::new("z_centered_uncertainty", &data.z_centered_uncertainty); // needs adding
+
+        let s_x_rotated = Series::new("x_rotated", &data.x_rotated);
+        let s_y_rotated = Series::new("y_rotated", &data.y_rotated);
+        let s_z_rotated = Series::new("z_rotated", &data.z_rotated);
+        let s_x_rotated_uncertainty = Series::new("x_rotated_uncertainty", &data.x_rotated_uncertainty); // needs adding
+        let s_y_rotated_uncertainty = Series::new("y_rotated_uncertainty", &data.y_rotated_uncertainty); // needs adding
+        let s_z_rotated_uncertainty = Series::new("z_rotated_uncertainty", &data.z_rotated_uncertainty); // needs adding
+
+        let s_x_anchor = Series::new("x_anchor", &data.x_anchor);
+        let s_y_anchor = Series::new("y_anchor", &data.y_anchor);
+        let s_z_anchor = Series::new("z_anchor", &data.z_anchor);
+        let s_x_anchor_uncertainty = Series::new("x_anchor_uncertainty", &data.x_anchor_uncertainty); // needs adding
+        let s_y_anchor_uncertainty = Series::new("y_anchor_uncertainty", &data.y_anchor_uncertainty); // needs adding
+        let s_z_anchor_uncertainty = Series::new("z_anchor_uncertainty", &data.z_anchor_uncertainty); // needs adding
+
+        let mut df = DataFrame::new(vec![
+            s_frame, s_timestamp, s_confidence, s_pose, s_coordinate_number, s_type, 
+            s_pose_x, s_pose_y, s_pose_z, s_pose_x_uncertainty, s_pose_y_uncertainty, s_pose_z_uncertainty, 
+            s_x_raw, s_y_raw, s_z_raw, s_x_raw_uncertainty, s_y_raw_uncertainty, s_z_raw_uncertainty, 
+            s_x_centered, s_y_centered, s_z_centered, s_x_centered_uncertainty, s_y_centered_uncertainty, s_z_centered_uncertainty, 
+            s_x_rotated, s_y_rotated, s_z_rotated, s_x_rotated_uncertainty, s_y_rotated_uncertainty, s_z_rotated_uncertainty, 
+            s_x_anchor, s_y_anchor, s_z_anchor, s_x_anchor_uncertainty, s_y_anchor_uncertainty, s_z_anchor_uncertainty
+        ])?;
+
+        let file = File::create(file_path).map_err(PolarsError::from)?;
+        ParquetWriter::new(file).finish(&mut df)?;
+
+        println!("Successfully exported raw UMD data to: {}", file_path);
+        Ok(())
+    }
+
 }
 
 // UMDDriver STRUCTURE: (Also the same for UMDCenter and UMDPose)
