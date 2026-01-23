@@ -242,6 +242,9 @@ pub fn parse_openface_data(path: &Path) -> Result<UMDDriver, MosaicError> {
         let pose_x: f64 = record[header_map.pose_x].parse().unwrap_or(0.0);
         let pose_y: f64 = record[header_map.pose_y].parse().unwrap_or(0.0);
         let pose_z: f64 = record[header_map.pose_z].parse().unwrap_or(0.0);
+        let pose_x_uncertainty: f64 = 0.01; // TEMP VALUE UNTIL WE MAKE CALIBRATION LOGIC
+        let pose_y_uncertainty: f64 = 0.01; // TEMP VALUE UNTIL WE MAKE CALIBRATION LOGIC
+        let pose_z_uncertainty: f64 = 0.01; // TEMP VALUE UNTIL WE MAKE CALIBRATION LOGIC        
 
         for i in 48..68 { // hardcoded only to get lip points but will change
             let landmark_enum = OpenFaceLandmarkType::openface_index(i);
@@ -254,6 +257,17 @@ pub fn parse_openface_data(path: &Path) -> Result<UMDDriver, MosaicError> {
                 .and_then(|v| v.parse().ok())
                 .unwrap_or(0.0);
 
+            let x_uncertainty: f64 = 0.5; // TEMP VALUE UNTIL WE MAKE CALIBRATION LOGIC
+            let y_uncertainty: f64 = 0.5; // TEMP VALUE UNTIL WE MAKE CALIBRATION LOGIC
+            let mut z_uncertainty: f64 = 0.0; // TEMP VALUE UNTIL WE MAKE CALIBRATION LOGIC
+            
+            if z != 0.0 {
+                let z_uncertainty = 0.5; // this is not perfect because if we did have a Z axis
+                                         //, the uncertaninty would be 0 if the z axis is 0 but this
+                                         // is only for testing purposes 
+            }
+        
+
             // temp making pose bool = true
             let pose = true;
 
@@ -261,7 +275,8 @@ pub fn parse_openface_data(path: &Path) -> Result<UMDDriver, MosaicError> {
             println!("Frame: {} - Timestamp: {} - Confidence: {} - Pose: {} - Pose_X: {} - Pose_Y: {} - Pose_Z: {} - Point #: {} - Label: {} - X: {} - Y: {} - Z: {}", frame_val, timestamp, confidence, pose, pose_x, pose_y, pose_z, i, label, x, y, z);
             }*/
             
-            umd.add_point(frame_val, timestamp, confidence, pose, pose_x, pose_y, pose_z, i as u32, label, x, y, z);
+            umd.add_point(frame_val, timestamp, confidence, pose, pose_x, pose_y, pose_z, pose_x_uncertainty, pose_y_uncertainty, pose_z_uncertainty, 
+                          i as u32, label, x, y, z, x_uncertainty, y_uncertainty, z_uncertainty);
     
         }
     }

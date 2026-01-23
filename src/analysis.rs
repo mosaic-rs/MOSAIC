@@ -44,7 +44,7 @@ impl run {
         // we can edit it to pass paremeters through later
         let PATH_TEMP: &str = "test_data/v15044gf0000d1dlc67og65r2deqmhd0.csv";
         let umd_data = parse_openface_data(Path::new(PATH_TEMP)).expect("Failed to parse data");
-        UMDDriver::save_umd_driver_to_parquet(&umd_data, "data/output_umd.parquet");
+        UMDDriver::save_umd_driver_to_parquet(&umd_data, "data/umd_driver.parquet");
 
         // anchor testing
 
@@ -60,6 +60,15 @@ impl run {
 
         let pose_correction_results = PoseProcessor::calculate_pose_corr(&centering_results)?;
         PoseProcessor::save_pose_to_parquet(&pose_correction_results, "data/output_pose_correction.parquet")?;
+
+        // Final UMD output
+
+        //aw: &UMDDriver, anchor: &UMDAnchor, centered: &UMDCentered, rotated: &UMDPose
+        let total_entries = centering_results.x.len() as u32;        
+        let mut umd_instance = UMD::construction(total_entries, 1);
+        umd_instance.add_point(&umd_data, &anchor_results, &centering_results, &pose_correction_results);
+
+        UMD::save_umd_to_parquet(&umd_instance, "data/UMD.parquet")?;
         Ok(())
     }
 

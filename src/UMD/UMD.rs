@@ -178,15 +178,31 @@ impl UMD {
             self.z_rotated_uncertainty = rotated.z_uncertainty.clone(); // needs adding - IMPLEMENTED IN SUBSCTRUCT
 
             // anchor
-            self.x_anchor = anchor.x_anchor.clone();
+            let points_per_frame = self.frame.len() / anchor.x_anchor.len();
+            /* 
+                Because the anchor parquet is frame per row we have to explode it so it we basically put
+                for every corresponding point/frame row, we attach the correct anchor 
+            */
+
+            for i in 0..anchor.x_anchor.len() {
+                for _ in 0..points_per_frame {
+                    self.x_anchor.push(anchor.x_anchor[i]);
+                    self.y_anchor.push(anchor.y_anchor[i]);
+                    self.z_anchor.push(anchor.z_anchor[i]);
+                    self.x_anchor_uncertainty.push(anchor.x_anchor_uncertainty[i]);
+                    self.y_anchor_uncertainty.push(anchor.y_anchor_uncertainty[i]);
+                    self.z_anchor_uncertainty.push(anchor.z_anchor_uncertainty[i]);
+                }
+            }
+            /*self.x_anchor = anchor.x_anchor.clone();
             self.y_anchor = anchor.y_anchor.clone();
             self.z_anchor = anchor.z_anchor.clone();
             self.x_anchor_uncertainty = anchor.x_anchor_uncertainty.clone(); // needs adding - IMPLEMENTED IN SUBSCTRUCT
             self.y_anchor_uncertainty = anchor.y_anchor_uncertainty.clone(); // needs adding - IMPLEMENTED IN SUBSCTRUCT
-            self.z_anchor_uncertainty = anchor.z_anchor_uncertainty.clone(); // needs adding - IMPLEMENTED IN SUBSCTRUCT
+            self.z_anchor_uncertainty = anchor.z_anchor_uncertainty.clone(); // needs adding - IMPLEMENTED IN SUBSCTRUCT*/
     }
 
-    pub fn save_umd_driver_to_parquet(data: &UMD, file_path: &str) -> PolarsResult<()> {
+    pub fn save_umd_to_parquet(data: &UMD, file_path: &str) -> PolarsResult<()> {
         let s_frame = Series::new("frame", &data.frame);
         let s_timestamp = Series::new("timestamp", &data.timestamp);
         let s_confidence = Series::new("confidence", &data.confidence); // needs adding
@@ -241,7 +257,7 @@ impl UMD {
         let file = File::create(file_path).map_err(PolarsError::from)?;
         ParquetWriter::new(file).finish(&mut df)?;
 
-        println!("Successfully exported raw UMD data to: {}", file_path);
+        println!("Successfully exported UMD data to: {}", file_path);
         Ok(())
     }
 

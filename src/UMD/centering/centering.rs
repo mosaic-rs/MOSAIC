@@ -26,6 +26,19 @@ use std::fs::File;
 
 pub struct CenteringProcessor;
 
+pub struct CenterUncertainty {
+    pub x_uncertainty: f64,
+    pub y_uncertainty: f64,
+    pub z_uncertainty: f64,
+}
+
+impl CenterUncertainty{
+    pub fn UncertaintyProcessor(x_uncertainty: f64, y_uncertainty: f64, z_uncertainty: f64, 
+                                x_anchor_uncertainty: f64, y_anchor_uncertainty: f64, z_anchor_uncertainty: f64) {
+        // will calculate the uncertainty of the new centered x/y/z values
+    }
+}
+
 impl CenteringProcessor {
     pub fn calculate_centering(raw_coord_data: &UMDDriver, raw_anchor_data: &UMDAnchor) -> Result<UMDCentered, MosaicError>{
         let total_points = raw_coord_data.frame.len();
@@ -63,6 +76,11 @@ impl CenteringProcessor {
                 let y_centered = raw_coord_data.y[i] - y_anchor;
                 let z_centered = raw_coord_data.z[i] - z_anchor;
 
+                // temporarily defininf uncertainty vals - will be replaced by CenterUncertainty struct
+                let x_uncertainty: f64 = 0.0;
+                let y_uncertainty: f64 = 0.0;
+                let z_uncertainty: f64 = 0.0;
+
                 // passing to struct 
 
                 centered_data.add_point(
@@ -82,6 +100,9 @@ impl CenteringProcessor {
                     x_centered,
                     y_centered,
                     z_centered,
+                    x_uncertainty,
+                    y_uncertainty,
+                    z_uncertainty,
 
                 )
             }

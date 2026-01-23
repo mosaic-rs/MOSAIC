@@ -30,6 +30,20 @@ use std::fs::File;
 //use na::{Matrix3, Vector3}; // not used
 //use trig::Trig; // not used
 
+pub struct PoseUncertainty {
+    // calculates uncertainty for pose corrected x/y/z coord values
+    pub x_uncertainty: f64,
+    pub y_uncertainty: f64,
+    pub z_uncertainty: f64,
+}
+
+impl PoseUncertainty{
+    pub fn UncertaintyProcessor(x_uncertainty: f64, y_uncertainty: f64, z_uncertainty: f64, 
+                                pose_x_uncertainty: f64, pose_y_uncertainty: f64, pose_z_uncertainty: f64) {
+        // will calculate the uncertainty of the new pose corrected x/y/z values
+    }
+}
+
 pub struct PoseProcessor;
 
 impl PoseProcessor{
@@ -104,6 +118,11 @@ impl PoseProcessor{
                 through a metadata section in the UMD. 
             */
 
+            // Temporary x/y/z uncertainty values - will be replaced by the top impl
+            let x_uncertainty: f64 = 0.0;
+            let y_uncertainty: f64 = 0.0;
+            let z_uncertainty: f64 = 0.0;
+
             pose_corr_data.add_point(
                 current_frame,
                 raw_centered_data.timestamp[i],
@@ -121,6 +140,9 @@ impl PoseProcessor{
                 x_pri,
                 y_pri,
                 z_pri,
+                x_uncertainty,
+                y_uncertainty,
+                z_uncertainty,
             )
 
         }
