@@ -138,52 +138,52 @@ impl UMD {
 
     pub fn add_point(&mut self, raw: &UMDDriver, anchor: &UMDAnchor, centered: &UMDCentered, rotated: &UMDPose) {
         
-            self.frame = (raw.frame);
-            self.timestamp = (raw.timestamp);
-            self.confidence = (raw.confidence); // needs adding - IMPLEMENTED IN SUBSCTRUCT
-            self.pose = (raw.pose);
-            self.coordinate_number = (raw.coordinate_number);
-            self.types = (raw.types);
+            self.frame = raw.frame.clone();
+            self.timestamp = raw.timestamp.clone();
+            self.confidence = raw.confidence.clone(); // needs adding - IMPLEMENTED IN SUBSCTRUCT
+            self.pose = raw.pose.clone();
+            self.coordinate_number = raw.coordinate_number.clone();
+            self.types = raw.types.clone();
 
             // pose
-            self.pose_x = (raw.pose_x);
-            self.pose_y = (raw.pose_y);
-            self.pose_z = (raw.pose_z);
-            self.pose_x_uncertainty = (raw.pose_x_uncertainty); // needs adding - IMPLEMENTED IN SUBSCTRUCT
-            self.pose_y_uncertainty = (raw.pose_y_uncertainty); // needs adding - IMPLEMENTED IN SUBSCTRUCT
-            self.pose_z_uncertainty = (raw.pose_z_uncertainty); // needs adding - IMPLEMENTED IN SUBSCTRUCT
+            self.pose_x = raw.pose_x.clone();
+            self.pose_y = raw.pose_y.clone();
+            self.pose_z = raw.pose_z.clone();
+            self.pose_x_uncertainty = raw.pose_x_uncertainty.clone(); // needs adding - IMPLEMENTED IN SUBSCTRUCT
+            self.pose_y_uncertainty = raw.pose_y_uncertainty.clone(); // needs adding - IMPLEMENTED IN SUBSCTRUCT
+            self.pose_z_uncertainty = raw.pose_z_uncertainty.clone(); // needs adding - IMPLEMENTED IN SUBSCTRUCT
 
             // raw coordinates
-            self.x_raw = (raw.x);
-            self.y_raw = (raw.y);
-            self.z_raw = (raw.z);
-            self.x_raw_uncertainty = (raw.x_uncertainty); // needs adding - IMPLEMENTED IN SUBSCTRUCT
-            self.y_raw_uncertainty = (raw.y_uncertainty); // needs adding - IMPLEMENTED IN SUBSCTRUCT
-            self.z_raw_uncertainty = (raw.z_uncertainty); // needs adding - IMPLEMENTED IN SUBSCTRUCT
+            self.x_raw = raw.x.clone();
+            self.y_raw = raw.y.clone();
+            self.z_raw = raw.z.clone();
+            self.x_raw_uncertainty = raw.x_uncertainty.clone(); // needs adding - IMPLEMENTED IN SUBSCTRUCT
+            self.y_raw_uncertainty = raw.y_uncertainty.clone(); // needs adding - IMPLEMENTED IN SUBSCTRUCT
+            self.z_raw_uncertainty = raw.z_uncertainty.clone(); // needs adding - IMPLEMENTED IN SUBSCTRUCT
 
             // centered coordinates
-            self.x_centered = (centered.x);
-            self.y_centered = (centered.y);
-            self.z_centered = (centered.z);
-            self.x_centered_uncertainty = (centered.x_uncertainty); // needs adding - IMPLEMENTED IN SUBSCTRUCT
-            self.y_centered_uncertainty = (centered.y_uncertainty); // needs adding - IMPLEMENTED IN SUBSCTRUCT
-            self.z_centered_uncertainty = (centered.z_uncertainty); // needs adding - IMPLEMENTED IN SUBSCTRUCT
+            self.x_centered = centered.x.clone();
+            self.y_centered = centered.y.clone();
+            self.z_centered = centered.z.clone();
+            self.x_centered_uncertainty = centered.x_uncertainty.clone(); // needs adding - IMPLEMENTED IN SUBSCTRUCT
+            self.y_centered_uncertainty = centered.y_uncertainty.clone(); // needs adding - IMPLEMENTED IN SUBSCTRUCT
+            self.z_centered_uncertainty = centered.z_uncertainty.clone(); // needs adding - IMPLEMENTED IN SUBSCTRUCT
 
             // pose corrected coordinates
-            self.x_rotated = (rotated.x);
-            self.y_rotated = (rotated.y);
-            self.z_rotated = (rotated.z);
-            self.x_rotated_uncertainty = (rotated.x_uncertainty); // needs adding - IMPLEMENTED IN SUBSCTRUCT
-            self.y_rotated_uncertainty = (rotated.y_uncertainty); // needs adding - IMPLEMENTED IN SUBSCTRUCT
-            self.z_rotated_uncertainty = (rotated.z_uncertainty); // needs adding - IMPLEMENTED IN SUBSCTRUCT
+            self.x_rotated = rotated.x.clone();
+            self.y_rotated = rotated.y.clone();
+            self.z_rotated = rotated.z.clone();
+            self.x_rotated_uncertainty = rotated.x_uncertainty.clone(); // needs adding - IMPLEMENTED IN SUBSCTRUCT
+            self.y_rotated_uncertainty = rotated.y_uncertainty.clone(); // needs adding - IMPLEMENTED IN SUBSCTRUCT
+            self.z_rotated_uncertainty = rotated.z_uncertainty.clone(); // needs adding - IMPLEMENTED IN SUBSCTRUCT
 
             // anchor
-            self.x_anchor = (anchor.x_anchor);
-            self.y_anchor = (anchor.y_anchor);
-            self.z_anchor = (anchor.z_anchor);
-            self.x_anchor_uncertainty = (anchor.x_anchor_uncertainty); // needs adding - IMPLEMENTED IN SUBSCTRUCT
-            self.y_anchor_uncertainty = (anchor.y_anchor_uncertainty); // needs adding - IMPLEMENTED IN SUBSCTRUCT
-            self.z_anchor_uncertainty = (anchor.z_anchor_uncertainty); // needs adding - IMPLEMENTED IN SUBSCTRUCT
+            self.x_anchor = anchor.x_anchor.clone();
+            self.y_anchor = anchor.y_anchor.clone();
+            self.z_anchor = anchor.z_anchor.clone();
+            self.x_anchor_uncertainty = anchor.x_anchor_uncertainty.clone(); // needs adding - IMPLEMENTED IN SUBSCTRUCT
+            self.y_anchor_uncertainty = anchor.y_anchor_uncertainty.clone(); // needs adding - IMPLEMENTED IN SUBSCTRUCT
+            self.z_anchor_uncertainty = anchor.z_anchor_uncertainty.clone(); // needs adding - IMPLEMENTED IN SUBSCTRUCT
     }
 
     pub fn save_umd_driver_to_parquet(data: &UMD, file_path: &str) -> PolarsResult<()> {
@@ -264,21 +264,25 @@ pub struct UMDDriver {
     // admin info
     pub frame: Vec<u32>,
     pub timestamp: Vec<f32>,
+    pub confidence: Vec<f32>,
     pub pose: Vec<bool>, // Because some pose values might be 0, we need a seperate bool value to determine if we are processing 
 
     // pose values
     pub pose_x: Vec<f64>,
     pub pose_y: Vec<f64>,
     pub pose_z: Vec<f64>,
+    pub pose_x_uncertainty: Vec<f64>, // needs implementing
+    pub pose_y_uncertainty: Vec<f64>, // needs implementing
+    pub pose_z_uncertainty: Vec<f64>, // needs implementing
 
     pub coordinate_number: Vec<u32>,
     pub types: Vec<String>, // we need to know whether or not this point was a commissure, philtrum, etc - defulat lip points can just be called "point"
     pub x: Vec<f64>,
     pub y: Vec<f64>,
     pub z: Vec<f64>,
-    pub x_raw_uncertainty: Vec<f64>,
-    pub y_raw_uncertainty: Vec<f64>,
-    pub z_raw_uncertainty: Vec<f64>,
+    pub x_uncertainty: Vec<f64>,
+    pub y_uncertainty: Vec<f64>,
+    pub z_uncertainty: Vec<f64>,
 
 
 }
@@ -291,38 +295,48 @@ impl UMDDriver{
         Self {
             frame: Vec::with_capacity(total_entries.try_into().unwrap()),
             timestamp: Vec::with_capacity(total_entries.try_into().unwrap()),
+            confidence: Vec::with_capacity(total_entries.try_into().unwrap()),
             pose: Vec::with_capacity(total_entries.try_into().unwrap()),
             pose_x: Vec::with_capacity(total_entries.try_into().unwrap()),
             pose_y: Vec::with_capacity(total_entries.try_into().unwrap()),
             pose_z: Vec::with_capacity(total_entries.try_into().unwrap()),
+            pose_x_uncertainty: Vec::with_capacity(total_entries.try_into().unwrap()), // needs implementing
+            pose_y_uncertainty: Vec::with_capacity(total_entries.try_into().unwrap()), // needs implementing
+            pose_z_uncertainty: Vec::with_capacity(total_entries.try_into().unwrap()), // needs implementing
+            coordinate_number: Vec::with_capacity(total_entries.try_into().unwrap()),
             types: Vec::with_capacity(total_entries.try_into().unwrap()),
             x: Vec::with_capacity(total_entries.try_into().unwrap()),
             y: Vec::with_capacity(total_entries.try_into().unwrap()),
             z: Vec::with_capacity(total_entries.try_into().unwrap()),
-            x_raw_uncertainty: Vec::with_capacity(total_entries.try_into().unwrap()),
-            y_raw_uncertainty: Vec::with_capacity(total_entries.try_into().unwrap()),
-            z_raw_uncertainty: Vec::with_capacity(total_entries.try_into().unwrap()),
+            x_uncertainty: Vec::with_capacity(total_entries.try_into().unwrap()),
+            y_uncertainty: Vec::with_capacity(total_entries.try_into().unwrap()),
+            z_uncertainty: Vec::with_capacity(total_entries.try_into().unwrap()),
         }
 
     }
 
     pub fn add_point(&mut self, frame: u32, time: f32, confidence: f32, pose: bool, pose_x: f64, pose_y: f64, pose_z: f64, 
-                     number: u32, types: String, x: f64, y: f64, z: f64, x_raw_uncertainty: f64, y_raw_uncertainty: f64, z_raw_uncertainty: f64) {
+                     pose_x_uncertainty: f64, pose_y_uncertainty: f64, pose_z_uncertainty: f64,
+                     number: u32, types: String, x: f64, y: f64, z: f64, x_uncertainty: f64, y_uncertainty: f64, z_uncertainty: f64) {
         
         self.frame.push(frame);
         self.timestamp.push(time);
+        self.confidence.push(confidence);
         self.pose.push(pose);
         self.pose_x.push(pose_x);
         self.pose_y.push(pose_y);
         self.pose_z.push(pose_z);
+        self.pose_x_uncertainty.push(pose_x_uncertainty); // needs implementing
+        self.pose_y_uncertainty.push(pose_y_uncertainty); // needs implementing
+        self.pose_z_uncertainty.push(pose_z_uncertainty); // needs implementing
         self.coordinate_number.push(number);
         self.types.push(types);
         self.x.push(x);
         self.z.push(z);
         self.y.push(y);
-        self.x_raw_uncertainty.push(x_raw_uncertainty);
-        self.y_raw_uncertainty.push(y_raw_uncertainty);
-        self.z_raw_uncertainty.push(z_raw_uncertainty);
+        self.x_uncertainty.push(x_uncertainty);
+        self.y_uncertainty.push(y_uncertainty);
+        self.z_uncertainty.push(z_uncertainty);
         
     }
 
@@ -344,9 +358,9 @@ impl UMDDriver{
         let s_y = Series::new("y_raw", &data.y);
         let s_z = Series::new("z_raw", &data.z);
 
-        let s_x_raw_uncertainty = Series::new("x_raw_uncertainty", &data.x_raw_uncertainty);
-        let s_y_raw_uncertainty = Series::new("y_raw_uncertainty", &data.y_raw_uncertainty);
-        let s_z_raw_uncertainty = Series::new("z_raw_uncertainty", &data.z_raw_uncertainty);
+        let s_x_raw_uncertainty = Series::new("x_raw_uncertainty", &data.x_uncertainty);
+        let s_y_raw_uncertainty = Series::new("y_raw_uncertainty", &data.y_uncertainty);
+        let s_z_raw_uncertainty = Series::new("z_raw_uncertainty", &data.z_uncertainty);
 
         let mut df = DataFrame::new(vec![
             s_frame, s_time, /*s_conf,*/s_pose, // I will add  confidence later
@@ -434,9 +448,9 @@ pub struct UMDCentered {
     pub x: Vec<f64>,
     pub y: Vec<f64>,
     pub z: Vec<f64>,
-    pub x_centered_uncertainty: Ved<f64>,
-    pub y_centered_uncertainty: Ved<f64>,
-    pub z_centered_uncertainty: Ved<f64>,
+    pub x_uncertainty: Vec<f64>,
+    pub y_uncertainty: Vec<f64>,
+    pub z_uncertainty: Vec<f64>,
 }
 
 
@@ -457,14 +471,14 @@ impl UMDCentered{
             x: Vec::with_capacity(total_entries.try_into().unwrap()),
             y: Vec::with_capacity(total_entries.try_into().unwrap()),
             z: Vec::with_capacity(total_entries.try_into().unwrap()),
-            x_centered_uncertainty: Vec::with_capacity(total_entries.try_into().unwrap()),
-            y_centered_uncertainty: Vec::with_capacity(total_entries.try_into().unwrap()),
-            z_centered_uncertainty: Vec::with_capacity(total_entries.try_into().unwrap()),
+            x_uncertainty: Vec::with_capacity(total_entries.try_into().unwrap()),
+            y_uncertainty: Vec::with_capacity(total_entries.try_into().unwrap()),
+            z_uncertainty: Vec::with_capacity(total_entries.try_into().unwrap()),
         }
     }
 
     pub fn add_point(&mut self, frame: u32, time: f32, confidence: f32, pose: bool, pose_x: f64, pose_y: f64, pose_z: f64, 
-                     number: u32, types: String, x: f64, y: f64, z: f64, x_centered_uncertainty: f64, y_centered_uncertainty: f64, z_centered_uncertainty: f64) {
+                     number: u32, types: String, x: f64, y: f64, z: f64, x_uncertainty: f64, y_uncertainty: f64, z_uncertainty: f64) {
         
         self.frame.push(frame);
         self.timestamp.push(time);
@@ -478,9 +492,9 @@ impl UMDCentered{
         self.x.push(x);
         self.z.push(z);
         self.y.push(y);
-        self.x_centered_uncertainty.pushc(x_centered_uncertainty);
-        self.y_centered_uncertainty.pushc(y_centered_uncertainty);
-        self.z_centered_uncertainty.pushc(z_centered_uncertainty);
+        self.x_uncertainty.push(x_uncertainty);
+        self.y_uncertainty.push(y_uncertainty);
+        self.z_uncertainty.push(z_uncertainty);
 
     }
 }
@@ -501,18 +515,15 @@ pub struct UMDPose{
     pub pose_x: Vec<f64>,
     pub pose_y: Vec<f64>,
     pub pose_z: Vec<f64>,
-    pub pose_x_uncertainty: Vec<f64>, // needs implementing
-    pub pose_y_uncertainty: Vec<f64>, // needs implementing
-    pub pose_z_uncertainty: Vec<f64>, // needs implementing
 
     pub coordinate_number: Vec<u32>,
     pub types: Vec<String>, // we need to know whether or not this point was a commissure, philtrum, etc - defulat lip points can just be called "point"
     pub x: Vec<f64>,
     pub y: Vec<f64>,
     pub z: Vec<f64>,
-    pub x_rotated_uncertainty: Vec<f64>, // needs implementing
-    pub y_rotated_uncertainty: Vec<f64>, // needs implementing
-    pub z_rotated_uncertainty: Vec<f64>, // needs implementing
+    pub x_uncertainty: Vec<f64>, // needs implementing
+    pub y_uncertainty: Vec<f64>, // needs implementing
+    pub z_uncertainty: Vec<f64>, // needs implementing
 }
 
 // again, quite similar to UMD and UMDCenter
@@ -528,24 +539,20 @@ impl UMDPose {
             pose_x: Vec::with_capacity(total_entries.try_into().unwrap()),
             pose_y: Vec::with_capacity(total_entries.try_into().unwrap()),
             pose_z: Vec::with_capacity(total_entries.try_into().unwrap()),
-            pose_x_uncertainty: Vec::with_capacity(total_entries.try_into().unwrap()), // needs implementing
-            pose_y_uncertainty: Vec::with_capacity(total_entries.try_into().unwrap()), // needs implementing
-            pose_z_uncertainty: Vec::with_capacity(total_entries.try_into().unwrap()), // needs implementing
              // needs implementing
             coordinate_number: Vec::with_capacity(total_entries.try_into().unwrap()),
             types: Vec::with_capacity(total_entries.try_into().unwrap()),
             x: Vec::with_capacity(total_entries.try_into().unwrap()),
             y: Vec::with_capacity(total_entries.try_into().unwrap()),
             z: Vec::with_capacity(total_entries.try_into().unwrap()),
-            x_rotated_uncertainty: Vec::with_capacity(total_entries.try_into().unwrap()), // needs implementing
-            y_rotated_uncertainty: Vec::with_capacity(total_entries.try_into().unwrap()), // needs implementing
-            z_rotated_uncertainty: Vec::with_capacity(total_entries.try_into().unwrap()), // needs implementing
+            x_uncertainty: Vec::with_capacity(total_entries.try_into().unwrap()), // needs implementing
+            y_uncertainty: Vec::with_capacity(total_entries.try_into().unwrap()), // needs implementing
+            z_uncertainty: Vec::with_capacity(total_entries.try_into().unwrap()), // needs implementing
         } 
     }
 
-    pub fn add_point(&mut self, frame: u32, time: f32, confidence: f32, pose: bool, pose_x: f64, pose_y: f64, pose_z: f64, 
-                     pose_x_uncertainty: f64, pose_y_uncertainty: f64, pose_z_uncertainty: f64, number: u32, types: String, 
-                     x: f64, y: f64, z: f64, x_rotated_uncertainty: f64, y_rotated_uncertainty: f64, z_rotated_uncertainty: f64) {
+    pub fn add_point(&mut self, frame: u32, time: f32, confidence: f32, pose: bool, pose_x: f64, pose_y: f64, pose_z: f64, number: u32, types: String, 
+                     x: f64, y: f64, z: f64, x_uncertainty: f64, y_uncertainty: f64, z_uncertainty: f64) {
         
         self.frame.push(frame);
         self.timestamp.push(time);
@@ -553,17 +560,14 @@ impl UMDPose {
         self.pose_x.push(pose_x);
         self.pose_y.push(pose_y);
         self.pose_z.push(pose_z);
-        self.pose_x_uncertainty.push(pose_x_uncertainty); // needs implementing
-        self.pose_y_uncertainty.push(pose_y_uncertainty); // needs implementing
-        self.pose_z_uncertainty.push(pose_z_uncertainty); // needs implementing
         self.coordinate_number.push(number);
         self.types.push(types);
         self.x.push(x);
         self.z.push(z);
         self.y.push(y);
-        self.x_rotated_uncertainty.push(x_rotated_uncertainty); // needs implementing
-        self.y_rotated_uncertainty.push(y_rotated_uncertainty); // needs implementing
-        self.z_rotated_uncertainty.push(z_rotated_uncertainty); // needs implementing
+        self.x_uncertainty.push(x_uncertainty); // needs implementing
+        self.y_uncertainty.push(y_uncertainty); // needs implementing
+        self.z_uncertainty.push(z_uncertainty); // needs implementing
 
     }
 }
