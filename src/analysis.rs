@@ -42,24 +42,24 @@ impl run {
     pub fn init() -> Result<(), Box<dyn std::error::Error>> {
         // init is a general run command
         // we can edit it to pass paremeters through later
-        let PATH_TEMP: &str = "test_data/v15044gf0000d1dlc67og65r2deqmhd0.csv";
+        let PATH_TEMP: &str = "/Users/harrywoodhouse/MOSAIC/MOSAIC/MOSAIC-Engine/test_data/v15044gf0000d1dlc67og65r2deqmhd0.csv";
         let umd_data = parse_openface_data(Path::new(PATH_TEMP)).expect("Failed to parse data");
         UMDDriver::save_umd_driver_to_parquet(&umd_data, "data/umd_driver.parquet");
 
         // anchor testing
 
         let anchor_results = AnchorProcessor::calculate_umd_anchors(&umd_data)?;
-        AnchorProcessor::save_anchors_to_parquet(&anchor_results, "data/output_anchors.parquet")?;
+        AnchorProcessor::save_anchors_to_parquet(&anchor_results, "/Users/harrywoodhouse/MOSAIC/MOSAIC/MOSAIC-Engine/data/output_anchors.parquet")?;
 
         // centering testing
 
         let centering_results = CenteringProcessor::calculate_centering(&umd_data, &anchor_results)?;
-        CenteringProcessor::save_centered_to_parquet(&centering_results, "data/output_centering.parquet")?;
+        CenteringProcessor::save_centered_to_parquet(&centering_results, "/Users/harrywoodhouse/MOSAIC/MOSAIC/MOSAIC-Engine/data/output_centering.parquet")?;
 
         // pose correction testing
 
         let pose_correction_results = PoseProcessor::calculate_pose_corr(&centering_results)?;
-        PoseProcessor::save_pose_to_parquet(&pose_correction_results, "data/output_pose_correction.parquet")?;
+        PoseProcessor::save_pose_to_parquet(&pose_correction_results, "/Users/harrywoodhouse/MOSAIC/MOSAIC/MOSAIC-Engine/data/output_pose_correction.parquet")?;
 
         // Final UMD output
 
@@ -68,7 +68,7 @@ impl run {
         let mut umd_instance = UMD::construction(total_entries, 1);
         umd_instance.add_point(&umd_data, &anchor_results, &centering_results, &pose_correction_results);
 
-        UMD::save_umd_to_parquet(&umd_instance, "data/UMD.parquet")?;
+        UMD::save_umd_to_parquet(&umd_instance, "/Users/harrywoodhouse/MOSAIC/MOSAIC/MOSAIC-Engine/data/UMD.parquet")?;
         Ok(())
     }
 

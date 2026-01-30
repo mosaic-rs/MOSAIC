@@ -39,6 +39,7 @@ pub struct PoseUncertainty {
 
 impl PoseUncertainty{
     pub fn UncertaintyProcessor(x_uncertainty: f64, y_uncertainty: f64, z_uncertainty: f64, 
+                                x_anchor_uncertainty: f64, y_anchor_uncertainty: f64, z_anchor_uncertainty: f64,
                                 pose_x_uncertainty: f64, pose_y_uncertainty: f64, pose_z_uncertainty: f64) {
         // will calculate the uncertainty of the new pose corrected x/y/z values
     }

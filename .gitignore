@@ -20,6 +20,8 @@ data/
 outputs/
 test/
 test_data/
+src/drivers/CARTSENS-AG-501TWIN/test-data
+TORGO-Database
 
 .idea/
 .vscode/
