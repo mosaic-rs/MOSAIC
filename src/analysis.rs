@@ -39,36 +39,46 @@ impl run {
     // currently very simple as we aren't passing complex arguments
     // rn it is just for testing stuff
 
-    pub fn init() -> Result<(), Box<dyn std::error::Error>> {
+    pub fn init(input_path: &str, output_path: &str) -> Result<(), Box<dyn std::error::Error>> {
         // init is a general run command
         // we can edit it to pass paremeters through later
-        let PATH_TEMP: &str = "/Users/harrywoodhouse/MOSAIC/MOSAIC/MOSAIC-Engine/test_data/v15044gf0000d1dlc67og65r2deqmhd0.csv";
-        let umd_data = parse_openface_data(Path::new(PATH_TEMP)).expect("Failed to parse data");
-        UMDDriver::save_umd_driver_to_parquet(&umd_data, "data/umd_driver.parquet");
+        let umd_driver = parse_openface_data(Path::new(input_path)).expect("Failed to parse data");
+        let file_name = "umd_driver.parqeut";
+        let umd_driver_output_path = format!("{output_path}{file_name}");;
+        UMDDriver::save_umd_driver_to_parquet(&umd_driver, umd_driver_output_path.as_str());
 
         // anchor testing
 
-        let anchor_results = AnchorProcessor::calculate_umd_anchors(&umd_data)?;
-        AnchorProcessor::save_anchors_to_parquet(&anchor_results, "/Users/harrywoodhouse/MOSAIC/MOSAIC/MOSAIC-Engine/data/output_anchors.parquet")?;
+        let anchor_results = AnchorProcessor::calculate_umd_anchors(&umd_driver)?;
+        let file_name = "umd_anchor.parqeut";
+        let umd_anchor_output_path = format!("{output_path}{file_name}");
+        AnchorProcessor::save_anchors_to_parquet(&anchor_results, umd_anchor_output_path.as_str())?;
 
         // centering testing
 
-        let centering_results = CenteringProcessor::calculate_centering(&umd_data, &anchor_results)?;
-        CenteringProcessor::save_centered_to_parquet(&centering_results, "/Users/harrywoodhouse/MOSAIC/MOSAIC/MOSAIC-Engine/data/output_centering.parquet")?;
+        let centering_results = CenteringProcessor::calculate_centering(&umd_driver, &anchor_results)?;
+        let file_name = "umd_centered.parqeut";
+        let umd_centering_output_path = format!("{output_path}{file_name}");
+        CenteringProcessor::save_centered_to_parquet(&centering_results, umd_centering_output_path.as_str())?;
 
         // pose correction testing
 
         let pose_correction_results = PoseProcessor::calculate_pose_corr(&centering_results)?;
-        PoseProcessor::save_pose_to_parquet(&pose_correction_results, "/Users/harrywoodhouse/MOSAIC/MOSAIC/MOSAIC-Engine/data/output_pose_correction.parquet")?;
+        let file_name = "umd_rotated.parqeut";
+        let umd_rotated_output_path = format!("{output_path}{file_name}");
+        PoseProcessor::save_pose_to_parquet(&pose_correction_results, umd_rotated_output_path.as_str())?;
 
         // Final UMD output
 
         //aw: &UMDDriver, anchor: &UMDAnchor, centered: &UMDCentered, rotated: &UMDPose
         let total_entries = centering_results.x.len() as u32;        
         let mut umd_instance = UMD::construction(total_entries, 1);
-        umd_instance.add_point(&umd_data, &anchor_results, &centering_results, &pose_correction_results);
+        umd_instance.add_point(&umd_driver, &anchor_results, &centering_results, &pose_correction_results);
 
-        UMD::save_umd_to_parquet(&umd_instance, "/Users/harrywoodhouse/MOSAIC/MOSAIC/MOSAIC-Engine/data/UMD.parquet")?;
+        let file_name = "umd.parqeut";
+        let umd_output_path = format!("{output_path}{file_name}");
+
+        UMD::save_umd_to_parquet(&umd_instance, umd_output_path.as_str())?;
         Ok(())
     }
 
