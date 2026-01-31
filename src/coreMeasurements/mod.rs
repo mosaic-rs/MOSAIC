@@ -16,3 +16,5 @@ MOSAIC. If not, see <https://www.gnu.org/licenses/>.
 // pub mod anchor; - Moved to UMD/anchor
 // pub mod centering; - Moved to UMD/centering
 // pub mod pose; - Moved to UMD/pose
+
+pub mod euclidean;
