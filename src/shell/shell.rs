@@ -94,7 +94,7 @@ pub fn shell_initiation(session: &mut SessionData) -> Result<()> {
 
                 if line.trim() == "UMD"{
                     let input_path = "/Users/harrywoodhouse/MOSAIC/MOSAIC/MOSAIC-Engine/test_data/v15044gf0000d1dlc67og65r2deqmhd0.csv";
-                    let output_path = "/Users/harrywoodhouse/MOSAIC/MOSAIC/MOSAIC-Engine/data";
+                    let output_path = "/Users/harrywoodhouse/MOSAIC/MOSAIC/MOSAIC-Engine/data/";
                     run::init(input_path, output_path);
                 }
             }
