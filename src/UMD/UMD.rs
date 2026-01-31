@@ -591,5 +591,10 @@ impl UMDPose {
 /*
 End of the core UMD functionality. 
 
-The next work will introduce a cohesive file structure through an io
+UMD is not finished development but I am confident in it being released as a 0.9.0 alpha. 
+It is currently pandered toward OpenFace data but once EMA drivers are made, we will make sure
+the UMD is truly universal. 
+
+The next features to truly release UMD.rs as 1.0.0 alpha is error handling which I will hold off until I 
+heavily develop the actual measurement data and I focus on publishing MOSAIC as a more user friendly tool for others to use.
 */
