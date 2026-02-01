@@ -101,6 +101,10 @@ impl CoreEuclidean {
 
 // MATH PART:
 
-pub fn euclidean_calculation(umd: &UMD, euclidean: CoreEuclidean){
+pub struct CoreMeasurementAnchor;
 
+impl CoreMeasurementAnchor {
+    pub fn calculate_euclidean_distance(){
+        println!("calc euclid dist func placeholder")
+    }
 }
