@@ -14,3 +14,9 @@ MOSAIC. If not, see <https://www.gnu.org/licenses/>.
 */
 
 pub mod OpenFace;
+pub mod CARTSENS_AG_100;
+pub mod CARTSENS_AG_200;
+pub mod CARTSENS_AG_500;
+pub mod CARTSENS_AG_501_TWIN;
+pub mod NDI_VOX;
+pub mod NDI_WAVE;

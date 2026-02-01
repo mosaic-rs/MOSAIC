@@ -13,8 +13,4 @@ You should have received a copy of the GNU General Public License along with
 MOSAIC. If not, see <https://www.gnu.org/licenses/>.
 */
 
-pub mod UMD;
-pub mod anchor;
-pub mod centering;
-pub mod pose;
-pub mod metadata;
+pub mod ndi_wave;

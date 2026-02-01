@@ -14,9 +14,22 @@ MOSAIC. If not, see <https://www.gnu.org/licenses/>.
 */
 
 // This will act as an API for the drivers so they can append data properly
+
+// DRIVERS
 use crate::drivers::OpenFace::openface::{OpenFaceLandmarkType};
+use crate::drivers::CARTSENS_AG_100;
+use crate::drivers::CARTSENS_AG_200;
+use crate::drivers::CARTSENS_AG_500;
+use crate::drivers::CARTSENS_AG_501_TWIN;
+use crate::drivers::NDI_VOX;
+use crate::drivers::NDI_WAVE;
+
+// METADATA
+use crate::UMD::metadata::{Metadata};
+
 use polars::prelude::*;
 use std::fs::File;
+
 
 /*
 As a note, this file is quite grandiose as it is helpful in visualising exactly what

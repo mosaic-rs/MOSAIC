@@ -13,8 +13,28 @@ You should have received a copy of the GNU General Public License along with
 MOSAIC. If not, see <https://www.gnu.org/licenses/>.
 */
 
-pub mod UMD;
-pub mod anchor;
-pub mod centering;
-pub mod pose;
-pub mod metadata;
+/*
+METADATA.rs 
+
+Defines metadata struct as a hashmap to be stored in the UMD Parquet footer
+*/
+
+use std::collections::HashMap;
+
+pub struct Metadata {
+    pub driver: String,
+    pub dimension: String,
+    pub pose_correction: bool,
+}
+
+impl Metadata {
+    pub fn into_metadata(self) -> HashMap<String, String> {
+        let mut metadata = HashMap::new();
+
+        metadata.insert("driver".to_string(), self.driver);
+        metadata.insert("dimension".to_string(), self.dimension);
+        metadata.insert("pose_correction".to_string(), self.pose_correction.to_string());
+
+        metadata
+    }
+} 

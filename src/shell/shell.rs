@@ -88,13 +88,14 @@ pub fn shell_initiation(session: &mut SessionData) -> Result<()> {
                 }
 
                 if line.trim() == "UMD"{
-                    //let PATH_TEMP: &str = "test_data/v15044gf0000d1dlc67og65r2deqmhd0.csv";
-                    //parse_openface_data(Path::new(PATH_TEMP)).expect("Failed to parse data");
-                }
-
-                if line.trim() == "UMD"{
                     let input_path = "/Users/harrywoodhouse/MOSAIC/MOSAIC/MOSAIC-Engine/test_data/v15044gf0000d1dlc67og65r2deqmhd0.csv";
                     let output_path = "/Users/harrywoodhouse/MOSAIC/MOSAIC/MOSAIC-Engine/data/";
+
+                    // defining placeholder metadata: 
+                    let driver = "OpenFace v2.2";
+                    let dimension = "2D";
+                    let pose_correction = true;
+
                     run::init(input_path, output_path);
                 }
             }
