@@ -22,6 +22,8 @@ I can get MOSAIC 1.0.0 out.
 */
 
 use crate::UMD::UMD::{UMD};
+use crate::errors::{MosaicError};
+
 
 pub struct CoreEuclidean {
     pub frame: Vec<u32>,
@@ -101,9 +103,9 @@ impl CoreEuclidean {
 
 // MATH PART:
 
-pub struct CoreMeasurementAnchor;
+pub struct EuclideanCalculation;
 
-impl CoreMeasurementAnchor {
+impl EuclideanCalculation {
     fn _read_UMD_metadata(umd: &UMD) {
         println!("Placeholder function to read UMD metadata.");
     }
@@ -125,20 +127,68 @@ impl CoreMeasurementAnchor {
         let y_2: f64 = coord_2[1];
         let z_2: f64 = coord_2[2];
 
-        let r: f64 = (((x_2 - x_1) + (y_2 - y_1) + (z_2 - z_1)).sqrt()).abs();
+        let r: f64 = (((x_2 - x_1).abs() + (y_2 - y_1).abs() + (z_2 - z_1).abs()).sqrt()).abs();
 
         r
     }
 
-    pub fn radius(umd: &UMD, pairs: &[u32; 2]) {
+    pub fn radius(umd: &UMD, pairs: &[String; 2]) -> Result<CoreEuclidean, MosaicError>{
         /*
             UMD - Universal Measurement Database - it is where we will get the coordinate values
 
-            pairs - an array of 2 unsigned 32 bit ints which define the point types. These point types can be referred to in the driver.
-                    Driver type is stored in UMD metadata. However, the driver does not need to be referenced in this function, it is only
-                    used when processing the data for statistical analysis (to label points). 
+            pairs - PointType as seen in the UMD file. For example, ["anchor", "all"]
+                    - In this example, we iteratre through every point in every frame and get teh radius (dist from center)
+
+                Another example: ["OuterRightCommissure", "OuterLeftCommissure"]
+                    - Calculates the distance between these two points 
+
+            rn though it just calculates the distance between the points and the anchor
         */
 
+        let total_points = umd.frame.len();
+        if total_points == 0 {
+            return Ok(CoreEuclidean::construction(0, 0));
+        }
 
+        // estimating frame count for UMDCenter::construction
+        let estimated_frames = (total_points as u32 / 68) + 1;
+        let mut euclidean_data = CoreEuclidean::construction(estimated_frames, 68);
+
+        for i in 0..total_points {
+            let mut coord_1: [f64; 3] = [
+                umd.x_rotated[i],
+                umd.y_rotated[i],
+                umd.z_rotated[i],
+            ];
+
+            let mut coord_2: [f64; 3] = [
+                0.0,
+                0.0,
+                0.0,
+            ];
+
+            let r = EuclideanCalculation::_calculate_radius(coord_1.to_vec(), coord_2.to_vec());
+
+            euclidean_data.add_point(
+                umd.frame[i],
+                umd.timestamp[i],
+                umd.coordinate_number[i],
+                umd.types[i].to_string(), // not a good solution for when we are calculating distances between two distinc points
+                coord_1[0],
+                coord_1[1],
+                coord_1[2],
+
+                1000000000, // need a better way to give anchor a number
+                "anchor".to_string(),
+                coord_2[0],
+                coord_2[1],
+                coord_2[2],
+                r,
+                0.0,
+            )
+            
+        }
+
+        Ok(euclidean_data)
     }
 }
