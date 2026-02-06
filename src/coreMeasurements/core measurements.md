@@ -4,11 +4,14 @@ This is a short information file about the "core measurements" section of MOSAIC
 
 P.S. Any variables marked with an astersic (*) are optional.
 
+## Notes:
+Currently, MOSAIC assumes values are pose corrected, which in this case, is true as you can not change it unless you edit the source code. This will change once the metadata is written to the UMD parquet which it is not.
+
 ### What are core measurements?
 Core measurements are static calculations which tells you how the coordinates are moving in a singular "frame". For example, it can tell you the distance a point is from the origin, the curve of the lips or tongue, etc. This is not to be confused with the "complex measurements" section which calculates mostly temporal measurements. 
 
 ### Input Data Structure
-Core Measurements ONLY read Mosaic UMD files, version 0.9.0 alpha and beyond. If I code MOSAIC smartly, there should always be backwards compatability for all 0.9.0 alpha UMD files. 
+Core Measurements ONLY read Mosaic UMD files, version 0.9.0 alpha and beyond. If I code MOSAIC smartly, there should always be backwards compatability for all 1.0.0 alpha UMD files (when metadata is written). 
 
 ### Output Data Structure
 Each measurement (outlined below) is held within its own struct on the stack. Once all core measurements are calculated, they are then combined into a master struct which is written as a parquet to the designated path. Once the project, participant, and trial system is finalized, you should not have to specify a path as it stores data based on the session data stores in .mosaic in your applications folder. 
@@ -21,14 +24,10 @@ Takes the X, Y, and Z* values from the origin and calculates the euclidean dista
 
 These formulas can also be used to calulate the distance of points from one another, not just the origin.
 
-#### 3D Euclidean Distance Formula
+#### 2D/3D Euclidean Distance Formula 
+Where Z is 0, it makes no difference to the output. 
 $$
 r = \sqrt(x_2-x_1)^2 + (y_2-y_1)^2+(z_2-z_1)^2
-$$
-
-#### 2D Euclidean Distance Formula
-$$
-r = \sqrt(x_2-x_1)^2 + (y_2-y_1)^2
 $$
 
 ### Angle Calculator
