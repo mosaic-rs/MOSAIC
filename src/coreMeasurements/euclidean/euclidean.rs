@@ -104,7 +104,41 @@ impl CoreEuclidean {
 pub struct CoreMeasurementAnchor;
 
 impl CoreMeasurementAnchor {
-    pub fn calculate_euclidean_distance(){
-        println!("calc euclid dist func placeholder")
+    fn _read_UMD_metadata(umd: &UMD) {
+        println!("Placeholder function to read UMD metadata.");
+    }
+
+    fn _calculate_radius(coord_1: Vec<f64>, coord_2: Vec<f64>) -> f64{
+        println!("calc euclid dist func placeholder");
+
+        /*
+            Math is super simple, just pythagorean theorem. 
+
+            Works for 2D or 3D coords because Z being 0 does not affect the output
+        */
+
+        let x_1: f64 = coord_1[0];
+        let y_1: f64 = coord_1[1];
+        let z_1: f64 = coord_1[2];
+
+        let x_2: f64 = coord_2[0];
+        let y_2: f64 = coord_2[1];
+        let z_2: f64 = coord_2[2];
+
+        let r: f64 = (((x_2 - x_1) + (y_2 - y_1) + (z_2 - z_1)).sqrt()).abs();
+
+        r
+    }
+
+    pub fn radius(umd: &UMD, pairs: &[u32; 2]) {
+        /*
+            UMD - Universal Measurement Database - it is where we will get the coordinate values
+
+            pairs - an array of 2 unsigned 32 bit ints which define the point types. These point types can be referred to in the driver.
+                    Driver type is stored in UMD metadata. However, the driver does not need to be referenced in this function, it is only
+                    used when processing the data for statistical analysis (to label points). 
+        */
+
+
     }
 }
