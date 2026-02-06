@@ -31,7 +31,12 @@ impl Metadata {
     pub fn into_metadata(self) -> HashMap<String, String> {
         let mut metadata = HashMap::new();
 
-        metadata.insert("driver".to_string(), self.driver);
+        /*
+        I will try to add metadata rules to the drivers. For example, maybe a certain driver HAS to be 3D, or a certain driver
+        doesn't support pose correction. 
+        */
+
+        metadata.insert("driver".to_string(), self.driver); 
         metadata.insert("dimension".to_string(), self.dimension);
         metadata.insert("pose_correction".to_string(), self.pose_correction.to_string());
 
