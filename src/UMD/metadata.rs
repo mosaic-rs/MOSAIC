@@ -22,24 +22,32 @@ Defines metadata struct as a hashmap to be stored in the UMD Parquet footer
 use std::collections::HashMap;
 
 pub struct Metadata {
+    pub UMD_Version: String,
     pub driver: String,
     pub dimension: String,
+    pub centered: bool,
     pub pose_correction: bool,
 }
 
 impl Metadata {
-    pub fn into_metadata(self) -> HashMap<String, String> {
-        let mut metadata = HashMap::new();
+    pub fn new(UMD_Version: String, driver: String, dimension: String, 
+               centered: bool, pose_correction: bool) -> Self {
+        Self {
+            UMD_Version,
+            driver,
+            dimension,
+            centered,
+            pose_correction,
+        }
+    }
 
-        /*
-        I will try to add metadata rules to the drivers. For example, maybe a certain driver HAS to be 3D, or a certain driver
-        doesn't support pose correction. 
-        */
-
-        metadata.insert("driver".to_string(), self.driver); 
-        metadata.insert("dimension".to_string(), self.dimension);
-        metadata.insert("pose_correction".to_string(), self.pose_correction.to_string());
-
-        metadata
+    pub fn to_kv_vec(&self) -> Vec<(String, String)> {
+        vec![
+            ("UMD_Version".to_string(), self.UMD_Version.clone()),
+            ("driver".to_string(), self.driver.clone()),
+            ("dimension".to_string(), self.dimension.clone()),
+            ("centered".to_string(), self.centered.to_string()),
+            ("pose_correction".to_string(), self.pose_correction.to_string()),
+        ]
     }
 } 

@@ -215,7 +215,7 @@ impl UMD {
             self.z_anchor_uncertainty = anchor.z_anchor_uncertainty.clone(); // needs adding - IMPLEMENTED IN SUBSCTRUCT*/
     }
 
-    pub fn save_umd_to_parquet(data: &UMD, file_path: &str) -> PolarsResult<()> {
+    pub fn save_umd_to_parquet(data: &UMD, file_path: &str, metadata: Vec<(String, String)>) -> PolarsResult<()> {
         let s_frame = Series::new("frame", &data.frame);
         let s_timestamp = Series::new("timestamp", &data.timestamp);
         let s_confidence = Series::new("confidence", &data.confidence); // needs adding
@@ -268,8 +268,10 @@ impl UMD {
         ])?;
 
         let file = File::create(file_path).map_err(PolarsError::from)?;
-        ParquetWriter::new(file).finish(&mut df)?;
 
+        ParquetWriter::new(file)
+            // .with_key_value_metadata(Some(kv_metadata)) -- I commented this out because I am having trouble with the polars API so metadata is not written
+            .finish(&mut df)?;
         println!("Successfully exported UMD data to: {}", file_path);
         Ok(())
     }

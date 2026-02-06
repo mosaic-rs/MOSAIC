@@ -29,6 +29,7 @@ use crate::UMD::anchor::anchor::{AnchorProcessor};
 use crate::UMD::centering::centering::{CenteringProcessor};
 use crate::UMD::pose::pose::{PoseProcessor};
 use crate::UMD::UMD::{UMD, UMDDriver};
+use crate::UMD::metadata::{Metadata};
 
 
 use std::path::Path;
@@ -40,6 +41,16 @@ impl run {
     // rn it is just for testing stuff
 
     pub fn init(input_path: &str, output_path: &str) -> Result<(), Box<dyn std::error::Error>> {
+        // for now we will define the metadata at the top sort of as const vars which will be customisable through the CLI
+        let UMD_Version = "0.9.0".to_string();
+        let driver = "OpenFace".to_string();
+        let dimension = "3D".to_string();
+        let centered = true;
+        let pose_correction = true;
+
+        let metadata = Metadata::new(UMD_Version, driver, dimension, centered, pose_correction);
+        let kv_metadata = metadata.to_kv_vec();
+
         // init is a general run command
         // we can edit it to pass paremeters through later
         let umd_driver = parse_openface_data(Path::new(input_path)).expect("Failed to parse data");
@@ -78,7 +89,7 @@ impl run {
         let file_name = "umd.parqeut";
         let umd_output_path = format!("{output_path}{file_name}");
 
-        UMD::save_umd_to_parquet(&umd_instance, umd_output_path.as_str())?;
+        UMD::save_umd_to_parquet(&umd_instance, umd_output_path.as_str(), kv_metadata)?;
         Ok(())
     }
 
