@@ -25,7 +25,7 @@ use crate::drivers::NDI_VOX;
 use crate::drivers::NDI_WAVE;
 
 // METADATA
-use crate::UMD::metadata::{Metadata};
+use crate::UMD::metadata::{Metadata}; // to be written shortly
 
 use polars::prelude::*;
 use std::fs::File;
