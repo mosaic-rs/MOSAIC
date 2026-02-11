@@ -150,17 +150,29 @@ impl EuclideanCalculator {
         let y1 = umd.y_rotated[idx1];
         let z1 = umd.z_rotated[idx1];
         
-        let dx1 = if idx1 < umd.x_rotated_uncertainty.len() { umd.x_rotated_uncertainty[idx1] } else { 0.0 };
-        let dy1 = if idx1 < umd.y_rotated_uncertainty.len() { umd.y_rotated_uncertainty[idx1] } else { 0.0 };
-        let dz1 = if idx1 < umd.z_rotated_uncertainty.len() { umd.z_rotated_uncertainty[idx1] } else { 0.0 };
+        let dx1 = if idx1 < umd.x_rotated_uncertainty.len() { 
+            umd.x_rotated_uncertainty[idx1] 
+        } else { 0.0 };
+        let dy1 = if idx1 < umd.y_rotated_uncertainty.len() { 
+            umd.y_rotated_uncertainty[idx1] 
+        } else { 0.0 };
+        let dz1 = if idx1 < umd.z_rotated_uncertainty.len() { 
+            umd.z_rotated_uncertainty[idx1] 
+        } else { 0.0 };
 
         let x2 = umd.x_rotated[idx2];
         let y2 = umd.y_rotated[idx2];
         let z2 = umd.z_rotated[idx2];
 
-        let dx2 = if idx2 < umd.x_rotated_uncertainty.len() { umd.x_rotated_uncertainty[idx2] } else { 0.0 };
-        let dy2 = if idx2 < umd.y_rotated_uncertainty.len() { umd.y_rotated_uncertainty[idx2] } else { 0.0 };
-        let dz2 = if idx2 < umd.z_rotated_uncertainty.len() { umd.z_rotated_uncertainty[idx2] } else { 0.0 };
+        let dx2 = if idx2 < umd.x_rotated_uncertainty.len() { 
+            umd.x_rotated_uncertainty[idx2] 
+        } else { 0.0 };
+        let dy2 = if idx2 < umd.y_rotated_uncertainty.len() { 
+            umd.y_rotated_uncertainty[idx2] 
+        } else { 0.0 };
+        let dz2 = if idx2 < umd.z_rotated_uncertainty.len() { 
+            umd.z_rotated_uncertainty[idx2] 
+        } else { 0.0 };
 
         let v_x = x2 - x1;
         let v_y = y2 - y1;
@@ -192,9 +204,15 @@ impl EuclideanCalculator {
         let v_y = y2;
         let v_z = z2;
 
-        let dv_x = if idx2 < umd.x_rotated_uncertainty.len() { umd.x_rotated_uncertainty[idx2] } else { 0.0 };
-        let dv_y = if idx2 < umd.y_rotated_uncertainty.len() { umd.y_rotated_uncertainty[idx2] } else { 0.0 };
-        let dv_z = if idx2 < umd.z_rotated_uncertainty.len() { umd.z_rotated_uncertainty[idx2] } else { 0.0 };
+        let dv_x = if idx2 < umd.x_rotated_uncertainty.len() { 
+            umd.x_rotated_uncertainty[idx2] 
+        } else { 0.0 };
+        let dv_y = if idx2 < umd.y_rotated_uncertainty.len() { 
+            umd.y_rotated_uncertainty[idx2] 
+        } else { 0.0 };
+        let dv_z = if idx2 < umd.z_rotated_uncertainty.len() { 
+            umd.z_rotated_uncertainty[idx2] 
+        } else { 0.0 };
 
         let r = DistanceCalc::calculate(v_x, v_y, v_z);
         let r_unc = DistanceCalc::calculate_uncertainty(r, v_x, v_y, v_z, dv_x, dv_y, dv_z);
@@ -217,7 +235,9 @@ impl DistanceCalc {
     }
 
     fn calculate_uncertainty(r: f64, x: f64, y: f64, z: f64, sx: f64, sy: f64, sz: f64) -> f64 {
-        if r == 0.0 { return 0.0; } // no division by 0 :)
+        if r == 0.0 { 
+            return 0.0; // no division by 0 :)
+        } 
         
         let term_x = (x * sx).powi(2);
         let term_y = (y * sy).powi(2);
