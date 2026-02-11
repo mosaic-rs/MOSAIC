@@ -1,8 +1,6 @@
 [![Rust, Python](https://img.shields.io/badge/languages-Rust%2C_Python-Blue
 )](https://www.rust-lang.org/)
 [![Topic](https://img.shields.io/badge/field-Phonetics-blue.svg)]()
-[![University](https://img.shields.io/badge/University-University_of_York-white)](https://www.york.ac.uk/)
-[![Website](https://img.shields.io/badge/Website-mosaic.harrywoodhouse.com-yellow)](https://mosaic.harrywoodhouse.com)
 
 
 
