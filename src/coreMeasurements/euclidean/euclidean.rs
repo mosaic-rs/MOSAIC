@@ -14,181 +14,215 @@ MOSAIC. If not, see <https://www.gnu.org/licenses/>.
 */
 
 /*
-EUCLIDEAN CALCULATOR
-
-Currently it can only calculated the euclidean distance (or radius) of points from the origin but I hope to 
-make it so you can calculate the distance between points. It is just a logic problem I won't tackle yet so 
-I can get MOSAIC 1.0.0 out.
+    Calculates the Euclidean distance between 2 different points, or a point and the origin.
 */
 
 use crate::UMD::UMD::{UMD};
 use crate::errors::{MosaicError};
 
-
+#[derive(Debug, Clone)]
 pub struct CoreEuclidean {
     pub frame: Vec<u32>,
     pub timestamp: Vec<f32>,
 
-    // Point 1 (Almost ALWAYS origin but I want to make it so people can calculate the distanc between other points too)
+    // point 1 - another point or the origin
+    pub coordinate_number_1: Vec<u32>,
+    pub coordinate_type_1: Vec<String>,
+    pub x1: Vec<f64>,
+    pub y1: Vec<f64>,
+    pub z1: Vec<f64>,
 
-    pub coordinate_number_1: Vec<u32>, // if not a specified point it'll just say 0
-    pub coordinate_type_1: Vec<String>, // if not specified, point will just be "origin" 
-                                        // but this is important when ca;culating the distance between points
-    pub x1: Vec<f64>, // USUALLY 0 
-    pub y1: Vec<f64>, // USUALLY 0 
-    pub z1: Vec<f64>, // optional - USUALLY 0 
-
-    // Point 2
+    // point 2
     pub coordinate_number_2: Vec<u32>, 
     pub coordinate_type_2: Vec<String>,
-                                       
     pub x2: Vec<f64>, 
     pub y2: Vec<f64>, 
-    pub z2: Vec<f64>, // optional    
+    pub z2: Vec<f64>,
 
-    // r
+    // r (distance/radius - whatever you wanna call it really)
     pub r: Vec<f64>,
     pub r_uncertainty: Vec<f64>,
 }
 
-// DATA STUFF:
-
 impl CoreEuclidean {
-    pub fn construction(total_frames: u32, points_per_frame: u32) -> Self {
-        let total_entries = total_frames * points_per_frame;
-
+    pub fn construction(estimated_entries: usize) -> Self {
         Self {
-            frame: Vec::with_capacity(total_entries.try_into().unwrap()),
-            timestamp: Vec::with_capacity(total_entries.try_into().unwrap()),
+            frame: Vec::with_capacity(estimated_entries),
+            timestamp: Vec::with_capacity(estimated_entries),
 
-            coordinate_number_1: Vec::with_capacity(total_entries.try_into().unwrap()),
-            coordinate_type_1: Vec::with_capacity(total_entries.try_into().unwrap()),
-            x1: Vec::with_capacity(total_entries.try_into().unwrap()),
-            y1: Vec::with_capacity(total_entries.try_into().unwrap()),
-            z1: Vec::with_capacity(total_entries.try_into().unwrap()),
+            coordinate_number_1: Vec::with_capacity(estimated_entries),
+            coordinate_type_1: Vec::with_capacity(estimated_entries),
+            x1: Vec::with_capacity(estimated_entries),
+            y1: Vec::with_capacity(estimated_entries),
+            z1: Vec::with_capacity(estimated_entries),
 
-            coordinate_number_2: Vec::with_capacity(total_entries.try_into().unwrap()),
-            coordinate_type_2: Vec::with_capacity(total_entries.try_into().unwrap()),
-            x2: Vec::with_capacity(total_entries.try_into().unwrap()),
-            y2: Vec::with_capacity(total_entries.try_into().unwrap()),
-            z2: Vec::with_capacity(total_entries.try_into().unwrap()),
+            coordinate_number_2: Vec::with_capacity(estimated_entries),
+            coordinate_type_2: Vec::with_capacity(estimated_entries),
+            x2: Vec::with_capacity(estimated_entries),
+            y2: Vec::with_capacity(estimated_entries),
+            z2: Vec::with_capacity(estimated_entries),
 
-            r: Vec::with_capacity(total_entries.try_into().unwrap()),
-            r_uncertainty: Vec::with_capacity(total_entries.try_into().unwrap()),
+            r: Vec::with_capacity(estimated_entries),
+            r_uncertainty: Vec::with_capacity(estimated_entries),
         }
     }
 
     pub fn add_point(
         &mut self, frame: u32, timestamp: f32, 
-        coordinate_number_1: u32, coordinate_type_1: String, x1: f64, y1: f64, z1: f64, 
-        coordinate_number_2: u32, coordinate_type_2: String, x2: f64, y2: f64, z2: f64, 
+        coord_1: (u32, String, f64, f64, f64), 
+        coord_2: (u32, String, f64, f64, f64),
         r: f64, r_uncertainty: f64
     ) {
         self.frame.push(frame);
         self.timestamp.push(timestamp);
-        self.coordinate_number_1.push(coordinate_number_1);
-        self.coordinate_type_1.push(coordinate_type_1);
-        self.x1.push(x1);
-        self.y1.push(y1);
-        self.z1.push(z1);
-        self.coordinate_number_2.push(coordinate_number_2);
-        self.coordinate_type_2.push(coordinate_type_2);
-        self.x2.push(x2);
-        self.y2.push(y2);
-        self.z2.push(z2);
+        
+        self.coordinate_number_1.push(coord_1.0);
+        self.coordinate_type_1.push(coord_1.1);
+        self.x1.push(coord_1.2);
+        self.y1.push(coord_1.3);
+        self.z1.push(coord_1.4);
+
+        self.coordinate_number_2.push(coord_2.0);
+        self.coordinate_type_2.push(coord_2.1);
+        self.x2.push(coord_2.2);
+        self.y2.push(coord_2.3);
+        self.z2.push(coord_2.4);
+
         self.r.push(r);
         self.r_uncertainty.push(r_uncertainty);
     }
 }
 
-// MATH PART:
+pub struct EuclideanCalculator;
 
-pub struct EuclideanCalculation;
+struct DistanceCalc;
 
-impl EuclideanCalculation {
-    fn _read_UMD_metadata(umd: &UMD) {
-        println!("Placeholder function to read UMD metadata.");
-    }
+impl EuclideanCalculator {
 
-    fn _calculate_radius(coord_1: Vec<f64>, coord_2: Vec<f64>) -> f64{
-        println!("calc euclid dist func placeholder");
-
-        /*
-            Math is super simple, just pythagorean theorem. 
-
-            Works for 2D or 3D coords because Z being 0 does not affect the output
-        */
-
-        let x_1: f64 = coord_1[0];
-        let y_1: f64 = coord_1[1];
-        let z_1: f64 = coord_1[2];
-
-        let x_2: f64 = coord_2[0];
-        let y_2: f64 = coord_2[1];
-        let z_2: f64 = coord_2[2];
-
-        let r: f64 = (((x_2 - x_1).abs() + (y_2 - y_1).abs() + (z_2 - z_1).abs()).sqrt()).abs();
-
-        r
-    }
-
-    pub fn radius(umd: &UMD, pairs: &[String; 2]) -> Result<CoreEuclidean, MosaicError>{
-        /*
-            UMD - Universal Measurement Database - it is where we will get the coordinate values
-
-            pairs - PointType as seen in the UMD file. For example, ["anchor", "all"]
-                    - In this example, we iteratre through every point in every frame and get teh radius (dist from center)
-
-                Another example: ["OuterRightCommissure", "OuterLeftCommissure"]
-                    - Calculates the distance between these two points 
-
-            rn though it just calculates the distance between the points and the anchor
-        */
-
+    pub fn euclidean(umd: &UMD, pairs: &[String; 2]) -> CoreEuclidean {
         let total_points = umd.frame.len();
         if total_points == 0 {
-            return Ok(CoreEuclidean::construction(0, 0));
+            return CoreEuclidean::construction(0);
         }
 
-        // estimating frame count for UMDCenter::construction
-        let estimated_frames = (total_points as u32 / 68) + 1;
-        let mut euclidean_data = CoreEuclidean::construction(estimated_frames, 68);
+        let estimated_frames = (total_points / 68) + 1;
+        let mut euclidean_data = CoreEuclidean::construction(estimated_frames);
+
+        // if point one is the origin
+        let p1_is_origin = pairs[0].to_lowercase() == "origin";
+
+        let mut current_frame = umd.frame[0];
+        let mut p1_idx: Option<usize> = None;
+        let mut p2_idx: Option<usize> = None;
 
         for i in 0..total_points {
-            let mut coord_1: [f64; 3] = [
-                umd.x_rotated[i],
-                umd.y_rotated[i],
-                umd.z_rotated[i],
-            ];
+            if umd.frame[i] != current_frame {
+                if p1_is_origin && p2_idx.is_some() {
+                    Self::process_with_origin(&mut euclidean_data, umd, p2_idx.unwrap());
+                } else if let (Some(idx1), Some(idx2)) = (p1_idx, p2_idx) {
+                    Self::process_pair(&mut euclidean_data, umd, idx1, idx2);
+                }
 
-            let mut coord_2: [f64; 3] = [
-                0.0,
-                0.0,
-                0.0,
-            ];
+                current_frame = umd.frame[i];
+                p1_idx = None;
+                p2_idx = None;
+            }
 
-            let r = EuclideanCalculation::_calculate_radius(coord_1.to_vec(), coord_2.to_vec());
-
-            euclidean_data.add_point(
-                umd.frame[i],
-                umd.timestamp[i],
-                umd.coordinate_number[i],
-                umd.types[i].to_string(), // not a good solution for when we are calculating distances between two distinc points
-                coord_1[0],
-                coord_1[1],
-                coord_1[2],
-
-                1000000000, // need a better way to give anchor a number
-                "anchor".to_string(),
-                coord_2[0],
-                coord_2[1],
-                coord_2[2],
-                r,
-                0.0,
-            )
-            
+            if !p1_is_origin && &umd.types[i] == &pairs[0] {
+                p1_idx = Some(i);
+            }
+            if &umd.types[i] == &pairs[1] {
+                p2_idx = Some(i);
+            }
         }
 
-        Ok(euclidean_data)
+        if p1_is_origin && p2_idx.is_some() {
+            Self::process_with_origin(&mut euclidean_data, umd, p2_idx.unwrap());
+        } else if let (Some(idx1), Some(idx2)) = (p1_idx, p2_idx) {
+            Self::process_pair(&mut euclidean_data, umd, idx1, idx2);
+        }
+
+        euclidean_data
+    }
+
+    fn process_pair(data: &mut CoreEuclidean, umd: &UMD, idx1: usize, idx2: usize) {
+        let x1 = umd.x_rotated[idx1];
+        let y1 = umd.y_rotated[idx1];
+        let z1 = umd.z_rotated[idx1];
+        
+        let dx1 = if idx1 < umd.x_rotated_uncertainty.len() { umd.x_rotated_uncertainty[idx1] } else { 0.0 };
+        let dy1 = if idx1 < umd.y_rotated_uncertainty.len() { umd.y_rotated_uncertainty[idx1] } else { 0.0 };
+        let dz1 = if idx1 < umd.z_rotated_uncertainty.len() { umd.z_rotated_uncertainty[idx1] } else { 0.0 };
+
+        let x2 = umd.x_rotated[idx2];
+        let y2 = umd.y_rotated[idx2];
+        let z2 = umd.z_rotated[idx2];
+
+        let dx2 = if idx2 < umd.x_rotated_uncertainty.len() { umd.x_rotated_uncertainty[idx2] } else { 0.0 };
+        let dy2 = if idx2 < umd.y_rotated_uncertainty.len() { umd.y_rotated_uncertainty[idx2] } else { 0.0 };
+        let dz2 = if idx2 < umd.z_rotated_uncertainty.len() { umd.z_rotated_uncertainty[idx2] } else { 0.0 };
+
+        let v_x = x2 - x1;
+        let v_y = y2 - y1;
+        let v_z = z2 - z1;
+
+        let dv_x = (dx1.powi(2) + dx2.powi(2)).sqrt();
+        let dv_y = (dy1.powi(2) + dy2.powi(2)).sqrt();
+        let dv_z = (dz1.powi(2) + dz2.powi(2)).sqrt();
+
+        let r = DistanceCalc::calculate(v_x, v_y, v_z);
+        let r_unc = DistanceCalc::calculate_uncertainty(r, v_x, v_y, v_z, dv_x, dv_y, dv_z);
+
+        data.add_point(
+            umd.frame[idx1],
+            umd.timestamp[idx1],
+            (umd.coordinate_number[idx1], umd.types[idx1].clone(), x1, y1, z1),
+            (umd.coordinate_number[idx2], umd.types[idx2].clone(), x2, y2, z2),
+            r,
+            r_unc
+        );
+    }
+
+    fn process_with_origin(data: &mut CoreEuclidean, umd: &UMD, idx2: usize) {
+        let x2 = umd.x_rotated[idx2];
+        let y2 = umd.y_rotated[idx2];
+        let z2 = umd.z_rotated[idx2];
+
+        let v_x = x2;
+        let v_y = y2;
+        let v_z = z2;
+
+        let dv_x = if idx2 < umd.x_rotated_uncertainty.len() { umd.x_rotated_uncertainty[idx2] } else { 0.0 };
+        let dv_y = if idx2 < umd.y_rotated_uncertainty.len() { umd.y_rotated_uncertainty[idx2] } else { 0.0 };
+        let dv_z = if idx2 < umd.z_rotated_uncertainty.len() { umd.z_rotated_uncertainty[idx2] } else { 0.0 };
+
+        let r = DistanceCalc::calculate(v_x, v_y, v_z);
+        let r_unc = DistanceCalc::calculate_uncertainty(r, v_x, v_y, v_z, dv_x, dv_y, dv_z);
+
+        data.add_point(
+            umd.frame[idx2],
+            umd.timestamp[idx2],
+            (0, "origin".to_string(), 0.0, 0.0, 0.0),
+            (umd.coordinate_number[idx2], umd.types[idx2].clone(), x2, y2, z2),
+            r,
+            r_unc
+        );
+    }
+}
+
+
+impl DistanceCalc {
+    fn calculate(x: f64, y: f64, z: f64) -> f64 {
+        (x.powi(2) + y.powi(2) + z.powi(2)).sqrt()
+    }
+
+    fn calculate_uncertainty(r: f64, x: f64, y: f64, z: f64, sx: f64, sy: f64, sz: f64) -> f64 {
+        if r == 0.0 { return 0.0; } // no division by 0 :)
+        
+        let term_x = (x * sx).powi(2);
+        let term_y = (y * sy).powi(2);
+        let term_z = (z * sz).powi(2);
+
+        (term_x + term_y + term_z).sqrt() / r
     }
 }
