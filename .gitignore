@@ -53,3 +53,6 @@ graph-test.py
 test-quad-area.py
 old_cli.py
 TestProject/
+
+# GUI
+src/GUI
