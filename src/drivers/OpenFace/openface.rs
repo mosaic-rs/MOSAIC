@@ -81,28 +81,28 @@ impl OpenFaceLandmarkType{
         match index {
             // Outer points
             48 => Self::OuterRightCommissure, // right
-            49 => Self::OuterUpperLip, // right
-            50 => Self::OuterUpperLip, // rught
+            49 => Self::OuterRightUpperLip, // right
+            50 => Self::OuterRightUpperLip, // rught
             51 => Self::OuterPhiltrum, // mid
-            52 => Self::OuterUpperLip, // left
-            53 => Self::OuterUpperLip, // left
+            52 => Self::OuterLeftUpperLip, // left
+            53 => Self::OuterLeftUpperLip, // left
             54 => Self::OuterLeftCommissure, // left
-            55 => Self::OuterLowerLip, // left
-            56 => Self::OuterLowerLip, // left
+            55 => Self::OuterLeftLowerLip, // left
+            56 => Self::OuterLeftLowerLip, // left
             57 => Self::OuterLowerVermillionBorder, // mid
-            58 => Self::OuterLowerLip, // right
-            59 => Self::OuterLowerLip, // right
+            58 => Self::OuterRightLowerLip, // right
+            59 => Self::OuterRightLowerLip, // right
             // goes back to point 48 to make a closed loop
 
             // Inner points
             60 => Self::InnerRightCommissure, // right
-            61 => Self::InnerUpperLip, // right
+            61 => Self::InnerRightUpperLip, // right
             62 => Self::InnerPhiltrum, // mid
-            63 => Self::InnerUpperLip, // left
+            63 => Self::InnerLeftUpperLip, // left
             64 => Self::InnerLeftCommissure, // left
-            65 => Self::InnerLowerLip, // left
+            65 => Self::InnerLeftLowerLip, // left
             66 => Self::InnerLowerVermillionBorder, // mid
-            67 => Self::InnerLowerLip, // right
+            67 => Self::InnerRightLowerLip, // right
             // goes back to 60 to make closed loop
 
             // Jaw
