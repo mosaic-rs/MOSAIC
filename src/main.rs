@@ -23,6 +23,12 @@ use MOSAIC::shell::projectManager::session::{DirectoryVerifiers, SessionData};
 use MOSAIC::shell::shell::{shell_initiation};
 use MOSAIC::drivers::OpenFace::openface::{parse_openface_data};
 
+// core measurement crates
+use MOSAIC::coreMeasurements::angle::{angle};
+use MOSAIC::coreMeasurements::area::{area};
+use MOSAIC::coreMeasurements::curve::{curve};
+use MOSAIC::coreMeasurements::euclidean::{euclidean};
+
 fn main(){
 
     /*
