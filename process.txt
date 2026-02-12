@@ -23,3 +23,7 @@ This is the process fro how OpenFace data is fully processed for core measuremen
     4.2. We then apply those pose values to the landmarks to reverse head/point rotation
     4.3. We push these values to the UMD pose corrected landmark struct
     4.4. This struct is part of the CoreMeasurementUMD whic his held in memory
+
+
+
+MAKE A GRAPH FEATURE LIKE PRAAT
