@@ -1,0 +1,32 @@
+name: Mac Release Build
+on: [push, workflow_dispatch]
+
+jobs:
+  build-mac:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: x86_64-apple-darwin, aarch64-apple-darwin
+
+      - name: Build for Intel and Apple Silicon
+        run: |
+          cargo build --release --target x86_64-apple-darwin
+          cargo build --release --target aarch64-apple-darwin
+
+      - name: Create Universal Binary
+        run: |
+          mkdir -p target/universal-apple-darwin/release
+          lipo -create \
+            -output target/universal-apple-darwin/release/mosaic \
+            target/x86_64-apple-darwin/release/mosaic \
+            target/aarch64-apple-darwin/release/mosaic
+
+      - name: Upload Mac Binary
+        uses: actions/upload-artifact@v4
+        with:
+          name: mosaic-mac-universal
+          path: target/universal-apple-darwin/release/mosaic
