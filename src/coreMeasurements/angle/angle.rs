@@ -175,7 +175,6 @@ impl AngleCalculator {
             theta, theta_unc, phi, phi_unc
         );
     }
-}
 
     fn process_pair(angle_data: &mut CoreAngle, umd: &UMD, idx1: usize, idx2: usize) {
         /* this only uses the pose correct coordinates for angles. If for some reason you wanna use none pose corrected values then
@@ -236,7 +235,6 @@ impl AngleCalculator {
         );
     }
 }
-
 
 impl ThetaCalc {
 
