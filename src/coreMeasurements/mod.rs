@@ -18,3 +18,6 @@ MOSAIC. If not, see <https://www.gnu.org/licenses/>.
 // pub mod pose; - Moved to UMD/pose
 
 pub mod euclidean;
+pub mod curve;
+pub mod area;
+pub mod angle;
