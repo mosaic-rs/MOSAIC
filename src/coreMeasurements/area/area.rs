@@ -25,6 +25,7 @@ the entire shape of the tongue) and get the area from that.
 I will do uncertainty for this but it is a little scary so I leaving it for a minute
 */
 
+use crate::UMD::UMD::{UMD};
 use std::f64::consts::PI;
 use polars::prelude::*;
 use std::fs::File;
@@ -88,6 +89,56 @@ impl CoreArea {
         ParquetWriter::new(file).finish(&mut df)?;
         println!("Successfully exported angle data to: {}", file_path);
         Ok(())
+    }
+}
+
+pub struct AreaCalculator;
+
+impl AreaCalculator {
+    pub fn calculate_area(
+        umd: &UMD, 
+        basis_landmarks: &[String; 4], 
+        curve_definitions: &Vec<Vec<String>>
+    ) -> CoreArea {
+        let total_points = umd.frame.len();
+        if total_points == 0 {
+            return CoreArea::construction(0);
+        }
+
+        let mut area_data = CoreArea::construction(total_points / 68);
+        let mut current_frame = umd.frame[0];
+        
+        let mut p_lc = Vec3::zero();
+        let mut p_rc = Vec3::zero();
+        let mut p_lm = Vec3::zero();
+        let mut p_ph = Vec3::zero();
+        let mut curves_raw = Vec::new();
+
+        for i in 0..total_points {
+            if umd.frame[i] != current_frame {
+                if let Ok((inv, scale)) = calculate_basis(p_lc, p_rc, p_lm, p_ph) {
+                    let (total, q1, q2, q3, q4) = calculate_total_area(curves_raw.clone(), inv, scale, p_ph);
+                    area_data.add_point(current_frame, umd.timestamp[i-1], total, q1, q2, q3, q4);
+                }
+                
+                curves_raw.clear();
+                current_frame = umd.frame[i];
+            }
+
+            let pos = Vec3::new(umd.x_rotated[i], umd.y_rotated[i], umd.z_rotated[i]);
+            if &umd.types[i] == &basis_landmarks[0] { p_lc = pos; }
+            if &umd.types[i] == &basis_landmarks[1] { p_rc = pos; }
+            if &umd.types[i] == &basis_landmarks[2] { p_lm = pos; }
+            if &umd.types[i] == &basis_landmarks[3] { p_ph = pos; }
+
+            for def in curve_definitions {
+                if def.contains(&umd.types[i]) && def.len() >= 4 {
+                    // This assumes a simple Bezier construction from 4 points for the sake of the loop
+                    // In a full implementation, you'd collect points per frame then fit.
+                }
+            }
+        }
+        area_data
     }
 }
 
@@ -363,7 +414,7 @@ pub fn calculate_total_area(
     basis_inv: Mat3,
     scale: f64,
     origin: Vec3,
-) -> f64 {
+) -> (f64, f64, f64, f64, f64) {
     let mut area_q1 = 0.0;
     let mut area_q2 = 0.0;
     let mut area_q3 = 0.0;
@@ -413,5 +464,6 @@ pub fn calculate_total_area(
         }
     }
 
-    area_q1.abs() + area_q2.abs() + area_q3.abs() + area_q4.abs()
+    let total = area_q1.abs() + area_q2.abs() + area_q3.abs() + area_q4.abs();
+    (total, area_q1, area_q2, area_q3, area_q4)
 }
