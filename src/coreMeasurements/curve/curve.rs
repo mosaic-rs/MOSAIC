@@ -19,6 +19,10 @@ MOSAIC. If not, see <https://www.gnu.org/licenses/>.
     using Chord Length Parameterization and SVD Least Squares solving.
 
     You can give it as many points as you want (minimum of 4 really)
+
+
+    I will make an uncertainty portion for uncertainty of coefficients 
+    but lord knows I am not smart enough to do that right now
 */
 
 use crate::UMD::UMD::{UMD};
@@ -50,12 +54,48 @@ impl CoreCurve {
         Self {
             frame: Vec::with_capacity(estimated_frames),
             timestamp: Vec::with_capacity(estimated_frames),
-            types_included: Vec::new(),
+            types_included: Vec::with_capacity(estimated_frames),
             x_coeffs: Vec::with_capacity(estimated_frames),
             y_coeffs: Vec::with_capacity(estimated_frames),
             z_coeffs: Vec::with_capacity(estimated_frames),
         }
     }
+
+    pub fn add_point(
+        &mut self, frame: u32, timestamp: f32, 
+        coord_1: (u32, u32, u32, u32), // currently only just takes in the 4 outer points of openface lip points BUT will be made more data blind
+        x_coeffs: (f64, f64, f64, f64),
+        y_coeffs: (f64, f64, f64, f64),
+        z_coeffs: (f64, f64, f64, f64),
+    ) {
+        self.frame.push(frame);
+        self.timestamp.push(timestamp);
+        
+        self.coord_1.push(coord_1);
+        self.x_coeffs.push(x_coeffs);
+        self.y_coeffs.push(y_coeffs);
+        self.z_coeffs.push(z_coeffs);
+    }
+
+    pub fn save_curve_to_parquet(curve: &CoreCurve, file_path: &str) -> PolarsResult<()> {
+        let s_frame = Series::new("frame", &curve.frame);
+        let s_time = Series::new("timestamp", &curve.timestamp);
+
+        let coord_1 = Series::new("coord_1", &curve.coord_1);
+        let x_coeffs = Series::new("x_coeffs", &curve.x_coeffs);
+        let y_coeffs = Series::new("y_coeffs", &curve.y_coeffs);
+        let z_coeffs = Series::new("z_coeffs", &curve.z_coeffs);
+
+        let mut df = DataFrame::new(vec![ 
+            s_frame, s_time, coord_1, x_coeffs, y_coeffs, z_coeffs,
+        ])?;
+        
+        let file = File::create(file_path).map_err(PolarsError::from)?;
+        ParquetWriter::new(file).finish(&mut df)?;
+        println!("Successfully exported curve data to: {}", file_path);
+        Ok(())
+    }
+
 }
 
 pub struct CurveCalculator;
