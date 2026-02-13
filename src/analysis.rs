@@ -54,28 +54,28 @@ impl run {
         // init is a general run command
         // we can edit it to pass paremeters through later
         let umd_driver = parse_openface_data(Path::new(input_path)).expect("Failed to parse data");
-        let file_name = "umd_driver.parqeut";
+        let file_name = "umd_driver.parquet";
         let umd_driver_output_path = format!("{output_path}{file_name}");;
         UMDDriver::save_umd_driver_to_parquet(&umd_driver, umd_driver_output_path.as_str());
 
         // anchor testing
 
         let anchor_results = AnchorProcessor::calculate_umd_anchors(&umd_driver)?;
-        let file_name = "umd_anchor.parqeut";
+        let file_name = "umd_anchor.parquet";
         let umd_anchor_output_path = format!("{output_path}{file_name}");
         AnchorProcessor::save_anchors_to_parquet(&anchor_results, umd_anchor_output_path.as_str())?;
 
         // centering testing
 
         let centering_results = CenteringProcessor::calculate_centering(&umd_driver, &anchor_results)?;
-        let file_name = "umd_centered.parqeut";
+        let file_name = "umd_centered.parquet";
         let umd_centering_output_path = format!("{output_path}{file_name}");
         CenteringProcessor::save_centered_to_parquet(&centering_results, umd_centering_output_path.as_str())?;
 
         // pose correction testing
 
         let pose_correction_results = PoseProcessor::calculate_pose_corr(&centering_results)?;
-        let file_name = "umd_rotated.parqeut";
+        let file_name = "umd_rotated.parquet";
         let umd_rotated_output_path = format!("{output_path}{file_name}");
         PoseProcessor::save_pose_to_parquet(&pose_correction_results, umd_rotated_output_path.as_str())?;
 
@@ -86,7 +86,7 @@ impl run {
         let mut umd_instance = UMD::construction(total_entries, 1);
         umd_instance.add_point(&umd_driver, &anchor_results, &centering_results, &pose_correction_results);
 
-        let file_name = "umd.parqeut";
+        let file_name = "umd.parquet";
         let umd_output_path = format!("{output_path}{file_name}");
 
         UMD::save_umd_to_parquet(&umd_instance, umd_output_path.as_str(), kv_metadata)?;
