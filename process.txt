@@ -27,3 +27,11 @@ This is the process fro how OpenFace data is fully processed for core measuremen
 
 
 MAKE A GRAPH FEATURE LIKE PRAAT
+
+Add this to the cargo.toml when we add the GUI stuff to the github
+
+[workspace]
+members = [
+    ".app-shell/src-tauri",
+    "."
+]
