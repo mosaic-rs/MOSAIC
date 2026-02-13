@@ -17,9 +17,79 @@ MOSAIC. If not, see <https://www.gnu.org/licenses/>.
 Area logic 
 
 Calculates the area of the mouth and also the 4 quadrants defined by the commissures and a vertical line through the philtrum
+
+Rn kind of catered toward openface lip curves but I wouold love to make it so you could implement 3 curves (i.e. 3 curves tracking
+the entire shape of the tongue) and get the area from that.
+
+
+I will do uncertainty for this but it is a little scary so I leaving it for a minute
 */
 
 use std::f64::consts::PI;
+use polars::prelude::*;
+use std::fs::File;
+
+pub struct CoreArea {
+    pub frame: Vec<u32>,
+    pub timestamp: Vec<f32>,
+
+    pub total_area: Vec<f64>,
+    pub q1_area: Vec<f64>,
+    pub q2_area: Vec<f64>,
+    pub q3_area: Vec<f64>,
+    pub q4_area: Vec<f64>,
+}
+
+impl CoreArea {
+    pub fn construction(estimated_entries: usize) -> Self {
+    Self {
+        frame: Vec::with_capacity(estimated_entries),
+        timestamp: Vec::with_capacity(estimated_entries),
+        
+        total_area: Vec::with_capacity(estimated_entries),
+        q1_area: Vec::with_capacity(estimated_entries),
+        q2_area: Vec::with_capacity(estimated_entries),
+        q3_area: Vec::with_capacity(estimated_entries),
+        q4_area: Vec::with_capacity(estimated_entries),
+        }
+    }
+
+    pub fn add_point(
+        &mut self, frame: u32, timestamp: f32, 
+        total_area: f64,
+        q1_area: f64, q2_area: f64, q3_area: f64, q4_area: f64
+    ) {
+        self.frame.push(frame);
+        self.timestamp.push(timestamp);
+        
+        self.total_area.push(total_area);
+        self.q1_area.push(q1_area);
+        self.q2_area.push(q2_area);
+        self.q3_area.push(q3_area);
+        self.q4_area.push(q4_area);
+    }
+
+    pub fn save_area_to_parquet(area: &CoreArea, file_path: &str) -> PolarsResult<()> {
+        let s_frame = Series::new("frame", &area.frame);
+        let s_time = Series::new("timestamp", &area.timestamp);
+
+        let s_total_area = Series::new("total_area", &area.total_area);
+        let s_q1_area = Series::new("q1_area", &area.q1_area);
+        let s_q2_area = Series::new("q2_area", &area.q2_area);
+        let s_q3_area = Series::new("q3_area", &area.q3_area);
+        let s_q4_area = Series::new("q4_area", &area.q4_area);
+
+        let mut df = DataFrame::new(vec![
+            s_frame, s_time, s_total_area, 
+            s_q1_area, s_q2_area, s_q3_area, s_q4_area,
+        ])?;
+        
+        let file = File::create(file_path).map_err(PolarsError::from)?;
+        ParquetWriter::new(file).finish(&mut df)?;
+        println!("Successfully exported angle data to: {}", file_path);
+        Ok(())
+    }
+}
 
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct Vec3 {
