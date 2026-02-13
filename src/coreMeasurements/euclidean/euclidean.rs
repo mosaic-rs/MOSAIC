@@ -19,6 +19,8 @@ MOSAIC. If not, see <https://www.gnu.org/licenses/>.
 
 use crate::UMD::UMD::{UMD};
 use crate::errors::{MosaicError};
+use polars::prelude::*;
+use std::fs::File;
 
 #[derive(Debug, Clone)]
 pub struct CoreEuclidean {
@@ -90,6 +92,37 @@ impl CoreEuclidean {
 
         self.r.push(r);
         self.r_uncertainty.push(r_uncertainty);
+    }
+
+    pub fn save_euclidean_to_parquet(euclidean: &CoreEuclidean, file_path: &str) -> PolarsResult<()> {
+        let s_frame = Series::new("frame", &euclidean.frame);
+        let s_time = Series::new("timestamp", &euclidean.timestamp);
+
+        let s_coord_1_num = Series::new("coordinate_number_1", &euclidean.coordinate_number_1);
+        let s_coord_1_type = Series::new("coordinate_type_1", &euclidean.coordinate_type_1);
+        let s_x1 = Series::new("x1", &euclidean.x1);
+        let s_y1 = Series::new("y1", &euclidean.y1);
+        let s_z1 = Series::new("z1", &euclidean.z1);
+
+        let s_coord_2_num = Series::new("coordinate_number_2", &euclidean.coordinate_number_2);
+        let s_coord_2_type = Series::new("coordinate_type_2", &euclidean.coordinate_type_2);
+        let s_x2 = Series::new("x2", &euclidean.x2);
+        let s_y2 = Series::new("y2", &euclidean.y2);
+        let s_z2 = Series::new("z2", &euclidean.z2);
+        
+        let s_r = Series::new("r", &euclidean.r);
+        let s_r_uncertainty = Series::new("r_uncertainty", &euclidean.r_uncertainty);
+
+        let mut df = DataFrame::new(vec![
+            s_frame, s_time, s_coord_1_num, s_coord_1_type, 
+            s_x1, s_y1, s_z1, s_coord_2_num, s_coord_2_type, 
+            s_x2, s_y2, s_z2, s_r, s_r_uncertainty,
+        ])?;
+
+        let file = File::create(file_path).map_err(PolarsError::from)?;
+        ParquetWriter::new(file).finish(&mut df)?;
+        println!("Successfully exported euclidean data to: {}", file_path);
+        Ok(())
     }
 }
 
@@ -246,3 +279,4 @@ impl DistanceCalc {
         (term_x + term_y + term_z).sqrt() / r
     }
 }
+
