@@ -137,14 +137,16 @@ impl CurveCalculator {
         }
 
         let mut curve_data = CoreCurve::construction(total_entries / 68);
-        curve_data.types_included = landmarks.to_vec();
+        
+        // Create a string representation of the landmarks involved for the column
+        let types_str = landmarks.join(",");
 
         let mut current_frame = umd.frame[0];
         let mut frame_points: Vec<(f64, f64, f64)> = Vec::new();
 
         for i in 0..total_entries {
             if umd.frame[i] != current_frame {
-                Self::process_frame(&mut curve_data, current_frame, umd.timestamp[i-1], &frame_points);
+                Self::process_frame(&mut curve_data, current_frame, umd.timestamp[i-1], &frame_points, &types_str);
                 frame_points.clear();
                 current_frame = umd.frame[i];
             }
@@ -154,12 +156,12 @@ impl CurveCalculator {
             }
         }
 
-        Self::process_frame(&mut curve_data, current_frame, *umd.timestamp.last().unwrap(), &frame_points);
+        Self::process_frame(&mut curve_data, current_frame, *umd.timestamp.last().unwrap(), &frame_points, &types_str);
 
         curve_data
     }
 
-    fn process_frame(data: &mut CoreCurve, frame: u32, ts: f32, points: &[(f64, f64, f64)]) {
+    fn process_frame(data: &mut CoreCurve, frame: u32, ts: f32, points: &[(f64, f64, f64)], types_str: &str) {
         if points.len() < 4 { return; }
 
         // chord length 
@@ -199,10 +201,13 @@ impl CurveCalculator {
         let cy = svd.solve(&py, 1e-9).unwrap();
         let cz = svd.solve(&pz, 1e-9).unwrap();
 
-        data.frame.push(frame);
-        data.timestamp.push(ts);
-        data.x_coeffs.push(CurveCoefficients { a: cx[0], b: cx[1], c: cx[2], d: cx[3] });
-        data.y_coeffs.push(CurveCoefficients { a: cy[0], b: cy[1], c: cy[2], d: cy[3] });
-        data.z_coeffs.push(CurveCoefficients { a: cz[0], b: cz[1], c: cz[2], d: cz[3] });
+        data.add_point(
+            frame,
+            ts,
+            types_str.to_string(),
+            CurveCoefficients { a: cx[0], b: cx[1], c: cx[2], d: cx[3] },
+            CurveCoefficients { a: cy[0], b: cy[1], c: cy[2], d: cy[3] },
+            CurveCoefficients { a: cz[0], b: cz[1], c: cz[2], d: cz[3] },
+        );
     }
 }
