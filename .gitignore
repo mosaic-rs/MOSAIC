@@ -56,3 +56,4 @@ TestProject/
 
 # GUI
 src/GUI
+.app-shell/
