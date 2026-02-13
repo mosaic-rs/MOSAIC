@@ -12,6 +12,9 @@ PURPOSE. See the GNU General Public License for more details.
 You should have received a copy of the GNU General Public License along with 
 MOSAIC. If not, see <https://www.gnu.org/licenses/>.
 */
+
+// Note to self:
+// RUSTFLAGS="-A warnings" cargo run     --  to run cargo without all the warnings
 use std::path::Path;
 
 
