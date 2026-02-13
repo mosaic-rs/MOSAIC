@@ -28,6 +28,7 @@ process.txt
 .vscode/
 .DS_Store
 Thumbs.db
+all_rust_code.txt
 
 
 *.log
