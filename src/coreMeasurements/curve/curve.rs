@@ -27,6 +27,8 @@ MOSAIC. If not, see <https://www.gnu.org/licenses/>.
 
 use crate::UMD::UMD::{UMD};
 use nalgebra::{DMatrix, DVector, SVD};
+use polars::prelude::*;
+use std::fs::File;
 
 #[derive(Debug, Clone)]
 pub struct CurveCoefficients {
@@ -34,6 +36,13 @@ pub struct CurveCoefficients {
     pub b: f64,
     pub c: f64,
     pub d: f64,
+}
+
+pub struct CurvePointTypes {
+    pub a: String,
+    pub b: String,
+    pub c: String,
+    pub d: String
 }
 
 pub struct CoreCurve {
@@ -63,15 +72,15 @@ impl CoreCurve {
 
     pub fn add_point(
         &mut self, frame: u32, timestamp: f32, 
-        coord_1: (u32, u32, u32, u32), // currently only just takes in the 4 outer points of openface lip points BUT will be made more data blind
-        x_coeffs: (f64, f64, f64, f64),
-        y_coeffs: (f64, f64, f64, f64),
-        z_coeffs: (f64, f64, f64, f64),
+        types_included: String, // currently only just takes in the 4 outer points of openface lip points BUT will be made more data blind
+        x_coeffs: CurveCoefficients,
+        y_coeffs: CurveCoefficients,
+        z_coeffs: CurveCoefficients,
     ) {
         self.frame.push(frame);
         self.timestamp.push(timestamp);
         
-        self.coord_1.push(coord_1);
+        self.types_included.push(types_included);
         self.x_coeffs.push(x_coeffs);
         self.y_coeffs.push(y_coeffs);
         self.z_coeffs.push(z_coeffs);
@@ -81,13 +90,30 @@ impl CoreCurve {
         let s_frame = Series::new("frame", &curve.frame);
         let s_time = Series::new("timestamp", &curve.timestamp);
 
-        let coord_1 = Series::new("coord_1", &curve.coord_1);
-        let x_coeffs = Series::new("x_coeffs", &curve.x_coeffs);
-        let y_coeffs = Series::new("y_coeffs", &curve.y_coeffs);
-        let z_coeffs = Series::new("z_coeffs", &curve.z_coeffs);
+        let s_coord_1 = Series::new("types_included", &curve.types_included);
+        let s_x_a = Series::new("x_a", curve.x_coeffs.iter().map(|c| c.a).collect::<Vec<f64>>());
+        let s_x_b = Series::new("x_b", curve.x_coeffs.iter().map(|c| c.b).collect::<Vec<f64>>());
+        let s_x_c = Series::new("x_c", curve.x_coeffs.iter().map(|c| c.c).collect::<Vec<f64>>());
+        let s_x_d = Series::new("x_d", curve.x_coeffs.iter().map(|c| c.d).collect::<Vec<f64>>());
+
+        let s_y_a = Series::new("y_a", curve.y_coeffs.iter().map(|c| c.a).collect::<Vec<f64>>());
+        let s_y_b = Series::new("y_b", curve.y_coeffs.iter().map(|c| c.b).collect::<Vec<f64>>());
+        let s_y_c = Series::new("y_c", curve.y_coeffs.iter().map(|c| c.c).collect::<Vec<f64>>());
+        let s_y_d = Series::new("y_d", curve.y_coeffs.iter().map(|c| c.d).collect::<Vec<f64>>());
+
+        let s_z_a = Series::new("z_a", curve.z_coeffs.iter().map(|c| c.a).collect::<Vec<f64>>());
+        let s_z_b = Series::new("z_b", curve.z_coeffs.iter().map(|c| c.b).collect::<Vec<f64>>());
+        let s_z_c = Series::new("z_c", curve.z_coeffs.iter().map(|c| c.c).collect::<Vec<f64>>());
+        let s_z_d = Series::new("z_d", curve.z_coeffs.iter().map(|c| c.d).collect::<Vec<f64>>());
+        //let x_coeffs = Series::new("x_coeffs", &curve.x_coeffs);
+        //let y_coeffs = Series::new("y_coeffs", &curve.y_coeffs);
+        //let z_coeffs = Series::new("z_coeffs", &curve.z_coeffs);
 
         let mut df = DataFrame::new(vec![ 
-            s_frame, s_time, coord_1, x_coeffs, y_coeffs, z_coeffs,
+            s_frame, s_time, s_coord_1, 
+            s_x_a, s_x_b, s_x_c, s_x_d, 
+            s_y_a, s_y_b, s_y_c, s_y_d, 
+            s_z_a, s_z_b, s_z_c, s_z_d,
         ])?;
         
         let file = File::create(file_path).map_err(PolarsError::from)?;
