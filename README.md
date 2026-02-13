@@ -1,6 +1,7 @@
 [![Rust, Python](https://img.shields.io/badge/languages-Rust%2C_Python-Blue
 )](https://www.rust-lang.org/)
 [![Topic](https://img.shields.io/badge/field-Phonetics-blue.svg)]()
+![MOSAIC Logo](./MOSAIC/MOSAIC-Engine/.app-shell/src-tauri/icons/MOSAIC-LOGO.png)
 
 
 
