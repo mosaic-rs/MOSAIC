@@ -16,6 +16,8 @@ MOSAIC. If not, see <https://www.gnu.org/licenses/>.
 use crate::UMD::UMD::{UMD};
 use crate::errors::{MosaicError};
 use std::f64::consts::PI;
+use polars::prelude::*;
+use std::fs::File;
 
 #[derive(Debug, Clone)]
 pub struct CoreAngle {
@@ -70,7 +72,7 @@ impl CoreAngle {
 
     pub fn add_point(
         &mut self, frame: u32, timestamp: f32, 
-        coord_1: (u32, String, f64, f64, f64), // Tuple for cleaner args
+        coord_1: (u32, String, f64, f64, f64),
         coord_2: (u32, String, f64, f64, f64),
         theta: f64, theta_uncertainty: f64, 
         phi: f64, phi_uncertainty: f64
@@ -94,6 +96,41 @@ impl CoreAngle {
         self.theta_uncertainty.push(theta_uncertainty);
         self.phi.push(phi);
         self.phi_uncertainty.push(phi_uncertainty);
+    }
+
+    pub fn save_angle_to_parquet(angle: &CoreAngle, file_path: &str) -> PolarsResult<()> {
+        let s_frame = Series::new("frame", &angle.frame);
+        let s_time = Series::new("timestamp", &angle.timestamp);
+
+        let s_coord_1_num = Series::new("coordinate_number_1", &angle.coordinate_number_1);
+        let s_coord_1_type = Series::new("coordinate_type_1", &angle.coordinate_type_1);
+        let s_x1 = Series::new("x1", &angle.x1);
+        let s_y1 = Series::new("y1", &angle.y1);
+        let s_z1 = Series::new("z1", &angle.z1);
+
+        let s_coord_2_num = Series::new("coordinate_number_2", &angle.coordinate_number_2);
+        let s_coord_2_type = Series::new("coordinate_type_2", &angle.coordinate_type_2);
+        let s_x2 = Series::new("x2", &angle.x2);
+        let s_y2 = Series::new("y2", &angle.y2);
+        let s_z2 = Series::new("z2", &angle.z2);
+
+        let s_theta = Series::new("theta", &angle.theta);
+        let s_theta_uncertainty = Series::new("theta_uncertainty", &angle.theta_uncertainty);
+
+        let s_phi = Series::new("phi", &angle.phi);
+        let s_phi_uncertainty = Series::new("phi_uncertainty", &angle.phi_uncertainty);
+
+        let mut df = DataFrame::new(vec![
+            s_frame, s_time, s_coord_1_num, s_coord_1_type, 
+            s_x1, s_y1, s_z1, s_coord_2_num, s_coord_2_type, 
+            s_x2, s_y2, s_z2, s_theta, s_theta_uncertainty, 
+            s_phi, s_phi_uncertainty,
+        ])?;
+        
+        let file = File::create(file_path).map_err(PolarsError::from)?;
+        ParquetWriter::new(file).finish(&mut df)?;
+        println!("Successfully exported angle data to: {}", file_path);
+        Ok(())
     }
 }
 
