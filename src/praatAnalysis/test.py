@@ -14,7 +14,7 @@ MOSAIC. If not, see <https://www.gnu.org/licenses/>.
 """
 
 """
-Because RustMouth is too unstable to be used in MOSAIC (for now), ParselMouth will be use :) 
+Because RustMouth is too unstable to be used in MOSAIC (for now), ParselMouth will be used :) 
 """
 
 import sys
