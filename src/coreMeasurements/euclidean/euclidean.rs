@@ -141,42 +141,55 @@ impl EuclideanCalculator {
         let estimated_frames = (total_points / 68) + 1;
         let mut euclidean_data = CoreEuclidean::construction(estimated_frames);
 
-        // if point one is the origin
         let p1_is_origin = pairs[0].to_lowercase() == "origin";
+        let target_all = pairs[1] == "*";
 
-        let mut current_frame = umd.frame[0];
-        let mut p1_idx: Option<usize> = None;
-        let mut p2_idx: Option<usize> = None;
+        let mut i = 0;
+        while i < total_points {
+            let start_idx = i;
+            let current_frame = umd.frame[i];
+            
+            // identify frame block
+            while i < total_points && umd.frame[i] == current_frame {
+                i += 1;
+            }
+            let end_idx = i;
 
-        for i in 0..total_points {
-            if umd.frame[i] != current_frame {
-                if p1_is_origin {
-                        // If pairs[1] is "*", process every single point
-                        if pairs[1] == "*" {
-                            Self::process_with_origin(&mut euclidean_data, umd, i);
-                        } else if &umd.types[i] == &pairs[1] {
-                            // Otherwise - just find the specific one
-                            p2_idx = Some(i);
+            if p1_is_origin {
+                if target_all {
+                    for k in start_idx..end_idx {
+                        Self::process_with_origin(&mut euclidean_data, umd, k);
+                    }
+                } else {
+                    for k in start_idx..end_idx {
+                        if &umd.types[k] == &pairs[1] {
+                            Self::process_with_origin(&mut euclidean_data, umd, k);
                         }
                     }
+                }
+            } else {
+                let mut p1_idx = None;
+                for k in start_idx..end_idx {
+                    if &umd.types[k] == &pairs[0] {
+                        p1_idx = Some(k);
+                        break;
+                    }
+                }
 
-                current_frame = umd.frame[i];
-                p1_idx = None;
-                p2_idx = None;
+                if let Some(idx1) = p1_idx {
+                    if target_all {
+                        for k in start_idx..end_idx {
+                            Self::process_pair(&mut euclidean_data, umd, idx1, k);
+                        }
+                    } else {
+                        for k in start_idx..end_idx {
+                            if &umd.types[k] == &pairs[1] {
+                                Self::process_pair(&mut euclidean_data, umd, idx1, k);
+                            }
+                        }
+                    }
+                }
             }
-
-            if !p1_is_origin && &umd.types[i] == &pairs[0] {
-                p1_idx = Some(i);
-            }
-            if &umd.types[i] == &pairs[1] {
-                p2_idx = Some(i);
-            }
-        }
-
-        if p1_is_origin && p2_idx.is_some() {
-            Self::process_with_origin(&mut euclidean_data, umd, p2_idx.unwrap());
-        } else if let (Some(idx1), Some(idx2)) = (p1_idx, p2_idx) {
-            Self::process_pair(&mut euclidean_data, umd, idx1, idx2);
         }
 
         euclidean_data
@@ -273,7 +286,7 @@ impl DistanceCalc {
 
     fn calculate_uncertainty(r: f64, x: f64, y: f64, z: f64, sx: f64, sy: f64, sz: f64) -> f64 {
         if r == 0.0 { 
-            return 0.0; // no division by 0 :)
+            return 0.0;
         } 
         
         let term_x = (x * sx).powi(2);
@@ -283,4 +296,3 @@ impl DistanceCalc {
         (term_x + term_y + term_z).sqrt() / r
     }
 }
-
