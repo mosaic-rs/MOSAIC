@@ -31,6 +31,9 @@ use crate::UMD::pose::pose::{PoseProcessor};
 use crate::UMD::UMD::{UMD, UMDDriver};
 use crate::UMD::metadata::{Metadata};
 
+// praat analysis
+use crate::praatAnalysis::testing::{tests};
+
 
 use std::path::Path;
 
@@ -90,6 +93,12 @@ impl run {
         let umd_output_path = format!("{output_path}{file_name}");
 
         UMD::save_umd_to_parquet(&umd_instance, umd_output_path.as_str(), kv_metadata)?;
+        Ok(())
+    }
+
+    pub fn test_python() -> Result<(), Box<dyn std::error::Error>> {
+        tests::test_main();
+
         Ok(())
     }
 
