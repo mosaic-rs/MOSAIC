@@ -21,18 +21,46 @@ MOSAIC. If not, see <https://www.gnu.org/licenses/>.
 // lip groups:
 
 // outer lips
-pub const right_upper_lip = ["OuterRightCommissure", "OuterRightUpperLip", "OuterRightUpperLip", "OuterPhiltrum",];
-pub const left_upper_lip = ["OuterPhiltrum", "OuterLeftUpperLip", "OuterLeftUpperLip", "OuterLeftCommissure",];
-pub const left_lower_lip = ["OuterLeftCommissure", "OuterLeftLowerLip", "OuterLeftLowerLip", "OuterLowerVermillionBorder",];
-pub const right_lower_lip = [ "OuterLowerVermillionBorder", "OuterRightLowerLip", "OuterRightLowerLip", "OuterRightCommissure",];
+pub const right_upper_lip: &[&str] = &["OuterRightCommissure",
+                             "OuterRightUpperLip",
+                             "OuterRightUpperLip",
+                             "OuterPhiltrum",
+                            ];
+pub const left_upper_lip: &[&str] = &["OuterPhiltrum",
+                             "OuterLeftUpperLip",
+                             "OuterLeftUpperLip",
+                             "OuterLeftCommissure",
+                            ];
+pub const left_lower_lip: &[&str] = &["OuterLeftCommissure",
+                                "OuterLeftLowerLip",
+                                "OuterLeftLowerLip",
+                                "OuterLowerVermillionBorder",
+                                ];
+pub const right_lower_lip: &[&str] = &[ "OuterLowerVermillionBorder",
+                                "OuterRightLowerLip",
+                                "OuterRightLowerLip",
+                                "OuterRightCommissure",
+                                ];
 
 // inner lips
 // Warning: inner lips are made up of three coordinates which is belwo the ideal number of coordinates for the curve fitting func (4)
 
-pub const right_upper_inner_lip = ["InnerRightCommissure", "InnerRightUpperLip", "InnerPhiltrum",];
-pub const left_upper_inner_lip = ["InnerPhiltrum", "InnerLeftUpperLip", "InnerLeftCommissure",];
-pub const left_lower_inner_lip = ["InnerLeftCommissure", "InnerLeftLowerLip", "InnerLowerVermillionBorder",];
-pub const right_lower_inner_lip = ["InnerRightCommissure", "InnerLowerVermillionBorder", "InnerRightLowerLip",];
+pub const right_upper_inner_lip: &[&str] = &["InnerRightCommissure",
+                                       "InnerRightUpperLip",
+                                       "InnerPhiltrum",
+                                      ];
+pub const left_upper_inner_lip: &[&str] = &["InnerPhiltrum",
+                                      "InnerLeftUpperLip",
+                                      "InnerLeftCommissure",
+                                     ];
+pub const left_lower_inner_lip: &[&str] = &["InnerLeftCommissure",
+                                      "InnerLeftLowerLip",
+                                      "InnerLowerVermillionBorder",
+                                     ];
+pub const right_lower_inner_lip: &[&str] = &["InnerRightCommissure",
+                                      "InnerLowerVermillionBorder",
+                                      "InnerRightLowerLip",
+                                     ];
 
 
 
