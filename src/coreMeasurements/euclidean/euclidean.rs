@@ -150,11 +150,15 @@ impl EuclideanCalculator {
 
         for i in 0..total_points {
             if umd.frame[i] != current_frame {
-                if p1_is_origin && p2_idx.is_some() {
-                    Self::process_with_origin(&mut euclidean_data, umd, p2_idx.unwrap());
-                } else if let (Some(idx1), Some(idx2)) = (p1_idx, p2_idx) {
-                    Self::process_pair(&mut euclidean_data, umd, idx1, idx2);
-                }
+                if p1_is_origin {
+                        // If pairs[1] is "*", process every single point
+                        if pairs[1] == "*" {
+                            Self::process_with_origin(&mut euclidean_data, umd, i);
+                        } else if &umd.types[i] == &pairs[1] {
+                            // Otherwise - just find the specific one
+                            p2_idx = Some(i);
+                        }
+                    }
 
                 current_frame = umd.frame[i];
                 p1_idx = None;
