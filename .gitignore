@@ -1,5 +1,4 @@
 __pycache__/
-*.py[cod]
 *.so
 *.egg
 *.egg-info/
@@ -48,7 +47,6 @@ pytest_cache/
 
 
 TODO.txt
-test.py
 tyj.txt
 disregard.py
 graph-test.py
