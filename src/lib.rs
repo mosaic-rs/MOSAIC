@@ -19,3 +19,5 @@ pub mod UMD;
 pub mod drivers;
 
 pub mod analysis;
+
+pub mod praatAnalysis;
