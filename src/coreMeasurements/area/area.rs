@@ -25,6 +25,7 @@ the entire shape of the tongue) and get the area from that.
 I will do uncertainty for this but it is a little scary so I leaving it for a minute
 */
 
+use crate::coreMeasurements::curve::curve::{CoreCurve};
 use crate::UMD::UMD::{UMD};
 use std::f64::consts::PI;
 use polars::prelude::*;
@@ -33,7 +34,7 @@ use std::fs::File;
 pub struct CoreArea {
     pub frame: Vec<u32>,
     pub timestamp: Vec<f32>,
-
+    pub types_included: Vec<String>,
     pub total_area: Vec<f64>,
     pub q1_area: Vec<f64>,
     pub q2_area: Vec<f64>,
@@ -43,51 +44,34 @@ pub struct CoreArea {
 
 impl CoreArea {
     pub fn construction(estimated_entries: usize) -> Self {
-    Self {
-        frame: Vec::with_capacity(estimated_entries),
-        timestamp: Vec::with_capacity(estimated_entries),
-        
-        total_area: Vec::with_capacity(estimated_entries),
-        q1_area: Vec::with_capacity(estimated_entries),
-        q2_area: Vec::with_capacity(estimated_entries),
-        q3_area: Vec::with_capacity(estimated_entries),
-        q4_area: Vec::with_capacity(estimated_entries),
+        Self {
+            frame: Vec::with_capacity(estimated_entries),
+            timestamp: Vec::with_capacity(estimated_entries),
+            types_included: Vec::with_capacity(estimated_entries),
+            total_area: Vec::with_capacity(estimated_entries),
+            q1_area: Vec::with_capacity(estimated_entries),
+            q2_area: Vec::with_capacity(estimated_entries),
+            q3_area: Vec::with_capacity(estimated_entries),
+            q4_area: Vec::with_capacity(estimated_entries),
         }
-    }
-
-    pub fn add_point(
-        &mut self, frame: u32, timestamp: f32, 
-        total_area: f64,
-        q1_area: f64, q2_area: f64, q3_area: f64, q4_area: f64
-    ) {
-        self.frame.push(frame);
-        self.timestamp.push(timestamp);
-        
-        self.total_area.push(total_area);
-        self.q1_area.push(q1_area);
-        self.q2_area.push(q2_area);
-        self.q3_area.push(q3_area);
-        self.q4_area.push(q4_area);
     }
 
     pub fn save_area_to_parquet(area: &CoreArea, file_path: &str) -> PolarsResult<()> {
         let s_frame = Series::new("frame", &area.frame);
         let s_time = Series::new("timestamp", &area.timestamp);
-
-        let s_total_area = Series::new("total_area", &area.total_area);
-        let s_q1_area = Series::new("q1_area", &area.q1_area);
-        let s_q2_area = Series::new("q2_area", &area.q2_area);
-        let s_q3_area = Series::new("q3_area", &area.q3_area);
-        let s_q4_area = Series::new("q4_area", &area.q4_area);
+        let s_types = Series::new("types_included", &area.types_included);
+        let s_total = Series::new("total_area", &area.total_area);
+        let s_q1 = Series::new("q1_area", &area.q1_area);
+        let s_q2 = Series::new("q2_area", &area.q2_area);
+        let s_q3 = Series::new("q3_area", &area.q3_area);
+        let s_q4 = Series::new("q4_area", &area.q4_area);
 
         let mut df = DataFrame::new(vec![
-            s_frame, s_time, s_total_area, 
-            s_q1_area, s_q2_area, s_q3_area, s_q4_area,
+            s_frame, s_time, s_types, s_total, s_q1, s_q2, s_q3, s_q4
         ])?;
-        
+
         let file = File::create(file_path).map_err(PolarsError::from)?;
         ParquetWriter::new(file).finish(&mut df)?;
-        println!("Successfully exported angle data to: {}", file_path);
         Ok(())
     }
 }
@@ -96,118 +80,130 @@ pub struct AreaCalculator;
 
 impl AreaCalculator {
     pub fn calculate_area(
-        umd: &UMD, 
-        basis_landmarks: &[String; 4], 
-        curve_definitions: &Vec<Vec<String>>
+        curve: &CoreCurve,
+        umd: &UMD,
+        basis_sets: &[&[&str; 4]],
+        area_sets: &[&[&str]]
     ) -> CoreArea {
-        let total_points = umd.frame.len();
-        if total_points == 0 {
-            return CoreArea::construction(0);
-        }
-
-        let mut area_data = CoreArea::construction(total_points / 68);
-        let mut current_frame = umd.frame[0];
+        let mut area_data = CoreArea::construction(curve.frame.len());
         
-        let mut p_lc = Vec3::zero();
-        let mut p_rc = Vec3::zero();
-        let mut p_lm = Vec3::zero();
-        let mut p_ph = Vec3::zero();
-        let mut curves_raw = Vec::new();
+        let total_curve_entries = curve.frame.len();
+        let total_umd_entries = umd.frame.len();
+        let mut curve_idx = 0;
+        let mut umd_idx = 0;
 
-        for i in 0..total_points {
-            if umd.frame[i] != current_frame {
-                if let Ok((inv, scale)) = calculate_basis(p_lc, p_rc, p_lm, p_ph) {
-                    let (total, q1, q2, q3, q4) = calculate_total_area(curves_raw.clone(), inv, scale, p_ph);
-                    area_data.add_point(current_frame, umd.timestamp[i-1], total, q1, q2, q3, q4);
-                }
-                
-                curves_raw.clear();
-                current_frame = umd.frame[i];
+        while curve_idx < total_curve_entries {
+            let current_frame = curve.frame[curve_idx];
+            
+            let umd_start = umd_idx;
+            while umd_idx < total_umd_entries && umd.frame[umd_idx] == current_frame {
+                umd_idx += 1;
             }
+            let umd_end = umd_idx;
 
-            let pos = Vec3::new(umd.x_rotated[i], umd.y_rotated[i], umd.z_rotated[i]);
-            if &umd.types[i] == &basis_landmarks[0] { p_lc = pos; }
-            if &umd.types[i] == &basis_landmarks[1] { p_rc = pos; }
-            if &umd.types[i] == &basis_landmarks[2] { p_lm = pos; }
-            if &umd.types[i] == &basis_landmarks[3] { p_ph = pos; }
+            let curve_start = curve_idx;
+            while curve_idx < total_curve_entries && curve.frame[curve_idx] == current_frame {
+                curve_idx += 1;
+            }
+            let curve_end = curve_idx;
 
-            for def in curve_definitions {
-                if def.contains(&umd.types[i]) && def.len() >= 4 {
-                    // This assumes a simple Bezier construction from 4 points for the sake of the loop
-                    // In a full implementation, you'd collect points per frame then fit.
+            for (k, set) in area_sets.iter().enumerate() {
+                let basis_names = basis_sets[k];
+
+                let (mut p_lc, mut p_rc, mut p_lm, mut p_ph) = (Vec3::zero(), Vec3::zero(), Vec3::zero(), Vec3::zero());
+
+                for j in umd_start..umd_end {
+                    let pos = Vec3::new(umd.x_rotated[j], umd.y_rotated[j], umd.z_rotated[j]);
+                    if &umd.types[j] == basis_names[0] { p_lc = pos; }
+                    if &umd.types[j] == basis_names[1] { p_rc = pos; }
+                    if &umd.types[j] == basis_names[2] { p_lm = pos; }
+                    if &umd.types[j] == basis_names[3] { p_ph = pos; }
                 }
+
+                let (basis_inv, scale) = match calculate_basis(p_lc, p_rc, p_lm, p_ph) {
+                    Ok(res) => res,
+                    Err(_) => continue, 
+                };
+                
+                let origin = p_lc.add(p_rc).scale(0.5);
+
+                let mut curves = Vec::new();
+                for j in curve_start..curve_end {
+                    let current_type = &curve.types_included[j];
+                    if set.contains(&current_type.as_str()) {
+                         let cb = CubicBezier::new(
+                            Vec3::new(curve.x_coeffs[j].d, curve.y_coeffs[j].d, curve.z_coeffs[j].d),
+                            Vec3::new(curve.x_coeffs[j].c, curve.y_coeffs[j].c, curve.z_coeffs[j].c),
+                            Vec3::new(curve.x_coeffs[j].b, curve.y_coeffs[j].b, curve.z_coeffs[j].b),
+                            Vec3::new(curve.x_coeffs[j].a, curve.y_coeffs[j].a, curve.z_coeffs[j].a),
+                        );
+                        curves.push(transform_curve(&cb, &basis_inv, origin));
+                    }
+                }
+
+                let (total, q1, q2, q3, q4) = calculate_total_area(curves, scale);
+
+                area_data.frame.push(current_frame);
+                area_data.timestamp.push(curve.timestamp[curve_start]);
+                area_data.types_included.push(set.join(","));
+                area_data.total_area.push(total);
+                area_data.q1_area.push(q1);
+                area_data.q2_area.push(q2);
+                area_data.q3_area.push(q3);
+                area_data.q4_area.push(q4);
             }
         }
         area_data
     }
 }
 
-#[derive(Debug, Clone, Copy, PartialEq)]
-pub struct Vec3 {
-    pub x: f64,
-    pub y: f64,
-    pub z: f64,
-}
+#[derive(Clone, Copy, Debug)]
+pub struct Vec3 { x: f64, y: f64, z: f64 }
 
 impl Vec3 {
-    pub fn new(x: f64, y: f64, z: f64) -> Self {
-        Self { x, y, z }
-    }
-
-    pub fn zero() -> Self {
-        Self::new(0.0, 0.0, 0.0)
-    }
-
-    pub fn sub(&self, other: Vec3) -> Vec3 {
-        Vec3::new(self.x - other.x, self.y - other.y, self.z - other.z)
-    }
-
-    pub fn add(&self, other: Vec3) -> Vec3 {
-        Vec3::new(self.x + other.x, self.y + other.y, self.z + other.z)
-    }
-
-    pub fn scale(&self, s: f64) -> Vec3 {
-        Vec3::new(self.x * s, self.y * s, self.z * s)
-    }
-
-    pub fn cross(&self, other: Vec3) -> Vec3 {
+    fn new(x: f64, y: f64, z: f64) -> Self { Self { x, y, z } }
+    fn zero() -> Self { Self { x: 0.0, y: 0.0, z: 0.0 } }
+    fn add(self, other: Vec3) -> Vec3 { Vec3::new(self.x + other.x, self.y + other.y, self.z + other.z) }
+    fn sub(self, other: Vec3) -> Vec3 { Vec3::new(self.x - other.x, self.y - other.y, self.z - other.z) }
+    fn scale(self, s: f64) -> Vec3 { Vec3::new(self.x * s, self.y * s, self.z * s) }
+    fn magnitude(self) -> f64 { (self.x * self.x + self.y * self.y + self.z * self.z).sqrt() }
+    fn cross(self, other: Vec3) -> Vec3 {
         Vec3::new(
             self.y * other.z - self.z * other.y,
             self.z * other.x - self.x * other.z,
             self.x * other.y - self.y * other.x,
         )
     }
-
-    // u_x * v_y - u_y * v_x (2d vers)
-    pub fn cross_2d(&self, other: Vec3) -> f64 {
+    fn cross_2d(self, other: Vec3) -> f64 {
         self.x * other.y - self.y * other.x
     }
 }
 
-#[derive(Debug, Clone, Copy)]
-pub struct Mat3 {
-    pub cols: [Vec3; 3],
-}
+#[derive(Clone, Copy, Debug)]
+pub struct Mat3 { cols: [Vec3; 3] }
 
 impl Mat3 {
-    pub fn from_cols(v1: Vec3, v2: Vec3, v3: Vec3) -> Self {
-        Self { cols: [v1, v2, v3] }
+    fn from_cols(c1: Vec3, c2: Vec3, c3: Vec3) -> Self { Self { cols: [c1, c2, c3] } }
+    
+    fn transform_vector(&self, v: Vec3) -> Vec3 {
+        let x = self.cols[0].x * v.x + self.cols[1].x * v.y + self.cols[2].x * v.z;
+        let y = self.cols[0].y * v.x + self.cols[1].y * v.y + self.cols[2].y * v.z;
+        let z = self.cols[0].z * v.x + self.cols[1].z * v.y + self.cols[2].z * v.z;
+        Vec3::new(x, y, z)
     }
 
     pub fn determinant(&self) -> f64 {
         let [c1, c2, c3] = self.cols;
-        c1.x * (c2.y * c3.z - c2.z * c3.y) -
-        c1.y * (c2.x * c3.z - c2.z * c3.x) +
-        c1.z * (c2.x * c3.y - c2.y * c3.x)
+        c1.x * (c2.y * c3.z - c2.z * c3.y) 
+        - c1.y * (c2.x * c3.z - c2.z * c3.x) 
+        + c1.z * (c2.x * c3.y - c2.y * c3.x)
     }
 
     pub fn inverse(&self) -> Option<Mat3> {
         let det = self.determinant();
-        if det.abs() < 1e-9 {
-            return None;
-        }
+        if det.abs() < 1e-12 { return None; }
         let inv_det = 1.0 / det;
-
+        
         let [c1, c2, c3] = self.cols;
 
         let v1 = Vec3::new(
@@ -226,244 +222,168 @@ impl Mat3 {
             (c1.x * c2.y - c1.y * c2.x) * inv_det,
         );
 
-        // note: The rows/cols might need transposing depending on multiplication convention.
-        // standard formula P_new = M_inv * P_old implies standard matrix mult.
-        // The adjugate construction above transposes the cofactors correctly for standard M^-1.
-        
-        // We construct column-wise
-        Some(Mat3 { cols: [
-            Vec3::new(v1.x, v2.x, v3.x), // Row 1 becomes Col 1
-            Vec3::new(v1.y, v2.y, v3.y),
-            Vec3::new(v1.z, v2.z, v3.z)
-        ]})
-    }
-
-    pub fn transform_vector(&self, v: Vec3) -> Vec3 {
-        let [c1, c2, c3] = self.cols;
-        Vec3::new(
-            c1.x * v.x + c2.x * v.y + c3.x * v.z,
-            c1.y * v.x + c2.y * v.y + c3.y * v.z,
-            c1.z * v.x + c2.z * v.y + c3.z * v.z,
-        )
+        Some(Mat3::from_cols(v1, v2, v3))
     }
 }
 
-#[derive(Debug, Clone)]
-pub struct CubicBezier {
-    pub p0: Vec3,
-    pub p1: Vec3,
-    pub p2: Vec3,
-    pub p3: Vec3,
-}
+#[derive(Clone, Copy, Debug)]
+pub struct CubicBezier { p0: Vec3, p1: Vec3, p2: Vec3, p3: Vec3 }
 
 impl CubicBezier {
-    pub fn new(p0: Vec3, p1: Vec3, p2: Vec3, p3: Vec3) -> Self {
-        Self { p0, p1, p2, p3 }
+    fn new(p0: Vec3, p1: Vec3, p2: Vec3, p3: Vec3) -> Self { Self { p0, p1, p2, p3 } }
+
+    fn eval(&self, t: f64) -> Vec3 {
+        let one_minus_t = 1.0 - t;
+        let a = one_minus_t.powi(3);
+        let b = 3.0 * one_minus_t.powi(2) * t;
+        let c = 3.0 * one_minus_t * t.powi(2);
+        let d = t.powi(3);
+        self.p0.scale(a).add(self.p1.scale(b)).add(self.p2.scale(c)).add(self.p3.scale(d))
     }
 
-    pub fn midpoint(&self) -> Vec3 {
-        // B(0.5) = 1/8 P0 + 3/8 P1 + 3/8 P2 + 1/8 P3
-        let term1 = self.p0.add(self.p3).scale(1.0 / 8.0);
-        let term2 = self.p1.add(self.p2).scale(3.0 / 8.0);
-        term1.add(term2)
-    }
-
-    // cubic Signed Area (Green's Theorem / Cross Product)
-    // A_cubic = 1/20 * [6C(P0, P1) + 3C(P0, P2) + C(P0, P3) + 3C(P1, P2) + 3C(P1, P3) + 6C(P2, P3)]
-    pub fn signed_area_2d(&self) -> f64 {
-        let c01 = self.p0.cross_2d(self.p1);
-        let c02 = self.p0.cross_2d(self.p2);
-        let c03 = self.p0.cross_2d(self.p3);
-        let c12 = self.p1.cross_2d(self.p2);
-        let c13 = self.p1.cross_2d(self.p3);
-        let c23 = self.p2.cross_2d(self.p3);
-
-        (1.0 / 20.0) * (6.0 * c01 + 3.0 * c02 + c03 + 3.0 * c12 + 3.0 * c13 + 6.0 * c23)
-    }
-
-    // de Casteljau Sub-segment Splitting at t
-    pub fn split(&self, t: f64) -> (CubicBezier, CubicBezier) {
-        let p0 = self.p0;
-        let p1 = self.p1;
-        let p2 = self.p2;
-        let p3 = self.p3;
-
-        let p01 = p0.scale(1.0 - t).add(p1.scale(t));
-        let p12 = p1.scale(1.0 - t).add(p2.scale(t));
-        let p23 = p2.scale(1.0 - t).add(p3.scale(t));
-
+    fn split(&self, t: f64) -> (CubicBezier, CubicBezier) {
+        let p01 = self.p0.scale(1.0 - t).add(self.p1.scale(t));
+        let p12 = self.p1.scale(1.0 - t).add(self.p2.scale(t));
+        let p23 = self.p2.scale(1.0 - t).add(self.p3.scale(t));
         let p012 = p01.scale(1.0 - t).add(p12.scale(t));
         let p123 = p12.scale(1.0 - t).add(p23.scale(t));
-
         let p0123 = p012.scale(1.0 - t).add(p123.scale(t));
-
-        let left = CubicBezier::new(p0, p01, p012, p0123);
-        let right = CubicBezier::new(p0123, p123, p23, p3);
-
-        (left, right)
+        (
+            CubicBezier::new(self.p0, p01, p012, p0123),
+            CubicBezier::new(p0123, p123, p23, self.p3)
+        )
     }
 
-    // root findinf for quad intersec (solve B(t) = 0 for one dimension)
-    // Returns sorted list of t in (0, 1) where the curve crosses zero on the specified axis.
-    // axis_selector: function to extract value (e.g., |v| v.x)
-    pub fn find_roots_1d<F>(&self, axis_selector: F) -> Vec<f64>
-    where
-        F: Fn(Vec3) -> f64,
-    {
-        let v0 = axis_selector(self.p0);
-        let v1 = axis_selector(self.p1);
-        let v2 = axis_selector(self.p2);
-        let v3 = axis_selector(self.p3);
-
-        // Coefficients for At^3 + Bt^2 + Ct + D = 0
-        let d = v0;
-        let c = -3.0 * v0 + 3.0 * v1;
-        let b = 3.0 * v0 - 6.0 * v1 + 3.0 * v2;
-        let a = -v0 + 3.0 * v1 - 3.0 * v2 + v3;
-
-        solve_cubic(a, b, c, d)
+    fn signed_area(&self) -> f64 {
+        let term1 = self.p0.cross_2d(self.p1);
+        let term2 = self.p0.cross_2d(self.p2);
+        let term3 = self.p0.cross_2d(self.p3);
+        let term4 = self.p1.cross_2d(self.p2);
+        let term5 = self.p1.cross_2d(self.p3);
+        let term6 = self.p2.cross_2d(self.p3);
+        
+        (6.0 * term1 + 3.0 * term2 + term3 + 3.0 * term4 + 3.0 * term5 + 6.0 * term6) / 20.0
     }
 }
 
-// solves At^3 + Bt^2 + Ct + D = 0 for t in (0, 1)
-// uses Cardano's method or numerical approximation logic as needed.
-// For stability with floating points, a simplified analytic approach is used.
-fn solve_cubic(a: f64, b: f64, c: f64, d: f64) -> Vec<f64> {
-    let mut roots = Vec::new();
-    const EPSILON: f64 = 1e-9;
+fn solve_cubic_roots(p0: f64, p1: f64, p2: f64, p3: f64) -> Vec<f64> {
+    let a = -p0 + 3.0 * p1 - 3.0 * p2 + p3;
+    let b = 3.0 * p0 - 6.0 * p1 + 3.0 * p2;
+    let c = -3.0 * p0 + 3.0 * p1;
+    let d = p0;
 
-    if a.abs() < EPSILON {
-        // Quadratic: Bt^2 + Ct + D = 0
-        if b.abs() < EPSILON {
-            // Linear: Ct + D = 0 -> t = -D/C
-            if c.abs() > EPSILON {
+    let epsilon = 1e-9;
+    let mut roots = Vec::new();
+
+    if a.abs() < epsilon {
+        if b.abs() < epsilon {
+            if c.abs() > epsilon {
                 let t = -d / c;
-                if t > EPSILON && t < 1.0 - EPSILON {
-                    roots.push(t);
-                }
+                if t > epsilon && t < 1.0 - epsilon { roots.push(t); }
             }
         } else {
-            let discriminant = c * c - 4.0 * b * d;
-            if discriminant >= 0.0 {
-                let sqrt_d = discriminant.sqrt();
-                let t1 = (-c - sqrt_d) / (2.0 * b);
-                let t2 = (-c + sqrt_d) / (2.0 * b);
-                if t1 > EPSILON && t1 < 1.0 - EPSILON { roots.push(t1); }
-                if t2 > EPSILON && t2 < 1.0 - EPSILON { roots.push(t2); }
+            let delta = c * c - 4.0 * b * d;
+            if delta >= 0.0 {
+                let sqrt_delta = delta.sqrt();
+                let t1 = (-c - sqrt_delta) / (2.0 * b);
+                let t2 = (-c + sqrt_delta) / (2.0 * b);
+                if t1 > epsilon && t1 < 1.0 - epsilon { roots.push(t1); }
+                if t2 > epsilon && t2 < 1.0 - epsilon { roots.push(t2); }
             }
         }
     } else {
-        let a_n = b / a;
-        let b_n = c / a;
-        let c_n = d / a;
+        let A = b / a; 
+        let B = c / a; 
+        let C = d / a;
+        let Q = (3.0 * B - A * A) / 9.0;
+        let R = (9.0 * A * B - 27.0 * C - 2.0 * A * A * A) / 54.0;
+        let D = Q * Q * Q + R * R;
 
-        let q = (3.0 * b_n - a_n * a_n) / 9.0;
-        let r = (9.0 * a_n * b_n - 27.0 * c_n - 2.0 * a_n.powi(3)) / 54.0;
-        let d_n = q.powi(3) + r.powi(2); 
-
-        if d_n > 0.0 {
-            let s = (r + d_n.sqrt()).cbrt();
-            let t = (r - d_n.sqrt()).cbrt();
-            let root = s + t - a_n / 3.0;
-            if root > EPSILON && root < 1.0 - EPSILON { roots.push(root); }
+        if D >= 0.0 {
+            let sqrt_D = D.sqrt();
+            let S = (R + sqrt_D).cbrt();
+            let T = (R - sqrt_D).cbrt();
+            let t = S + T - A / 3.0;
+            if t > epsilon && t < 1.0 - epsilon { roots.push(t); }
         } else {
-            let theta = (r / (-q.powi(3)).sqrt()).acos();
-            let sqrt_neg_q = (-q).sqrt();
-            let t1 = 2.0 * sqrt_neg_q * (theta / 3.0).cos() - a_n / 3.0;
-            let t2 = 2.0 * sqrt_neg_q * ((theta + 2.0 * PI) / 3.0).cos() - a_n / 3.0;
-            let t3 = 2.0 * sqrt_neg_q * ((theta + 4.0 * PI) / 3.0).cos() - a_n / 3.0;
-
-            for t in [t1, t2, t3] {
-                if t > EPSILON && t < 1.0 - EPSILON { roots.push(t); }
+            let theta = (R / (-Q * Q * Q).sqrt()).acos();
+            let sqrt_minus_Q = (-Q).sqrt();
+            for k in 0..3 {
+                let t = 2.0 * sqrt_minus_Q * ((theta + 2.0 * PI * k as f64) / 3.0).cos() - A / 3.0;
+                if t > epsilon && t < 1.0 - epsilon { roots.push(t); }
             }
         }
     }
-    roots.sort_by(|a, b| a.partial_cmp(b).unwrap());
     roots
 }
 
-pub fn calculate_basis(p_lc: Vec3, p_rc: Vec3, p_lm: Vec3, p_ph: Vec3) -> Result<(Mat3, f64), String> {
-    // v1 = PLC - PRC
+fn calculate_basis(p_lc: Vec3, p_rc: Vec3, p_lm: Vec3, p_ph: Vec3) -> Result<(Mat3, f64), String> {
     let v1 = p_lc.sub(p_rc);
-    // v2 = PLM - PPH
     let v2 = p_lm.sub(p_ph);
-    // v3 = v1 x v2
     let v3 = v1.cross(v2);
 
     let basis = Mat3::from_cols(v1, v2, v3);
-    let scale = basis.determinant().abs();
+    let scale = v3.magnitude(); 
 
-    match basis.inverse() {
-        Some(inv) => Ok((inv, scale)),
-        None => Err("Basis matrix is singular (determinant is 0)".to_string()),
-    }
+    if scale < 1e-12 { return Err("Singular basis".to_string()); }
+
+    basis.inverse().map(|inv| (inv, scale)).ok_or_else(|| "Singular basis".to_string())
 }
 
 pub fn transform_curve(curve: &CubicBezier, basis_inv: &Mat3, origin: Vec3) -> CubicBezier {
-    let transform = |p: Vec3| basis_inv.transform_vector(p.sub(origin));
-    CubicBezier::new(
-        transform(curve.p0),
-        transform(curve.p1),
-        transform(curve.p2),
-        transform(curve.p3),
-    )
+    let tr = |p: Vec3| basis_inv.transform_vector(p.sub(origin));
+    CubicBezier::new(tr(curve.p0), tr(curve.p1), tr(curve.p2), tr(curve.p3))
 }
 
 pub fn calculate_total_area(
-    raw_curves: Vec<CubicBezier>,
-    basis_inv: Mat3,
-    scale: f64,
-    origin: Vec3,
+    curves: Vec<CubicBezier>,
+    scale: f64
 ) -> (f64, f64, f64, f64, f64) {
-    let mut area_q1 = 0.0;
-    let mut area_q2 = 0.0;
-    let mut area_q3 = 0.0;
-    let mut area_q4 = 0.0;
+    let mut q_areas = [0.0; 4];
 
-    for raw_curve in raw_curves {
-        let bio_curve = transform_curve(&raw_curve, &basis_inv, origin);
+    for curve in curves {
+        let mut split_params = Vec::new();
+        
+        let roots_x = solve_cubic_roots(curve.p0.x, curve.p1.x, curve.p2.x, curve.p3.x);
+        split_params.extend(roots_x);
 
-        let mut t_values = Vec::new();
-        t_values.extend(bio_curve.find_roots_1d(|v| v.x));
-        t_values.extend(bio_curve.find_roots_1d(|v| v.y));
-        t_values.sort_by(|a, b| a.partial_cmp(b).unwrap());
-        t_values.dedup();
+        let roots_y = solve_cubic_roots(curve.p0.y, curve.p1.y, curve.p2.y, curve.p3.y);
+        split_params.extend(roots_y);
+
+        split_params.sort_by(|a, b| a.partial_cmp(b).unwrap());
+        split_params.dedup();
 
         let mut segments = Vec::new();
-        let mut current_curve = bio_curve;
-        let mut accumulated_t = 0.0; // Track local t relative to start
+        let mut current_curve = curve.clone();
+        let mut t_start = 0.0;
 
-        for t in t_values {
-
-            if t <= accumulated_t { continue; }
-            let local_t = (t - accumulated_t) / (1.0 - accumulated_t);
-            
-            if local_t > 0.0 && local_t < 1.0 {
-                let (left, right) = current_curve.split(local_t);
+        for t_global in split_params {
+            let t_local = (t_global - t_start) / (1.0 - t_start);
+            if t_local > 1e-6 && t_local < 1.0 - 1e-6 {
+                let (left, right) = current_curve.split(t_local);
                 segments.push(left);
                 current_curve = right;
-                accumulated_t = t;
+                t_start = t_global;
             }
         }
-        segments.push(current_curve); 
+        segments.push(current_curve);
 
-        for segment in segments {
-            let mid = segment.midpoint();
-            let segment_area = segment.signed_area_2d();
-            let contribution = scale * segment_area;
-
-            if mid.x >= 0.0 && mid.y >= 0.0 {
-                area_q1 += contribution;
-            } else if mid.x < 0.0 && mid.y >= 0.0 {
-                area_q2 += contribution;
-            } else if mid.x < 0.0 && mid.y < 0.0 {
-                area_q3 += contribution;
-            } else {
-                area_q4 += contribution;
-            }
+        for seg in segments {
+            let mid = seg.eval(0.5); 
+            let area = seg.signed_area() * scale;
+            
+            if mid.x >= 0.0 && mid.y >= 0.0 { q_areas[0] += area; }      
+            else if mid.x < 0.0 && mid.y >= 0.0 { q_areas[1] += area; } 
+            else if mid.x < 0.0 && mid.y < 0.0 { q_areas[2] += area; }  
+            else { q_areas[3] += area; }                                
         }
     }
 
-    let total = area_q1.abs() + area_q2.abs() + area_q3.abs() + area_q4.abs();
-    (total, area_q1, area_q2, area_q3, area_q4)
+    let q1 = q_areas[0].abs();
+    let q2 = q_areas[1].abs();
+    let q3 = q_areas[2].abs();
+    let q4 = q_areas[3].abs();
+    let total = q1 + q2 + q3 + q4;
+
+    (total, q1, q2, q3, q4)
 }
