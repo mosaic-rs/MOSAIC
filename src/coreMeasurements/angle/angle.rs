@@ -14,6 +14,7 @@ MOSAIC. If not, see <https://www.gnu.org/licenses/>.
 */
 
 use crate::UMD::UMD::{UMD};
+//use crate::coreMeasurements::euclidean::{CoreEuclidean};
 use crate::errors::{MosaicError};
 use std::f64::consts::PI;
 use polars::prelude::*;
@@ -150,30 +151,53 @@ impl AngleCalculator {
         let mut angle_data = CoreAngle::construction(total_points / 68);
         
         let p1_is_origin = pairs[0].to_lowercase() == "origin";
+        let target_all = pairs[1] == "*";
 
-        let mut current_frame = umd.frame[0];
-        let mut p1_idx: Option<usize> = None;
-        let mut p2_idx: Option<usize> = None;
+        let mut i = 0;
+        while i < total_points {
+            let start_idx = i;
+            let current_frame = umd.frame[i];
+            
+            // identify frame block
+            while i < total_points && umd.frame[i] == current_frame {
+                i += 1;
+            }
+            let end_idx = i;
 
-        for i in 0..total_points {
-            if umd.frame[i] != current_frame {
-  
-                if p1_is_origin && p2_idx.is_some() {
-                    Self::process_with_origin(&mut angle_data, umd, p2_idx.unwrap());
-                } else if let (Some(idx1), Some(idx2)) = (p1_idx, p2_idx) {
-                    Self::process_pair(&mut angle_data, umd, idx1, idx2);
+            if p1_is_origin {
+                if target_all {
+                    for k in start_idx..end_idx {
+                        Self::process_with_origin(&mut angle_data, umd, k);
+                    }
+                } else {
+                    for k in start_idx..end_idx {
+                        if &umd.types[k] == &pairs[1] {
+                            Self::process_with_origin(&mut angle_data, umd, k);
+                        }
+                    }
+                }
+            } else {
+                let mut p1_idx = None;
+                for k in start_idx..end_idx {
+                    if &umd.types[k] == &pairs[0] {
+                        p1_idx = Some(k);
+                        break;
+                    }
                 }
 
-                current_frame = umd.frame[i];
-                p1_idx = None;
-                p2_idx = None;
-            }
-
-            if !p1_is_origin && &umd.types[i] == &pairs[0] {
-                p1_idx = Some(i);
-            }
-            if &umd.types[i] == &pairs[1] {
-                p2_idx = Some(i);
+                if let Some(idx1) = p1_idx {
+                    if target_all {
+                        for k in start_idx..end_idx {
+                            Self::process_pair(&mut angle_data, umd, idx1, k);
+                        }
+                    } else {
+                        for k in start_idx..end_idx {
+                            if &umd.types[k] == &pairs[1] {
+                                Self::process_pair(&mut angle_data, umd, idx1, k);
+                            }
+                        }
+                    }
+                }
             }
         }
 
@@ -215,7 +239,7 @@ impl AngleCalculator {
 
     fn process_pair(angle_data: &mut CoreAngle, umd: &UMD, idx1: usize, idx2: usize) {
         /* this only uses the pose correct coordinates for angles. If for some reason you wanna use none pose corrected values then
-         wwitch to `x_centered` or `x_raw` */
+         switch to `x_centered` or `x_raw` */
         
         let x1 = umd.x_rotated[idx1];
         let y1 = umd.y_rotated[idx1];
