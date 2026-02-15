@@ -14,6 +14,7 @@ pub struct CurveCoefficients {
 pub struct CoreCurve {
     pub frame: Vec<u32>,
     pub timestamp: Vec<f32>,
+    pub is_reliable: Vec<bool>, // for undertermined points (i.e. the 3 "inner" lip openface points) - as we are fitting to a cubic curve
     pub types_included: Vec<String>, 
     pub x_coeffs: Vec<CurveCoefficients>,
     pub y_coeffs: Vec<CurveCoefficients>,
@@ -25,6 +26,7 @@ impl CoreCurve {
         Self {
             frame: Vec::with_capacity(estimated_frames),
             timestamp: Vec::with_capacity(estimated_frames),
+            is_reliable: Vec::with_capacity(estimated_frames),
             types_included: Vec::with_capacity(estimated_frames),
             x_coeffs: Vec::with_capacity(estimated_frames),
             y_coeffs: Vec::with_capacity(estimated_frames),
@@ -33,7 +35,7 @@ impl CoreCurve {
     }
 
     pub fn add_point(
-        &mut self, frame: u32, timestamp: f32, 
+        &mut self, frame: u32, timestamp: f32, is_reliable: bool,
         types_included: String, 
         x_coeffs: CurveCoefficients,
         y_coeffs: CurveCoefficients,
@@ -41,6 +43,7 @@ impl CoreCurve {
     ) {
         self.frame.push(frame);
         self.timestamp.push(timestamp);
+        self.is_reliable.push(is_reliable);
         self.types_included.push(types_included);
         self.x_coeffs.push(x_coeffs);
         self.y_coeffs.push(y_coeffs);
@@ -50,6 +53,7 @@ impl CoreCurve {
     pub fn save_curve_to_parquet(curve: &CoreCurve, file_path: &str) -> PolarsResult<()> {
         let s_frame = Series::new("frame", &curve.frame);
         let s_time = Series::new("timestamp", &curve.timestamp);
+        let s_is_reliable = Series::new("is_reliable", &curve.is_reliable);
         let s_coord_1 = Series::new("types_included", &curve.types_included);
 
         let s_x_a = Series::new("x_a", curve.x_coeffs.iter().map(|c| c.a).collect::<Vec<f64>>());
@@ -68,7 +72,7 @@ impl CoreCurve {
         let s_z_d = Series::new("z_d", curve.z_coeffs.iter().map(|c| c.d).collect::<Vec<f64>>());
 
         let mut df = DataFrame::new(vec![ 
-            s_frame, s_time, s_coord_1, 
+            s_frame, s_time, s_coord_1, s_is_reliable, 
             s_x_a, s_x_b, s_x_c, s_x_d, 
             s_y_a, s_y_b, s_y_c, s_y_d, 
             s_z_a, s_z_b, s_z_c, s_z_d,
@@ -117,6 +121,8 @@ impl CurveCalculator {
     fn process_frame(data: &mut CoreCurve, frame: u32, ts: f32, points: &[(f64, f64, f64)], types_str: &str) {
         if points.len() < 3 { return; } 
 
+        let reliable = points.len() >= 4;
+
         let mut d = Vec::with_capacity(points.len() - 1);
         for i in 0..points.len() - 1 {
             let dist = ((points[i+1].0 - points[i].0).powi(2) + 
@@ -153,7 +159,7 @@ impl CurveCalculator {
         let cz = svd.solve(&pz, 1e-9).unwrap_or(DVector::from_element(4, 0.0));
 
         data.add_point(
-            frame, ts, types_str.to_string(),
+            frame, ts, reliable, types_str.to_string(),
             CurveCoefficients { a: cx[0], b: cx[1], c: cx[2], d: cx[3] },
             CurveCoefficients { a: cy[0], b: cy[1], c: cy[2], d: cy[3] },
             CurveCoefficients { a: cz[0], b: cz[1], c: cz[2], d: cz[3] },
