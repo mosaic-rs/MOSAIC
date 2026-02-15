@@ -98,6 +98,10 @@ pub fn shell_initiation(session: &mut SessionData) -> Result<()> {
 
                     run::init(input_path, output_path);
                 }
+
+                if line.trim() == "test-py"{
+                    run::test_python();
+                }
             }
             Err(ReadlineError::Interrupted) => { // Handles Ctrl-C
                 println!("CTRL-C");
