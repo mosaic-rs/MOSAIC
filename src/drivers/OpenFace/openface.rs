@@ -59,10 +59,14 @@ pub enum OpenFaceLandmarkType{
     InnerLeftUpperLip,
     InnerRightLowerLip,
     InnerLeftLowerLip,
-    OuterRightUpperLip,
-    OuterLeftUpperLip,
-    OuterRightLowerLip,
-    OuterLeftLowerLip,
+    OuterRightUpperLip_com, // point closest to commissure
+    OuterRightUpperLip_phil, // point closest to philtrum
+    OuterLeftUpperLip_com,
+    OuterLeftUpperLip_phil,
+    OuterRightLowerLip_com,
+    OuterRightLowerLip_phil,
+    OuterLeftLowerLip_com,
+    OuterLeftLowerLip_phil,
 
     // OTHER POINTS
     LeftJaw,
@@ -85,17 +89,17 @@ impl OpenFaceLandmarkType{
         match index {
             // Outer points
             48 => Self::OuterRightCommissure, // right
-            49 => Self::OuterRightUpperLip, // right
-            50 => Self::OuterRightUpperLip, // rught
+            49 => Self::OuterRightUpperLip_com, // right
+            50 => Self::OuterRightUpperLip_phil, // rught
             51 => Self::OuterPhiltrum, // mid
-            52 => Self::OuterLeftUpperLip, // left
-            53 => Self::OuterLeftUpperLip, // left
+            52 => Self::OuterLeftUpperLip_phil, // left
+            53 => Self::OuterLeftUpperLip_com, // left
             54 => Self::OuterLeftCommissure, // left
-            55 => Self::OuterLeftLowerLip, // left
-            56 => Self::OuterLeftLowerLip, // left
+            55 => Self::OuterLeftLowerLip_com, // left
+            56 => Self::OuterLeftLowerLip_phil, // left
             57 => Self::OuterLowerVermillionBorder, // mid
-            58 => Self::OuterRightLowerLip, // right
-            59 => Self::OuterRightLowerLip, // right
+            58 => Self::OuterRightLowerLip_phil, // right
+            59 => Self::OuterRightLowerLip_com, // right
             // goes back to point 48 to make a closed loop
 
             // Inner points
@@ -160,10 +164,15 @@ impl OpenFaceLandmarkType{
             Self::InnerLeftUpperLip => "InnerLeftUpperLip".to_string(),
             Self::InnerRightLowerLip => "InnerRightLowerLip".to_string(),
             Self::InnerLeftLowerLip => "InnerLeftLowerLip".to_string(),
-            Self::OuterRightUpperLip => "OuterUpperLip".to_string(),
-            Self::OuterLeftUpperLip => "OuterLeftLip".to_string(),
-            Self::OuterRightLowerLip => "OuterLowerLip".to_string(),
-            Self::OuterLeftLowerLip => "OuterLowerLip".to_string(),
+
+            Self::OuterRightUpperLip_com => "OuterRightUpperLip_com".to_string(),
+            Self::OuterRightUpperLip_phil => "OuterRightUpperLip_phil".to_string(),
+            Self::OuterLeftUpperLip_com => "OuterLeftUpperLip_com".to_string(),
+            Self::OuterLeftUpperLip_phil => "OuterLeftUpperLip_phil".to_string(),
+            Self::OuterRightLowerLip_com => "OuterRightLowerLip_com".to_string(),
+            Self::OuterRightLowerLip_phil => "OuterRightLowerLip_phil".to_string(),
+            Self::OuterLeftLowerLip_com => "OuterLeftLowerLip_com".to_string(),
+            Self::OuterLeftLowerLip_phil => "OuterLeftLowerLip_phil".to_string(),
 
             Self::LeftJaw => "LeftJaw".to_string(),
             Self::RightJaw => "RightJaw".to_string(),

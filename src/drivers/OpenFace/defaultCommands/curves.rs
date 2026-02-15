@@ -22,23 +22,23 @@ MOSAIC. If not, see <https://www.gnu.org/licenses/>.
 
 // outer lips
 pub const right_upper_lip: &[&str] = &["OuterRightCommissure",
-                             "OuterRightUpperLip",
-                             "OuterRightUpperLip",
+                             "OuterRightUpperLip_com",
+                             "OuterRightUpperLip_phil",
                              "OuterPhiltrum",
                             ];
 pub const left_upper_lip: &[&str] = &["OuterPhiltrum",
-                             "OuterLeftUpperLip",
-                             "OuterLeftUpperLip",
+                             "OuterLeftUpperLip_phil",
+                             "OuterLeftUpperLip_com",
                              "OuterLeftCommissure",
                             ];
 pub const left_lower_lip: &[&str] = &["OuterLeftCommissure",
-                                "OuterLeftLowerLip",
-                                "OuterLeftLowerLip",
+                                "OuterLeftLowerLip_com",
+                                "OuterLeftLowerLip_phil",
                                 "OuterLowerVermillionBorder",
                                 ];
 pub const right_lower_lip: &[&str] = &[ "OuterLowerVermillionBorder",
-                                "OuterRightLowerLip",
-                                "OuterRightLowerLip",
+                                "OuterRightLowerLip_phil",
+                                "OuterRightLowerLip_com",
                                 "OuterRightCommissure",
                                 ];
 
@@ -57,9 +57,9 @@ pub const left_lower_inner_lip: &[&str] = &["InnerLeftCommissure",
                                       "InnerLeftLowerLip",
                                       "InnerLowerVermillionBorder",
                                      ];
-pub const right_lower_inner_lip: &[&str] = &["InnerRightCommissure",
-                                      "InnerLowerVermillionBorder",
+pub const right_lower_inner_lip: &[&str] = &["InnerLowerVermillionBorder",
                                       "InnerRightLowerLip",
+                                      "InnerRightCommissure",
                                      ];
 
 
