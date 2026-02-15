@@ -23,7 +23,7 @@ use crate::shell::projectManager::session::{SessionData, DirectoryVerifiers, Sys
 
 // Drivers
 use crate::drivers::OpenFace::openface::{parse_openface_data};
-use crate::drivers::OpenFace::defaultCommands::{curves};
+use crate::drivers::OpenFace::defaultCommands::{curves, areas};
 
 // UMD
 use crate::UMD::anchor::anchor::{AnchorProcessor};
@@ -155,7 +155,20 @@ impl run {
 
         // Area
 
+        let area_sets: &[&[&str]] = &[
+            areas::outer_lip_area,
+            areas::inner_lip_area,
+        ];
 
+        let basis_sets: &[&[&str; 4]] = &[
+            &areas::outer_basis_landmarks,
+            &areas::inner_basis_landmarks,
+        ];
+
+        let area_results = AreaCalculator::calculate_area(&curve_results, &umd_instance, &basis_sets, &area_sets);
+        let file_name = "areas.parquet";
+        let area_output_path = format!("{output_path}{file_name}"); 
+        CoreArea::save_area_to_parquet(&area_results, &area_output_path).expect("Failed to write area to parquet");
 
         Ok(())
     }
