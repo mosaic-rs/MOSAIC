@@ -23,6 +23,7 @@ use crate::shell::projectManager::session::{SessionData, DirectoryVerifiers, Sys
 
 // Drivers
 use crate::drivers::OpenFace::openface::{parse_openface_data};
+use crate::drivers::OpenFace::defaultCommands::{curves};
 
 // UMD
 use crate::UMD::anchor::anchor::{AnchorProcessor};
@@ -30,6 +31,12 @@ use crate::UMD::centering::centering::{CenteringProcessor};
 use crate::UMD::pose::pose::{PoseProcessor};
 use crate::UMD::UMD::{UMD, UMDDriver};
 use crate::UMD::metadata::{Metadata};
+
+// Core Measurements
+use crate::coreMeasurements::euclidean::euclidean::{EuclideanCalculator, CoreEuclidean};
+use crate::coreMeasurements::angle::angle::{AngleCalculator, CoreAngle};
+use crate::coreMeasurements::curve::curve::{CurveCalculator, CoreCurve};
+use crate::coreMeasurements::area::area::{AreaCalculator, CoreArea};
 
 // praat analysis
 use crate::praatAnalysis::testing::{tests};
@@ -44,6 +51,8 @@ impl run {
     // rn it is just for testing stuff
 
     pub fn init(input_path: &str, output_path: &str) -> Result<(), Box<dyn std::error::Error>> {
+        // the init command is kinda just for testing but it also does work for real input
+
         // for now we will define the metadata at the top sort of as const vars which will be customisable through the CLI
         let UMD_Version = "0.9.0".to_string();
         let driver = "OpenFace".to_string();
@@ -93,6 +102,61 @@ impl run {
         let umd_output_path = format!("{output_path}{file_name}");
 
         UMD::save_umd_to_parquet(&umd_instance, umd_output_path.as_str(), kv_metadata)?;
+
+
+
+        // Core measurement testing:
+        
+        // Eulidean
+        let euclidean_results = EuclideanCalculator::euclidean(&umd_instance, &["origin".to_string(), "*".to_string()]);
+        let file_name = "euclidean.parquet";
+        let euclidean_output_path = format!("{output_path}{file_name}"); 
+        CoreEuclidean::save_euclidean_to_parquet(&euclidean_results, &euclidean_output_path).expect("Failed to write euclidean to parquet");
+        println!("Euclidean works");
+
+
+        // Angle
+
+        let angle_results = AngleCalculator::angle(&umd_instance, &["origin".to_string(), "*".to_string()]);
+        let file_name = "angle.parquet";
+        let angle_output_path = format!("{output_path}{file_name}"); 
+        CoreAngle::save_angle_to_parquet(&angle_results, &angle_output_path).expect("Failed to write angles to parquet");
+        println!("Angle worked");
+
+
+
+        // Curves
+
+
+        let curve_sets: &[&[&str]] = &[
+
+            // these are default curve settings from the OpenFace driver (the driver used in the UMD we reference for the testing)
+            // I will try to give every driver these sorts of configs 
+
+            curves::right_upper_lip,
+            curves::left_upper_lip,
+            curves::left_lower_lip,
+            curves::right_lower_lip,
+
+            curves::right_upper_inner_lip,
+            curves::left_upper_inner_lip,
+            curves::left_lower_inner_lip,
+            curves::right_lower_inner_lip,
+        ];
+
+        let curve_results = CurveCalculator::fit_curve(&umd_instance, curve_sets);
+        let file_name = "curves.parquet";
+        let curve_output_path = format!("{output_path}{file_name}"); 
+        CoreCurve::save_curve_to_parquet(&curve_results, &curve_output_path).expect("Failed to write curves to parquet");
+
+        println!("Curves worked");
+
+
+
+        // Area
+
+
+
         Ok(())
     }
 
