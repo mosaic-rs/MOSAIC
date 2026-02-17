@@ -18,49 +18,27 @@ MOSAIC. If not, see <https://www.gnu.org/licenses/>.
 use std::path::Path;
 
 
-// CORE MEASUREMENTS
-//use MOSAIC::coreMeasurements::anchor::anchor::{AnchorCoordinate};
 
 // SHELL
-use MOSAIC::shell::projectManager::session::{DirectoryVerifiers, SessionData};
-use MOSAIC::shell::shell::{shell_initiation};
-use MOSAIC::drivers::OpenFace::openface::{parse_openface_data};
+use MOSAIC::shell::projectManager::session::SessionData;
+use MOSAIC::shell::shell::shell_initiation;
 
-// core measurement crates
-use MOSAIC::coreMeasurements::angle::{angle};
-use MOSAIC::coreMeasurements::area::{area};
-use MOSAIC::coreMeasurements::curve::{curve};
-use MOSAIC::coreMeasurements::euclidean::{euclidean};
+// venv
+use MOSAIC::praatAnalysis::setup::{PythonEnvironment};
 
-fn main(){
+fn main() -> std::io::Result<()>{
 
-    /*
-    println!("MOSAIC -- v0.2.1 pre-release (GLPv3)");
-    Anchor();
-    println!("");
-    DirectoryVerifiers::check_project_directory("Hello World");
-
-    let data = SessionData::read_session_data();
-
-    println!("Session data below: \n\n{:#?}", data);
-
-    */
-
-    // testing func
-    // const PATH_TEMP: &str = "/Users/harrywoodhouse/Desktop/MOSAIC/MOSAIC-Engine/test_data/v15044gf0000d1dlc67og65r2deqmhd0.csv";
-    // parse_openface_data(Path::new(PATH_TEMP)).expect("Failed to parse data");
-
-
-    // running cli
-
-    //let test_coords = [[12.5, 45.0, 0.1], [34.2, 88.9, 1.5], [102.3, 14.7, -5.2], [110.0, 20.1, -4.8], [255.0, 512.0, 10.0], [260.5, 515.2, 11.2], [7.0, 3.1, 0.0], [9.4, 2.8, 0.2]];
-    //let time: f32 = 3.4;
-    //let anchor = AnchorCoordinate::anchor(time, &test_coords);
-    //println!("Anchor: {:?}", anchor);
+    if let Err(e) = PythonEnvironment::ensure_python_bridge() {
+        eprintln!("[MOSAIC FATAL ERROR] Could not initialize Python environment.");
+        eprintln!("Reason: {}", e);
+        eprintln!("Please ensure Python 3 is installed on your system.\nVisit https://www.python.org/ to download python3");
+        std::process::exit(1);
+    }
     
 
     let mut session = SessionData::read_session_data();
 
     shell_initiation(&mut session);
 
+    Ok(())
 }
