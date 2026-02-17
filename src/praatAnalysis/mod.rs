@@ -14,3 +14,4 @@ MOSAIC. If not, see <https://www.gnu.org/licenses/>.
 */
 
 pub mod testing;
+pub mod setup;
