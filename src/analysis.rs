@@ -39,10 +39,16 @@ use crate::coreMeasurements::curve::curve::{CurveCalculator, CoreCurve};
 use crate::coreMeasurements::area::area::{AreaCalculator, CoreArea};
 
 // praat analysis
-use crate::praatAnalysis::testing::{tests};
+use crate::praatAnalysis::setup::PythonEnvironment;
+use crate::praatAnalysis::testing::test_function;
 
 
 use std::path::Path;
+use std::fs;
+use pyo3::prelude::*;
+use pyo3::Python;
+
+
 
 pub struct run;
 
@@ -173,11 +179,15 @@ impl run {
         Ok(())
     }
 
-    pub fn test_python() -> Result<(), Box<dyn std::error::Error>> {
-        tests::test_main();
-
+    pub fn test_python() -> PyResult<()> {
+        PythonEnvironment::ensure_python_bridge().expect("Venv failed");
+    
+        Python::attach(|py| {
+            if let Err(e) = test_function(py) {
+                eprintln!("Failed to attach to Python interpreter: {:?}", e);
+            }
         Ok(())
+        })
     }
-
 }
 
