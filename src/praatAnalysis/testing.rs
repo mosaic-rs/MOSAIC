@@ -13,20 +13,29 @@ You should have received a copy of the GNU General Public License along with
 MOSAIC. If not, see <https://www.gnu.org/licenses/>.
 */
 
-/// Just a test file to call a python script
+use pyo3::prelude::*;
+use pyo3::types::PyModule;
+use std::ffi::{CStr, CString}; 
 
-pub struct tests;
-use std::process::Command;
+pub fn test_function(py: Python<'_>) -> PyResult<()> {
+    let code_rust_str = include_str!("test.py");
 
+    let code_c_string = CString::new(code_rust_str)
+        .expect("Python script contained a null byte!");
 
-impl tests{
-    pub fn test_main() {
-        let script_path = "src/praatAnalysis/test.py";
-        let data_path = "test_data.parquet"; // fake data to see how it handles data transmission
-        
-        let status = Command::new("python3")
-            .arg(script_path) // the script
-            .arg(data_path)   // the data
-            .status();
-    }
+    let file_name = c"test.py";
+    let module_name = c"test";
+
+    let module = PyModule::from_code(
+        py, 
+        &code_c_string, 
+        file_name, 
+        module_name
+    )?;
+
+    let func = module.getattr(c"beans")?;
+    let result: String = func.call1(("Heinz",))?.extract()?;
+
+    println!("Result from Python: {}", result);
+    Ok(())
 }
