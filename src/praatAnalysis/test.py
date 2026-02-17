@@ -17,8 +17,11 @@ MOSAIC. If not, see <https://www.gnu.org/licenses/>.
 Because RustMouth is too unstable to be used in MOSAIC (for now), ParselMouth will be used :) 
 """
 
-import sys
+#import sys
 
-print("PYTHON TEST CONNECTION FILE\n\nHello World!")
-if len(sys.argv) > 1:
-    print(f"Testing Argument parsing:\n\n    Argument: {sys.argv[1]}")
+#print("PYTHON TEST CONNECTION FILE\n\nHello World!")
+#if len(sys.argv) > 1:
+#    print(f"Testing Argument parsing:\n\n    Argument: {sys.argv[1]}")
+
+def beans(type: str):
+    return f"You like {type} beans."
