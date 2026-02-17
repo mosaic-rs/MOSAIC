@@ -1,6 +1,6 @@
 [package]
 name = "MOSAIC"
-version = "0.3.0-alpha"
+version = "0.3.1-alpha"
 edition = "2024"
 authors = ["Harry Woodhouse <jgf526@york.ac.uk>"]
 description = "Motor Oral Speech Analysis and Integrated Computation (MOSAIC)"
