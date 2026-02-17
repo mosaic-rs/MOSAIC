@@ -12,7 +12,7 @@ Motor-Oral Speech Analysis & Integrated Computation (MOSAIC) is a mathematical s
 
 
 ## UPDATE:
-Version 0.3.1-alpha - MOSAIC now creates it's own Venv for python so it can run parselmouth. 
+Version 0.3.2-alpha - MOSAIC now creates it's own Venv for python so it can run parselmouth. 
 
 ### All Information Below is Based on the Python Version:
 
