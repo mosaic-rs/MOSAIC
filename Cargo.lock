@@ -4,7 +4,7 @@ version = 4
 
 [[package]]
 name = "MOSAIC"
-version = "0.3.0-alpha"
+version = "0.3.3-alpha"
 dependencies = [
  "clap",
  "csv",
