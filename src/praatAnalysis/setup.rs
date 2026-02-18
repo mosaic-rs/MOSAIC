@@ -13,7 +13,6 @@ You should have received a copy of the GNU General Public License along with
 MOSAIC. If not, see <https://www.gnu.org/licenses/>.
 */
 
-use std::process::Command;
 use std::env;
 use std::path::PathBuf;
 
@@ -25,30 +24,11 @@ impl PythonEnvironment {
             .expect("Failed to get current executable path")
             .parent()
             .unwrap()
-            .join(".mosaic_venv")
+            .join("python_lib") 
     }
 
     pub fn ensure_python_bridge() -> std::io::Result<()> {
-        let venv_dir = Self::get_venv_path();
-
-        if !venv_dir.exists() {
-            println!("Initializing MOSAIC Python venv");
-            
-            // Create venv
-            Command::new("python3")
-                .args(&["-m", "venv", venv_dir.to_str().unwrap()])
-                .status()?;
-
-            // Install Parselmouth
-            let pip_bin = if cfg!(windows) { "Scripts/pip.exe" } else { "bin/pip" };
-            let pip_path = venv_dir.join(pip_bin);
-
-            Command::new(pip_path)
-                .args(&["install", "praat-parselmouth"])
-                .status()?;
-            
-            println!("venv Created Successfully");
-        }
+        
         Ok(())
     }
 }
