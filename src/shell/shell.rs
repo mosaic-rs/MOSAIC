@@ -28,7 +28,8 @@ use crate::shell::projectManager::session::{SessionData, DirectoryVerifiers, Sys
 use crate::analysis::{run};
 
 pub fn shell_initiation(session: &mut SessionData) -> Result<()> {
-    println!("MOSAIC -- v0.3.2-alpha pre-release (GLPv3)\n"); // opening message
+    let version = env!("CARGO_PKG_VERSION");
+    println!("MOSAIC -- v{}-alpha pre-release (GLPv3)\n", version); // opening message
     let mut rl = DefaultEditor::new()?;
 
     loop {
