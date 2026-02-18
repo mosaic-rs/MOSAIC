@@ -10,9 +10,11 @@ PythonLegacy/
 
 venv/
 .env/
+.env
 .venv/
 env/
 ENV/
+/MOSAIC.app
 
 
 data/
