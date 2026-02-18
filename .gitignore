@@ -15,7 +15,8 @@ venv/
 env/
 ENV/
 /MOSAIC.app
-
+python_lib/stdlib/
+python_lib/site-packages/
 
 data/
 outputs/
