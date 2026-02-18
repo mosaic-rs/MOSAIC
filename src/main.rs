@@ -26,7 +26,38 @@ use MOSAIC::shell::shell::shell_initiation;
 // venv
 use MOSAIC::praatAnalysis::setup::{PythonEnvironment};
 
+use std::env;
+use std::path::PathBuf;
+
+fn setup_python_paths() {
+    let exe_path = env::current_exe().expect("Failed to get exe path");
+    
+    let bundle_macos = exe_path.parent().expect("Failed to get MacOS dir");
+    let bundle_contents = bundle_macos.parent().expect("Failed to get Contents dir");
+    let resources = bundle_contents.join("Resources");
+
+    let python_lib = resources.join("python_lib");
+    let stdlib = python_lib.join("stdlib");
+    let site_packages = python_lib.join("site-packages");
+
+    unsafe {
+        env::set_var("PYTHONHOME", &python_lib);
+    }
+    
+    let new_path = format!("{}:{}:{}", 
+        python_lib.to_string_lossy(),
+        stdlib.to_string_lossy(),
+        site_packages.to_string_lossy()
+    );
+
+    unsafe {
+        env::set_var("PYTHONPATH", new_path);
+    }
+}
+
 fn main() -> std::io::Result<()>{
+
+    setup_python_paths();
 
     if let Err(e) = PythonEnvironment::ensure_python_bridge() {
         eprintln!("[MOSAIC FATAL ERROR] Could not initialize Python environment.");
