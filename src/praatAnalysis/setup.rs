@@ -31,4 +31,55 @@ impl PythonEnvironment {
         
         Ok(())
     }
+    
+    // mac
+    #[cfg(target_os = "macos")]
+    pub fn setup_python_paths() {
+        let exe_path = env::current_exe().expect("Failed to get exe path");
+        let is_bundled = exe_path.to_string_lossy().contains(".app/Contents/MacOS");
+
+        let resources = if is_bundled {
+            exe_path.parent().unwrap().parent().unwrap().join("Resources")
+        } else {
+            PathBuf::from(env!("CARGO_MANIFEST_DIR"))
+        };
+
+        let python_lib = resources.join("python_lib");
+        let stdlib = python_lib.join("stdlib");
+        let site_packages = python_lib.join("site-packages");
+
+        let new_path = format!("{}:{}:{}", 
+            python_lib.to_string_lossy(),
+            stdlib.to_string_lossy(),
+            site_packages.to_string_lossy()
+        );
+
+        unsafe {
+            env::set_var("PYTHONHOME", &python_lib);
+            env::set_var("PYTHONPATH", new_path);
+        }
+    }
+
+    // windows
+    #[cfg(target_os = "windows")]
+    pub fn setup_python_paths() {
+        let exe_path = env::current_exe().expect("Failed to get exe path");
+        
+        let resources = exe_path.parent().unwrap().to_path_buf();
+
+        let python_lib = resources.join("python_lib");
+        let stdlib = python_lib.join("stdlib");
+        let site_packages = python_lib.join("site-packages");
+
+        let new_path = format!("{};{};{}", 
+            python_lib.to_string_lossy(),
+            stdlib.to_string_lossy(),
+            site_packages.to_string_lossy()
+        );
+
+        unsafe {
+            env::set_var("PYTHONHOME", &python_lib);
+            env::set_var("PYTHONPATH", new_path);
+        }
+    }
 }
