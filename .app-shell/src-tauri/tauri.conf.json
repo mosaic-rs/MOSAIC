@@ -50,6 +50,7 @@
     }
   },
   "bundle": {
+    
     "active": false,
     "targets": "all",
     "icon": [
