@@ -1,3 +1,17 @@
+#This file is part of MOSAIC.
+#
+#MOSAIC is free software: you can redistribute it and/or modify it under 
+#the terms of the GNU General Public License as published by the Free 
+#Software Foundation, either version 3 of the License, or any later version.
+#
+#MOSAIC is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; 
+#without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+#PURPOSE. See the GNU General Public License for more details.
+#
+#You should have received a copy of the GNU General Public License along with 
+#MOSAIC. If not, see <https://www.gnu.org/licenses/>.
+
+
 #!/bin/bash
 set -e
 
@@ -34,8 +48,11 @@ mkdir -p "$RESOURCES/python_lib/modules"
 
 echo "[MOSAIC] Compiling MOSAIC"
 export PYO3_PYTHON="$PY_PATH/bin/python$PY_VER"
-RUSTFLAGS="-A warnings" cargo build --release
-cp "target/release/MOSAIC" "$MACOS/$BINARY_NAME"
+cd .app-shell
+RUSTFLAGS="-A warnings" cargo tauri build
+cd ..
+cp ".app-shell/src-tauri/target/release/app" "$MACOS/$BINARY_NAME"
+cp -R ".app-shell/src-tauri/target/release/bundle/macos/MOSAIC.app/Contents/Resources/"* "$RESOURCES/"
 
 echo "[MOSAIC] App metadata"
 cp "Info.plist" "$CONTENTS/Info.plist"
@@ -47,7 +64,13 @@ install_name_tool -id "@executable_path/../Frameworks/libpython$PY_VER.dylib" "$
 
 echo "[MOSAIC] Copying Python Library..."
 rsync -a "$PY_PATH/lib/python$PY_VER/" "$RESOURCES/python_lib/stdlib/" \
-    --exclude 'test' --exclude 'tests' --exclude 'site-packages' --exclude '__pycache__'
+    --exclude 'test' \
+    --exclude 'tests' \
+    --exclude 'site-packages' \
+    --exclude '__pycache__' \
+    --exclude 'config-3.11-darwin' \
+    --exclude 'libpython3.11.a' \
+    --exclude 'idlelib'
 
 echo "[MOSAIC] Installing Python Dependencies"
 "$PY_PATH/bin/python$PY_VER" -m pip install \
@@ -69,7 +92,7 @@ if [ -z "$APPLE_SIGNING_IDENTITY" ]; then
 else
     codesign --force --timestamp --options runtime --sign "$APPLE_SIGNING_IDENTITY" "$FRAMEWORKS/libpython$PY_VER.dylib"
     
-    find "$SITE_PACKAGES" -name "*.so" -exec \
+    find "$RESOURCES/python_lib" -type f \( -name "*.so" -o -name "*.dylib" -o -name "python" \) -exec \
         codesign --force --timestamp --options runtime --sign "$APPLE_SIGNING_IDENTITY" {} \;
 
     codesign --force --timestamp --options runtime \
@@ -95,3 +118,21 @@ hdiutil create -volname "MOSAIC-Installer" \
 rm -rf "MOSAIC_DMG_STAGING"
 
 echo "Build Complete: MOSAIC_v0.3.3.dmg"
+
+echo "[MOSAIC] Notarizing Final DMG..."
+if [ -z "$APPLE_ID" ] || [ -z "$APPLE_PASSWORD" ] || [ -z "$APPLE_TEAM_ID" ]; then
+    echo "ERROR: Missing APPLE_ID, APPLE_PASSWORD, or APPLE_TEAM_ID in .env"
+    echo "Cannot proceed with notarization."
+    exit 1
+fi
+
+xcrun notarytool submit "MOSAIC_v0.3.3.dmg" \
+    --apple-id "$APPLE_ID" \
+    --password "$APPLE_PASSWORD" \
+    --team-id "$APPLE_TEAM_ID" \
+    --wait
+
+echo "[MOSAIC] Stapling Notarization Ticket"
+xcrun stapler staple "MOSAIC_v0.3.3.dmg"
+
+echo "Notarisation Succesful: MOSAIC_v0.3.3.dmg is notarized and ready for distribution."
