@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>MOSAIC</title>
   <link rel="stylesheet" href="style.css">
+  <script src="../guiTranslator/file_manager.js"></script>
 </head>
 <body>
   <div class="drag-handle" data-tauri-drag-region></div>
@@ -17,12 +18,12 @@
       </header>
 
       <div class="launch-actions">
-        <button class="glass-btn primary">Create New</button>
-        <button class="glass-btn">Open Project</button>
+        <button class="glass-btn primary" id="createProjectButton">Create New</button>
+        <button class="glass-btn" id="openProjectButton">Open Project</button>
       </div>
 
       <footer class="status-bar">
-        <span>V. 0.2.1 alpha</span>
+        <span>V. 0.3.3-alpha</span>
       </footer>
     </div>
   </main>
