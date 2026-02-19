@@ -15,8 +15,10 @@ venv/
 env/
 ENV/
 /MOSAIC.app
-python_lib/stdlib/
-python_lib/site-packages/
+python_lib/site-packages
+python_lib/stdlib
+
+*.dmg
 
 data/
 outputs/
@@ -57,6 +59,6 @@ test-quad-area.py
 old_cli.py
 TestProject/
 
-# GUI
-src/GUI
-.app-shell/
+
+# tauri stuff
+.app-shell/src-tauri/target
