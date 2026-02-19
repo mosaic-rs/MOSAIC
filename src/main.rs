@@ -20,11 +20,11 @@ use std::path::Path;
 
 
 // SHELL
-use shell::projectManager::session::SessionData;
-use shell::shell::shell_initiation;
+use mosaic_core::shell::projectManager::session::SessionData;
+use mosaic_core::shell::shell::shell_initiation;
 
 // venv
-use praatAnalysis::setup::{PythonEnvironment};
+use mosaic_core::praatAnalysis::setup::{PythonEnvironment};
 
 use std::env;
 use std::path::PathBuf;
