@@ -49,7 +49,7 @@ mkdir -p "$RESOURCES/python_lib/modules"
 echo "[MOSAIC] Compiling MOSAIC"
 export PYO3_PYTHON="$PY_PATH/bin/python$PY_VER"
 cd .app-shell
-RUSTFLAGS="-A warnings" cargo tauri build
+RUSTFLAGS="-A warnings" cargo tauri build --bundles app
 cd ..
 cp ".app-shell/src-tauri/target/release/app" "$MACOS/$BINARY_NAME"
 cp -R ".app-shell/src-tauri/target/release/bundle/macos/MOSAIC.app/Contents/Resources/"* "$RESOURCES/"
