@@ -10,6 +10,7 @@
   },
   "app": {
     "macOSPrivateApi": true,
+    "withGlobalTauri": true,
     "windows": [
       {
         "label": "main",
@@ -34,7 +35,15 @@
             "core:path:default",
             "core:event:default",
             "core:window:default",
-            "core:window:allow-start-dragging"
+            "core:window:allow-start-dragging",
+            "dialog:allow-open",
+            "dialog:allow-save",
+            "fs:allow-mkdir",
+            "fs:allow-write-file",
+              {
+                "identifier": "fs:scope",
+                "allow": [{ "path": "$HOME/**" }] 
+              }
           ]
         }
       ]

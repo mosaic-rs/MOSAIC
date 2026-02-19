@@ -26,3 +26,5 @@ tauri = { version = "2.10.0", features = ["macos-private-api"] }
 tauri-plugin-log = "2"
 window-vibrancy = "0.5.0"
 mosaic_core = { package = "MOSAIC", path = "../../" }
+tauri-plugin-dialog = "2.6.0"
+tauri-plugin-fs = "2.4.5"
