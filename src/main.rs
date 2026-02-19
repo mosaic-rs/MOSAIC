@@ -20,21 +20,25 @@ use std::path::Path;
 
 
 // SHELL
-use MOSAIC::shell::projectManager::session::SessionData;
-use MOSAIC::shell::shell::shell_initiation;
+use shell::projectManager::session::SessionData;
+use shell::shell::shell_initiation;
 
 // venv
-use MOSAIC::praatAnalysis::setup::{PythonEnvironment};
+use praatAnalysis::setup::{PythonEnvironment};
 
 use std::env;
 use std::path::PathBuf;
 
-fn setup_python_paths() {
+/*fn setup_python_paths() {
     let exe_path = env::current_exe().expect("Failed to get exe path");
     
-    let bundle_macos = exe_path.parent().expect("Failed to get MacOS dir");
-    let bundle_contents = bundle_macos.parent().expect("Failed to get Contents dir");
-    let resources = bundle_contents.join("Resources");
+    let is_bundled = exe_path.to_string_lossy().contains(".app/Contents/MacOS");
+
+    let resources = if is_bundled {
+        exe_path.parent().unwrap().parent().unwrap().join("Resources")
+    } else {
+        PathBuf::from(env!("CARGO_MANIFEST_DIR"))
+    };
 
     let python_lib = resources.join("python_lib");
     let stdlib = python_lib.join("stdlib");
@@ -53,11 +57,11 @@ fn setup_python_paths() {
     unsafe {
         env::set_var("PYTHONPATH", new_path);
     }
-}
+}*/
 
 fn main() -> std::io::Result<()>{
 
-    setup_python_paths();
+    PythonEnvironment::setup_python_paths();
 
     if let Err(e) = PythonEnvironment::ensure_python_bridge() {
         eprintln!("[MOSAIC FATAL ERROR] Could not initialize Python environment.");
