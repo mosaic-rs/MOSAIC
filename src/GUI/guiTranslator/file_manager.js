@@ -13,12 +13,6 @@ You should have received a copy of the GNU General Public License along with
 MOSAIC. If not, see <https://www.gnu.org/licenses/>.
 */
 
-//import { openPath, openUrl } from '@tauri-apps/plugin-opener';
-
-
-//await openPath('/path/to/file');
-//await openPath('C:/path/to/file', 'vlc');
-//await openUrl('https://tauri.app');
 
 const { open } = window.__TAURI__.dialog;
 const { save } = window.__TAURI__.dialog;
