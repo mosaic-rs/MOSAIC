@@ -20,22 +20,18 @@ const { mkdir } = window.__TAURI__.fs;
 
 const createProjectFolder = async () => {
     try {
-        // 1. Open the "Save As" window to let the user name the project
         const projectPath = await save({
             title: 'Create New Project',
             defaultPath: 'New Project'
         });
 
         if (projectPath) {
-            // 2. Create the directory at that exact path
-            // Setting 'recursive: true' ensures parent folders are created if needed
             await mkdir(projectPath, { recursive: true });
             
-            console.log("Success! Folder created at:", projectPath);
-            alert("Project folder created!");
+            console.log("Folder created at:", projectPath);
         }
-    } catch (err) {
-        console.error("Failed to create folder:", err);
+    } catch (e) {
+        console.error("Failed to create folder:", e);
     }
 };
 
@@ -43,7 +39,7 @@ const openFinder = async () => {
     try {
         const selected = await open({
             multiple: false,
-            directory: false,
+            directory: true,
         });
         
         if (selected) {
