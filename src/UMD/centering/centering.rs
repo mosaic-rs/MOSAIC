@@ -33,8 +33,8 @@ pub struct CenterUncertainty {
 }
 
 impl CenterUncertainty{
-    pub fn UncertaintyProcessor(x_uncertainty: f64, y_uncertainty: f64, z_uncertainty: f64, 
-                                x_anchor_uncertainty: f64, y_anchor_uncertainty: f64, z_anchor_uncertainty: f64) {
+    pub fn UncertaintyProcessor(_x_uncertainty: f64, _y_uncertainty: f64, _z_uncertainty: f64, 
+                                _x_anchor_uncertainty: f64, _y_anchor_uncertainty: f64, _z_anchor_uncertainty: f64) {
         // will calculate the uncertainty of the new centered x/y/z values
     }
 }
