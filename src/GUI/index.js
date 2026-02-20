@@ -17,6 +17,8 @@ MOSAIC. If not, see <https://www.gnu.org/licenses/>.
 const { open } = window.__TAURI__.dialog;
 const { save } = window.__TAURI__.dialog;
 const { mkdir } = window.__TAURI__.fs;
+const { invoke } = window.__TAURI__.core;
+const { message } = window.__TAURI__.dialog;
 
 const createProjectFolder = async () => {
     try {
@@ -29,6 +31,17 @@ const createProjectFolder = async () => {
             await mkdir(projectPath, { recursive: true });
             
             console.log("Folder created at:", projectPath);
+            try {
+                const response = await invoke('update_project_directory', { 
+                    path: projectPath, 
+                });
+                console.log("Session updated successfully:", response);
+
+                window.location.href = 'pages/settings/index.html';
+            } catch (e) {
+                console.error("Failed to update session data:", e);
+                await message(e, { title: 'MOSAIC Error', kind: 'error' });
+            }
         }
     } catch (e) {
         console.error("Failed to create folder:", e);
@@ -44,6 +57,14 @@ const openFinder = async () => {
         
         if (selected) {
             console.log("File selected:", selected);
+            try {
+                const response = await invoke('update_project_directory', { 
+                    path: selected, 
+                });
+                console.log("Session updated successfully:", response);
+            } catch (e) {
+                console.error("Failed to update session data:", e);
+            }
         }
     } catch (e) {
         console.error("Dialog error:", e);
