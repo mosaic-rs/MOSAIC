@@ -18,7 +18,6 @@ MOSAIC. If not, see <https://www.gnu.org/licenses/>.
 */
 
 use crate::UMD::UMD::{UMD};
-use crate::errors::{MosaicError};
 use polars::prelude::*;
 use std::fs::File;
 
