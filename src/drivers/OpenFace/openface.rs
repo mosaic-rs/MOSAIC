@@ -14,12 +14,10 @@ MOSAIC. If not, see <https://www.gnu.org/licenses/>.
 */
 
 use crate::UMD::UMD::{UMDDriver};
-use crate::errors::{MosaicError, UMDError, FileError};
+use crate::errors::{MosaicError, FileError};
 
 use std::path::Path;
-use std::io::Read;
 use std::fs::File;
-use csv::Reader;
 use std::io::{BufRead, BufReader};
 use std::u32;
 
@@ -235,16 +233,16 @@ pub fn parse_openface_data(path: &Path) -> Result<UMDDriver, MosaicError> {
 
     let mut umd = UMDDriver::construction(total_frames, points_per_frame);
 
-    let file = File::open(path)?; 
+    let _file = File::open(path)?; 
     let mut reader = csv::ReaderBuilder::new()
         .trim(csv::Trim::All)
         .flexible(true)
         .has_headers(true)
         .from_path(path)
-        .map_err(|e| FileError::MissingColumn)?;
+        .map_err(|_e| FileError::MissingColumn)?;
 
-    let headers = reader.headers().map_err(|e| FileError::MissingColumn)?.clone();
-    let x0_index = headers.iter().position(|h| h == "x_0")
+    let headers = reader.headers().map_err(|_e| FileError::MissingColumn)?.clone();
+    let _x0_index = headers.iter().position(|h| h == "x_0")
         .ok_or_else(|| FileError::MissingColumn)?;
 
     let header_map = OpenFaceHeaderMap::new(&headers)?;
@@ -276,10 +274,10 @@ pub fn parse_openface_data(path: &Path) -> Result<UMDDriver, MosaicError> {
 
             let x_uncertainty: f64 = 0.5; // TEMP VALUE UNTIL WE MAKE CALIBRATION LOGIC
             let y_uncertainty: f64 = 0.5; // TEMP VALUE UNTIL WE MAKE CALIBRATION LOGIC
-            let mut z_uncertainty: f64 = 0.0; // TEMP VALUE UNTIL WE MAKE CALIBRATION LOGIC
+            let z_uncertainty: f64 = 0.0; // TEMP VALUE UNTIL WE MAKE CALIBRATION LOGIC
             
             if z != 0.0 {
-                let z_uncertainty = 0.5; // this is not perfect because if we did have a Z axis
+                let _z_uncertainty = 0.5; // this is not perfect because if we did have a Z axis
                                          //, the uncertaninty would be 0 if the z axis is 0 but this
                                          // is only for testing purposes 
             }
