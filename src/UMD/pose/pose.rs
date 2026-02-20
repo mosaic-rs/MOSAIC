@@ -38,9 +38,9 @@ pub struct PoseUncertainty {
 }
 
 impl PoseUncertainty{
-    pub fn UncertaintyProcessor(x_uncertainty: f64, y_uncertainty: f64, z_uncertainty: f64, 
-                                x_anchor_uncertainty: f64, y_anchor_uncertainty: f64, z_anchor_uncertainty: f64,
-                                pose_x_uncertainty: f64, pose_y_uncertainty: f64, pose_z_uncertainty: f64) {
+    pub fn UncertaintyProcessor(_x_uncertainty: f64, _y_uncertainty: f64, _z_uncertainty: f64, 
+                                _x_anchor_uncertainty: f64, _y_anchor_uncertainty: f64, _z_anchor_uncertainty: f64,
+                                _pose_x_uncertainty: f64, _pose_y_uncertainty: f64, _pose_z_uncertainty: f64) {
         // will calculate the uncertainty of the new pose corrected x/y/z values
     }
 }
@@ -92,21 +92,15 @@ impl PoseProcessor{
             // What is shown below is the post matrix multiplication 
             // I think
 
-            let x_pri = (
-                  (poseZ.cos() * poseY.cos() * x)
+            let x_pri = (poseZ.cos() * poseY.cos() * x)
                 + (poseZ.cos() * poseY.sin() * poseX.sin() - poseZ.sin() * poseX.cos() * y)
-                + (poseZ.cos() * poseY.sin() * poseX.cos() + poseZ.sin() * poseX.sin() * z)
-            );
-            let y_pri = (
-                  (poseZ.sin() * poseY.cos() * x)
+                + (poseZ.cos() * poseY.sin() * poseX.cos() + poseZ.sin() * poseX.sin() * z);
+            let y_pri = (poseZ.sin() * poseY.cos() * x)
                 + (poseZ.sin() * poseY.sin() * poseX.sin() + poseZ.cos() * poseX.cos() * y)
-                + (poseZ.sin() * poseY.sin() * poseX.cos() - poseZ.cos() * poseX.sin() * z)
-            );
-            let z_pri = (
-                  (-poseY.sin() * x)
+                + (poseZ.sin() * poseY.sin() * poseX.cos() - poseZ.cos() * poseX.sin() * z);
+            let z_pri = (-poseY.sin() * x)
                 + (poseY.cos() * poseX.sin() * y)
-                + (poseY.cos() * poseX.cos() * z)
-            );
+                + (poseY.cos() * poseX.cos() * z);
 
             /*
                 Important note:
