@@ -15,7 +15,7 @@ MOSAIC. If not, see <https://www.gnu.org/licenses/>.
 
 use pyo3::prelude::*;
 use pyo3::types::PyModule;
-use std::ffi::{CStr, CString}; 
+use std::ffi::CString; 
 
 pub fn test_function(py: Python<'_>) -> PyResult<()> {
     let code_rust_str = include_str!("test.py");
