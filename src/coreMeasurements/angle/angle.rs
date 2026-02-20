@@ -15,8 +15,6 @@ MOSAIC. If not, see <https://www.gnu.org/licenses/>.
 
 use crate::UMD::UMD::{UMD};
 //use crate::coreMeasurements::euclidean::{CoreEuclidean};
-use crate::errors::{MosaicError};
-use std::f64::consts::PI;
 use polars::prelude::*;
 use std::fs::File;
 
@@ -309,8 +307,8 @@ impl ThetaCalc {
             return 0.0; // division by 0 error
         } 
         
-        let term_x = (vy.powi(2) * svx.powi(2));
-        let term_y = (vx.powi(2) * svy.powi(2));
+        let term_x = vy.powi(2) * svx.powi(2);
+        let term_y = vx.powi(2) * svy.powi(2);
         
         ((term_x + term_y) / r2.powi(2)).sqrt()
     }
