@@ -1,18 +1,3 @@
-/*
-This file is part of MOSAIC.
-
-MOSAIC is free software: you can redistribute it and/or modify it under 
-the terms of the GNU General Public License as published by the Free 
-Software Foundation, either version 3 of the License, or any later version.
-
-MOSAIC is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; 
-without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
-PURPOSE. See the GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License along with 
-MOSAIC. If not, see <https://www.gnu.org/licenses/>.
-*/
-
 use serde::{Deserialize, Serialize};
 use crate::errors::{MosaicError, ProjectError, ParticipantError, TrialError};
 
@@ -39,14 +24,14 @@ impl DirectoryVerifiers {
 
 impl SessionData {
     pub fn read_session_data() -> Self {
-        let contents = std::fs::read_to_string(".mosaic").unwrap_or_else(|_| String::from("{}"));
+        let contents = std::fs::read_to_string(SESSION_FILE).unwrap_or_else(|_| String::from("{}"));
         
         serde_json::from_str(&contents).unwrap_or_else(|_| Self::new_blank())
     }
 
     pub fn write_session_data(&self) {
         let json = serde_json::to_string_pretty(&self).unwrap();
-        std::fs::write(".mosaic", json).expect("[FATAL MOSAIC ERROR] Failed to save!");
+        std::fs::write(SESSION_FILE, json).expect("[FATAL MOSAIC ERROR] Failed to save!");
     }
 
     pub fn initialize() -> Self {
@@ -67,12 +52,11 @@ impl SessionData {
     }
 
     pub fn new_blank() -> Self {
-
         SessionData {
             data: SessionStructure {
-                project_directory: String::from("None"), //Path/supermegapath/project.mosaicproj
-                participant_directory: String::from("None"), //Path/supermegapath/participant.mosaicproj
-                trial_directory: String::from("None"), //Path/supermegapath/trial.mosaicproj
+                project_directory: String::from("None"),
+                participant_directory: String::from("None"),
+                trial_directory: String::from("None"),
             }
         }
     }
@@ -91,7 +75,6 @@ impl SystemVerifier {
         let session_info = SessionData::read_session_data();
         let project_path = session_info.data.project_directory;
         
-        // this logic is a bit weird but this is only a test bit of code 
         if project_path != "None" {
             return std::result::Result::Ok(project_path)
 
@@ -108,7 +91,6 @@ impl SystemVerifier {
         let session_info = SessionData::read_session_data();
         let participant_path = session_info.data.participant_directory;
         
-        // this logic is a bit weird but this is only a test bit of code 
         if participant_path != "None" {
             return std::result::Result::Ok(participant_path)
             
@@ -125,7 +107,6 @@ impl SystemVerifier {
         let session_info = SessionData::read_session_data();
         let trial_path = session_info.data.trial_directory;
         
-        // this logic is a bit weird but this is only a test bit of code
         if trial_path != "None" {
             return std::result::Result::Ok(trial_path)
             
@@ -144,27 +125,23 @@ impl SessionUpdate {
     pub fn update_project_directory(path: &str){
         DirectoryVerifiers::check_any_directory(path);
 
-        let updated_project_directory = SessionData {
-            data: SessionStructure {
-                project_directory: path.to_string(),
-                participant_directory: String::from("None"),
-                trial_directory: String::from("None"),
-            }
-        };
-
-        updated_project_directory.write_session_data();
+        let mut session = SessionData::read_session_data();
+        session.data.project_directory = path.to_string();
+        session.write_session_data();
 
         println!("Opened project path: '{}'.", path)
     }
 
-    pub fn update_participant_directory(path: &str){
-        // we need to make sure they are actually in a project dir
+    pub fn update_participant_directory(_path: &str){
         println!("Updating participant directory!")
     }
 
-    pub fn update_trial_directory(path: &str){
-        // need to confirm they are in project and participant dir
+    pub fn update_trial_directory(_path: &str){
         println!("Updating project directory!")
     }
 }
 
+#[tauri::command]
+pub fn update_project_directory(path: String) {
+    SessionUpdate::update_project_directory(&path);
+}
