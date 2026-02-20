@@ -19,15 +19,13 @@ core shell file which parses commands and allocates them to seperate files which
 shell.rs sort of acts like a receptionist
 */
 
-use std::process::Command;
-use std::path::Path;
 use rustyline::error::ReadlineError;
 use rustyline::{DefaultEditor, Result};
 
-use crate::shell::projectManager::session::{SessionData, DirectoryVerifiers, SystemVerifier};
+use crate::shell::projectManager::session::{SessionData, SystemVerifier};
 use crate::analysis::{run};
 
-pub fn shell_initiation(session: &mut SessionData) -> Result<()> {
+pub fn shell_initiation(_session: &mut SessionData) -> Result<()> {
     let version = env!("CARGO_PKG_VERSION");
     println!("MOSAIC -- v{}-alpha pre-release (GLPv3)\n", version); // opening message
     let mut rl = DefaultEditor::new()?;
@@ -93,9 +91,9 @@ pub fn shell_initiation(session: &mut SessionData) -> Result<()> {
                     let output_path = "/Users/harrywoodhouse/MOSAIC/MOSAIC/MOSAIC-Engine/data/";
 
                     // defining placeholder metadata: 
-                    let driver = "OpenFace v2.2";
-                    let dimension = "2D";
-                    let pose_correction = true;
+                    let _driver = "OpenFace v2.2";
+                    let _dimension = "2D";
+                    let _pose_correction = true;
 
                     run::init(input_path, output_path);
                 }
