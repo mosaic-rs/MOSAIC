@@ -19,7 +19,6 @@ METADATA.rs
 Defines metadata struct as a hashmap to be stored in the UMD Parquet footer
 */
 
-use std::collections::HashMap;
 
 pub struct Metadata {
     pub UMD_Version: String,
