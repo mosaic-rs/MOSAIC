@@ -16,16 +16,9 @@ MOSAIC. If not, see <https://www.gnu.org/licenses/>.
 // This will act as an API for the drivers so they can append data properly
 
 // DRIVERS
-use crate::drivers::OpenFace::openface::{OpenFaceLandmarkType};
-use crate::drivers::CARTSENS_AG_100;
-use crate::drivers::CARTSENS_AG_200;
-use crate::drivers::CARTSENS_AG_500;
-use crate::drivers::CARTSENS_AG_501_TWIN;
-use crate::drivers::NDI_VOX;
-use crate::drivers::NDI_WAVE;
 
 // METADATA
-use crate::UMD::metadata::{Metadata}; // to be written shortly
+ // to be written shortly
 
 use polars::prelude::*;
 use std::fs::File;
@@ -96,7 +89,7 @@ pub struct UMD {
 impl UMD {
     pub fn construction(total_frames: u32, points_per_frame: u32)-> Self{
         // reserves the memory needed based on the frame count and the points per frame
-        let mut total_entries = total_frames * points_per_frame;
+        let total_entries = total_frames * points_per_frame;
 
         Self {
             frame: Vec::with_capacity(total_entries.try_into().unwrap()),
@@ -215,7 +208,7 @@ impl UMD {
             self.z_anchor_uncertainty = anchor.z_anchor_uncertainty.clone(); // needs adding - IMPLEMENTED IN SUBSCTRUCT*/
     }
 
-    pub fn save_umd_to_parquet(data: &UMD, file_path: &str, metadata: Vec<(String, String)>) -> PolarsResult<()> {
+    pub fn save_umd_to_parquet(data: &UMD, file_path: &str, _metadata: Vec<(String, String)>) -> PolarsResult<()> {
         let s_frame = Series::new("frame", &data.frame);
         let s_timestamp = Series::new("timestamp", &data.timestamp);
         let s_confidence = Series::new("confidence", &data.confidence); // needs adding
@@ -321,7 +314,7 @@ pub struct UMDDriver {
 impl UMDDriver{
     pub fn construction(total_frames: u32, points_per_frame: u32)-> Self{
         // reserves the memory needed based on the frame count and the points per frame
-        let mut total_entries = total_frames * points_per_frame;
+        let total_entries = total_frames * points_per_frame;
 
         Self {
             frame: Vec::with_capacity(total_entries.try_into().unwrap()),
@@ -432,7 +425,7 @@ pub struct UMDAnchor {
 
 impl UMDAnchor{
     pub fn construction(total_frames: u32) -> Self{
-        let mut total_entries = total_frames;
+        let total_entries = total_frames;
         Self {
             frame: Vec::with_capacity(total_entries.try_into().unwrap()),
             timestamp: Vec::with_capacity(total_entries.try_into().unwrap()), 
@@ -508,7 +501,7 @@ impl UMDCentered{
         }
     }
 
-    pub fn add_point(&mut self, frame: u32, time: f32, confidence: f32, pose: bool, pose_x: f64, pose_y: f64, pose_z: f64, 
+    pub fn add_point(&mut self, frame: u32, time: f32, _confidence: f32, pose: bool, pose_x: f64, pose_y: f64, pose_z: f64, 
                      number: u32, types: String, x: f64, y: f64, z: f64, x_uncertainty: f64, y_uncertainty: f64, z_uncertainty: f64) {
         
         self.frame.push(frame);
@@ -582,7 +575,7 @@ impl UMDPose {
         } 
     }
 
-    pub fn add_point(&mut self, frame: u32, time: f32, confidence: f32, pose: bool, pose_x: f64, pose_y: f64, pose_z: f64, number: u32, types: String, 
+    pub fn add_point(&mut self, frame: u32, time: f32, _confidence: f32, pose: bool, pose_x: f64, pose_y: f64, pose_z: f64, number: u32, types: String, 
                      x: f64, y: f64, z: f64, x_uncertainty: f64, y_uncertainty: f64, z_uncertainty: f64) {
         
         self.frame.push(frame);
