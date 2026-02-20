@@ -1,4 +1,4 @@
-<img src="./assets/logos/MOSAIC-LOGO.png" width="200" alt="MOSAIC Logo">
+<img src="./assets/logos/MOSAIC-logo-HIGH.png" width="200" alt="MOSAIC Logo">
 
 [![Rust, Python](https://img.shields.io/badge/languages-Rust%2C_Python-Blue
 )](https://www.rust-lang.org/)
@@ -11,99 +11,45 @@
 Motor-Oral Speech Analysis & Integrated Computation (MOSAIC) is a mathematical system which tracks mouth and jaw movement and correlates those measurements to a [parselmouth/praat](https://parselmouth.readthedocs.io/en/stable/#) analysis. MOSAIC has three measurement "units": core measurements, complex measurements, and praat based measurements. 
 
 
-## UPDATE:
-Version 0.3.2-alpha - MOSAIC now creates it's own Venv for python so it can run parselmouth. 
+## Compiling MOSAIC:
+Below is how to compile MOSAIC for your specific machine - and whether you want a GUI or headless version. (Currently just MacOS)
 
-### All Information Below is Based on the Python Version:
+### MacOS
+#### Requirements:
+- Rust
+- Python 3.11.9 (Must be that version)
+#### Tauri/GUI Version
+Clone this repo into a desired folder and open terminal. Navigate to the root folder (probably called "MOSAIC") and run:
 
-## Core measurements
-Core measurements serve as the backbone for the higher-level measurements used in facial tracking. It follows a simple pipiline.
-```mermaid
-flowchart TD
-    1[OpenFace Landmarks] --> 2[Anchor Calculation]
-    2 --> 3[Landmark Centering]
-    3 -.-> 4[Optional Pose Correction]
-    4 --> 5[Landmark Euclidean Distance Calculation]
-    5 --> 6[Landmark Angle Calculation]
-    6 --> 7[Lip Curve Fitting]
-    7 --> 8[Quadrant Based Area]
-    7 --> 9[Biological Based Area]
-    8 --> 10[Core Measurement CSV Output]
-    9 --> 10
-
+``` shell
+./builds/build_mac_release.sh
 ```
 
-Uncertainty is calculated for all metrics based off the standard deviation of landmark coordinates through a calibration sequence.
+It will create a DMG in the root folder and unless you decide to sign/notarize it, it should skip that.
 
-## Complex measurements
-Complex measurements can be split into two categories: Temporal measurements and Motor Geometry. 
+(You can also just download the pre-configure v0.3.4-alpha DMG [here](https://github.com/mosaic-rs/MOSAIC/releases/download/0.3.4-alpha/MOSAIC_v0.3.4.dmg))
 
-### Temporal measurements
-As the name suggests, these are time-based metrics such as velocity, acceleration, jerk, commissure drift, lip open/close velocity, etc. These are exported to a temporal measurement csv file.
+#### Headless/CLI Version:
+In the root folder, do the following commands:
+``` shell
+# adding Python 3.11 to pythin_lib
+ln -s /Library/Frameworks/Python.framework/Versions/3.11/lib/python3.11 ./src/python_lib
 
-### Motor Geometry
-Motor Geometry measures oromotor control and consists of several modules such as commissure angle deviation, commissure rotation, and curvature metrics.
-
-## Praat analysis
-Praat analysis compares the movement of the mouth to what the mouth is doing. For example: VOT, pitch (F0), phonation, and vowel analysis (F1, F2).
-
-
-
-## Acknowledgements
-
- - Joshua Woodhouse, University of York - For contributions to the anchor/centering logic, uncertainty propagation, and curvature.
-
-
-
-## API Reference
-I have never written an API reference before so please email me using the author information below for any changes (or submit a pull request I think).
-
-#### Installing MOSAIC
-
-```http
-  pip install https://github.com/Harry-S-W/MOSAIC.git
+cargo install --path .
 ```
 
-#### Using MOSAIC
-MOSAIC Uses a REPL (under heavy development) to make the CLI as intuitive as possible
-
-To access the shell:
-```http
-  > mosaic
-```
-You are now in the MOSAIC environment and your terminal will look like the following, assuming you are not in any project, participant, or trial directory.
-
-```http
-MOSAIC (no project) >
-```
-
-The prompt is dynamic and will change based on where you are within an MOSAIC project and it is stateful. For example
-
-```http
-MOSAIC (no project) > add project "project path" "project name"
-
-Project "project name" created at "project path"
-
-MOSAIC project name >
-```
-
-This pattern is followed when accessing participant and trial directories as well.
+MOSAIC (without a GUI) should be fully installed. To access MOSAIC, type "mosaic" into your terminal.
 
 
+Windows stuff will come soon! 
 
-## Authors
+## MOSAIC Cores
 
-- Harry Woodhouse, University of York - [Github: @Harry-S-W](https://github.com/Harry-S-W), [Website:](https://harrywstephen.com)
+(tiles if you will)
 
-
-## License
-
-[GLPv3](https://www.gnu.org/licenses/licenses.html)
-
-
-## Contributing
-
-Contributions are always welcome!
-
-Just submit a pull request! (At least I think that is what you're supposed to do!)
-
+MOSAIC is made up of 5 major cores: 
+- Universal Measurement Datastructure (UMD) (Gotta add stuff) [ReadMe](./src/UMD/README.md).
+- Core Measurements [ReadMe](./src/coreMeasurements/README.md).
+- Complex Measurements (Gotta add stuff) [ReadMe](./src/complexMeasurements/README.md).
+- Praat Analysis [ReadMe](./src/praatAnalysis/README.md)
+- Statistics Engine [ReadMe](./src/statisticsEngine/README.md)
