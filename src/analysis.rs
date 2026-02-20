@@ -13,13 +13,6 @@ You should have received a copy of the GNU General Public License along with
 MOSAIC. If not, see <https://www.gnu.org/licenses/>.
 */
 
-/// ANALYSIS
-// Acts as a conductor for mosaic
-// Keeps shell lean
-
-
-// Session info:
-use crate::shell::projectManager::session::{SessionData, DirectoryVerifiers, SystemVerifier};
 
 // Drivers
 use crate::drivers::OpenFace::openface::{parse_openface_data};
@@ -44,7 +37,6 @@ use crate::praatAnalysis::testing::test_function;
 
 
 use std::path::Path;
-use std::fs;
 use pyo3::prelude::*;
 use pyo3::Python;
 
