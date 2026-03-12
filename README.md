@@ -16,12 +16,13 @@ Below is how to compile MOSAIC for your specific machine - and whether you want 
 
 ### MacOS
 #### Requirements:
-- Rust
+- Rust + Cargo
 - Python 3.11.9 (Must be that version)
+- Pip
 #### Tauri/GUI Version
 Clone this repo into a desired folder and open terminal. Navigate to the root folder (probably called "MOSAIC") and run:
 
-``` shell
+``` bash
 ./builds/build_mac_release.sh
 ```
 
@@ -31,6 +32,29 @@ It will create a DMG in the root folder and unless you decide to sign/notarize i
 
 (You can also just download the pre-configure v0.3.4-alpha DMG [here](https://github.com/mosaic-rs/MOSAIC/releases/download/0.3.4-alpha/MOSAIC_v0.3.4.dmg))
 
+### Windows
+#### Requirements:
+- Rust + Cargo
+- Python 3.11.9
+- Pip
+
+```ps1
+./builds/build_windows_release.sh
+```
+
+These are not signed/notarized for windows. There will be preconfigured windows versions upon next release hopefully
+
+### Linux
+#### Requirements:
+- Rust + Cargo
+- Python 3.11.9
+- Pip
+
+```bash
+./builds/build_linux_release.sh
+```
+
+I do not personally use Linux and this Bash script has not been tested.
 #### Headless/CLI Version:
 In the root folder, do the following commands:
 ``` shell
