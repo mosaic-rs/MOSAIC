@@ -37,9 +37,9 @@ $$
 v_{r, i} = \sqrt{v_{x, i}^2 + v_{y, i}^2 + v_{z, i}^2}
 $$
 
-#### Landmark Undertainty
+#### Landmark Velocity Undertainty
 
-##### Partial derivative with respect to x_i
+##### Partial derivative with respect to x_i, y_i, and z_i
 $$
 \frac{\partial{v_x}}{\partial{x_{i}}} = \frac{1}{\Delta{t}}
 \hspace{10pt}
@@ -48,7 +48,7 @@ $$
 \frac{\partial{v_z}}{\partial{z_{i}}} = \frac{1}{\Delta{t}}
 $$
 
-##### Partial Derivative with respect to x_{i - 1}
+##### Partial Derivative with respect to x_{i - 1}, y_{i - 1}, z_{i - 1}
 
 $$
 \frac{\partial{v_x}}{\partial{x_{i-1}}} = - \frac{1}{\Delta{t}}
@@ -109,3 +109,6 @@ Verticle Velocity: Speed of the verticle movement
 $$
 v_{d, i} = \sqrt{v_{d_{x, i}}^2 + v_{d_{y, i}}^2 + v_{d_{z, i}}^2}
 $$
+
+### Curve Velocity Uncertainty
+#### Partial Derivitives with respect to a_{x, i}, b_{x, i}, c_{x, i}, d_{x, i} (and so on for y and x)
