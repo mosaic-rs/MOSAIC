@@ -54,7 +54,7 @@ SITE_PACKAGES="$RESOURCES/python_lib/site-packages"
 
 BINARY_NAME="mosaic_engine"
 
-echo "[MOSAIC] Removing old builds"
+echo "[MOSAIC BUILD] Removing old builds"
 rm -rf "$APP_BUNDLE" "MOSAIC_DMG_STAGING"
 mkdir -p "$MACOS"
 mkdir -p "$FRAMEWORKS"
@@ -62,7 +62,7 @@ mkdir -p "$RESOURCES/python_lib/stdlib"
 mkdir -p "$SITE_PACKAGES"
 mkdir -p "$RESOURCES/python_lib/modules"
 
-echo "[MOSAIC] Compiling MOSAIC"
+echo "[MOSAIC BUILD] Compiling MOSAIC"
 export PYO3_PYTHON="$PY_PATH/bin/python$PY_VER"
 cd .app-shell
 RUSTFLAGS="-A warnings" cargo tauri build --bundles app
@@ -70,7 +70,7 @@ cd ..
 cp ".app-shell/src-tauri/target/release/app" "$MACOS/$BINARY_NAME"
 cp -R ".app-shell/src-tauri/target/release/bundle/macos/MOSAIC.app/Contents/Resources/"* "$RESOURCES/"
 
-echo "[MOSAIC] App metadata"
+echo "[MOSAIC BUILD] App metadata"
 cp "Info.plist" "$CONTENTS/Info.plist"
 
 echo "Copying python 3.11.9 to /libpython"
@@ -78,7 +78,7 @@ cp "$PY_PATH/Python" "$FRAMEWORKS/libpython$PY_VER.dylib"
 
 install_name_tool -id "@executable_path/../Frameworks/libpython$PY_VER.dylib" "$FRAMEWORKS/libpython$PY_VER.dylib"
 
-echo "[MOSAIC] Copying Python Library..."
+echo "[MOSAIC BUILD] Copying Python Library..."
 rsync -a "$PY_PATH/lib/python$PY_VER/" "$RESOURCES/python_lib/stdlib/" \
     --exclude 'test' \
     --exclude 'tests' \
@@ -88,13 +88,13 @@ rsync -a "$PY_PATH/lib/python$PY_VER/" "$RESOURCES/python_lib/stdlib/" \
     --exclude 'libpython3.11.a' \
     --exclude 'idlelib'
 
-echo "[MOSAIC] Installing Python Dependencies"
+echo "[MOSAIC BUILD] Installing Python Dependencies"
 "$PY_PATH/bin/python$PY_VER" -m pip install \
     praat-parselmouth numpy \
     --target "$SITE_PACKAGES" \
     --no-user --upgrade --no-warn-script-location > /dev/null
 
-echo "[MOSAIC] Copying MOSAIC python scripts"
+echo "[MOSAIC BUILD] Copying MOSAIC python scripts"
 cp src/praatAnalysis/*.py "$RESOURCES/python_lib/modules/"
 
 install_name_tool -change \
@@ -102,7 +102,7 @@ install_name_tool -change \
     "@executable_path/../Frameworks/libpython$PY_VER.dylib" \
     "$MACOS/$BINARY_NAME"
 
-echo "[MOSAIC] Signing App Bundle"
+echo "[MOSAIC BUILD] Signing App Bundle"
 if [ -z "$APPLE_SIGNING_IDENTITY" ]; then
     echo "Skipping signing (Identity not found)"
 else
@@ -119,12 +119,12 @@ else
     codesign --force --timestamp --options runtime --sign "$APPLE_SIGNING_IDENTITY" "$APP_BUNDLE"
 fi
 
-echo "[MOSAIC] Preparing to make DMG"
+echo "[MOSAIC BUILD] Preparing to make DMG"
 mkdir -p "MOSAIC_DMG_STAGING"
 cp -R "$APP_BUNDLE" "MOSAIC_DMG_STAGING/"
 ln -s /Applications "MOSAIC_DMG_STAGING/Applications"
 
-echo "[MOSAIC] Creating Disk Image"
+echo "[MOSAIC BUILD] Creating Disk Image"
 rm -f "MOSAIC_v0.3.3.dmg"
 hdiutil create -volname "MOSAIC-Installer" \
                -srcfolder "MOSAIC_DMG_STAGING" \
@@ -135,7 +135,7 @@ rm -rf "MOSAIC_DMG_STAGING"
 
 echo "Build Complete: MOSAIC_v0.3.3.dmg"
 
-echo "[MOSAIC] Notarizing Final DMG..."
+echo "[MOSAIC BUILD] Notarizing Final DMG..."
 if [ -z "$APPLE_ID" ] || [ -z "$APPLE_PASSWORD" ] || [ -z "$APPLE_TEAM_ID" ]; then
     echo "ERROR: Missing APPLE_ID, APPLE_PASSWORD, or APPLE_TEAM_ID in .env"
     echo "Cannot proceed with notarization."
@@ -148,7 +148,7 @@ xcrun notarytool submit "MOSAIC_v0.3.3.dmg" \
     --team-id "$APPLE_TEAM_ID" \
     --wait
 
-echo "[MOSAIC] Stapling Notarization Ticket"
+echo "[MOSAIC BUILD] Stapling Notarization Ticket"
 xcrun stapler staple "MOSAIC_v0.3.3.dmg"
 
 echo "Notarisation Succesful: MOSAIC_v0.3.3.dmg is notarized and ready for distribution."
