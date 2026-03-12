@@ -12,3 +12,16 @@ PURPOSE. See the GNU General Public License for more details.
 You should have received a copy of the GNU General Public License along with 
 MOSAIC. If not, see <https://www.gnu.org/licenses/>.
 */
+
+pub struct curveVelocity {
+    pub frame: Vec<u32>,
+    pub timestamp: Vec<f32>,
+    pub is_reliable: Vec<bool>, // for undertermined points (i.e. the 3 "inner" lip openface points) - as we are fitting to a cubic curve
+    pub types_included: Vec<String>, 
+    pub vx_coeffs: Vec<CurveCoefficients>,
+    pub vy_coeffs: Vec<CurveCoefficients>,
+    pub vz_coeffs: Vec<CurveCoefficients>,
+    pub vx_coeffs_uncertainty: Vec<CurveCoefficients>,
+    pub vy_coeffs_uncertainty: Vec<CurveCoefficients>,
+    pub vz_coeffs_uncertainty: Vec<CurveCoefficients>,
+}
