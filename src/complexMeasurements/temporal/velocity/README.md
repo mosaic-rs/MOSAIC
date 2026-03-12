@@ -9,6 +9,7 @@ This section of complexMeasurements calculates velocity of measurements.
 Calculates the velocity of landmarks and the uncertainty of the velocity. 
 $$
 
+
 r_i =
 \begin{bmatrix}
 x_i \\
