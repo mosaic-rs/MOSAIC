@@ -58,6 +58,7 @@ graph-test.py
 test-quad-area.py
 old_cli.py
 TestProject/
+src/complexMeasurements/entropy/
 
 
 # tauri stuff
