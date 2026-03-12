@@ -25,6 +25,8 @@ Clone this repo into a desired folder and open terminal. Navigate to the root fo
 ./builds/build_mac_release.sh
 ```
 
+You will be prompted to provide a Python path - just press "enter" to use teh default path it provides which is where Python should be installed on your system.
+
 It will create a DMG in the root folder and unless you decide to sign/notarize it, it should skip that.
 
 (You can also just download the pre-configure v0.3.4-alpha DMG [here](https://github.com/mosaic-rs/MOSAIC/releases/download/0.3.4-alpha/MOSAIC_v0.3.4.dmg))
