@@ -121,16 +121,20 @@ impl CalculateVelocity{
             let start_idx = i;
             let current_frame = umd.frame[i];
 
-            let dx: f64 = 0.0;
-            let dy: f64 = 0.0;
-            let dz: f64 = 0.0;
+            let vx: f64 = 0.0;
+            let vy: f64 = 0.0;
+            let vz: f64 = 0.0;
 
-            let dx_uncertainty: f64 = 0.0;
-            let dy_uncertainty: f64 = 0.0;
-            let dz_uncertainty: f64 = 0.0
+            let vx_uncertainty: f64 = 0.0;
+            let vy_uncertainty: f64 = 0.0;
+            let vz_uncertainty: f64 = 0.0
+
+            while i < total_points && umd.frame[i] == current_frame {
+                i += 1;
+            }
 
             if current_frame == 1 {
-
+                LandmarkVelocity::add_point(umd.frame[i], umd.timestamp[i], umd.confidence[i], umd.pose[i])
             }
         }
         
