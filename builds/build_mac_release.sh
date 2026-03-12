@@ -26,8 +26,24 @@ else
     echo "[MOSAIC BUILD] WARNING: .env not found."
 fi
 
+# Asking for python path - if empty then uses defualt
 PY_VER="3.11"
-PY_PATH="/Library/Frameworks/Python.framework/Versions/$PY_VER"
+DEFAULT_PATH="/Library/Frameworks/Python.framework/Versions/$PY_VER"
+
+echo "Please provide the path where Python 3.11.9 is installed."
+echo "It is likely: $DEFAULT_PATH"
+
+read -r UserPath
+
+if [[ -z "$UserPath" ]]; then
+    echo "Using default path: $DEFAULT_PATH"
+    PY_PATH="$DEFAULT_PATH"
+else
+    PY_PATH="$UserPath"
+fi
+
+# Verify the final path
+echo "Python path set to: $PY_PATH"
 
 APP_BUNDLE="MOSAIC.app"
 CONTENTS="$APP_BUNDLE/Contents"
