@@ -111,4 +111,52 @@ v_{d, i} = \sqrt{v_{d_{x, i}}^2 + v_{d_{y, i}}^2 + v_{d_{z, i}}^2}
 $$
 
 ### Curve Velocity Uncertainty
-#### Partial Derivitives with respect to a_{x, i}, b_{x, i}, c_{x, i}, d_{x, i} (and so on for y and x)
+#### Partial Derivitives with respect to $a_{x, i}$, $b_{x, i}$, $c_{x, i}$, $d_{x, i}$ (and so on for y and z)
+
+$$\frac{\partial{v_{a_x}}}{\partial{a_{x, i}}} = \frac{1}{\Delta{t}}
+\hspace{10pt}
+\frac{\partial{v_{b_x}}}{\partial{b_{x, i}}} = \frac{1}{\Delta{t}}
+\hspace{10pt}
+\frac{\partial{v_{c_x}}}{\partial{c_{x, i}}} = \frac{1}{\Delta{t}}
+\hspace{10pt}
+\frac{\partial{v_{d_x}}}{\partial{d_{x, i}}} = \frac{1}{\Delta{t}}
+$$
+
+#### Partial Derivatives with respect to $a_{x, i-1}$, $b_{x, i-1}$, $c_{x, i-1}$, $d_{x, i-1}$(And so on for y and z)
+
+$$\frac{\partial{v_{a_x}}}{\partial{a_{x, i-1}}} = - \frac{1}{\Delta{t}}
+\hspace{10pt}
+\frac{\partial{v_{b_x}}}{\partial{b_{x, i-1}}} = - \frac{1}{\Delta{t}}
+\hspace{10pt}
+\frac{\partial{v_{c_x}}}{\partial{c_{x, i-1}}} = - \frac{1}{\Delta{t}}
+\hspace{10pt}
+\frac{\partial{v_{d_x}}}{\partial{d_{x, i-1}}} = - \frac{1}{\Delta{t}}$$
+
+#### Uncertainty Propagation(And so on for y and z)
+
+$$\sigma_{v_{a_x}} = \sqrt{\left(\frac{1}{\Delta{t}}\sigma_{a_{x, i}}\right)^2 + \left(-\frac{1}{\Delta{t}}\sigma_{a_{x, i-1}}\right)^2}$$
+
+$$\sigma_{v_{b_x}} = \sqrt{\left(\frac{1}{\Delta{t}}\sigma_{b_{x, i}}\right)^2 + \left(-\frac{1}{\Delta{t}}\sigma_{b_{x, i-1}}\right)^2}$$
+
+$$\sigma_{v_{c_x}} = \sqrt{\left(\frac{1}{\Delta{t}}\sigma_{c_{x, i}}\right)^2 + \left(-\frac{1}{\Delta{t}}\sigma_{c_{x, i-1}}\right)^2}$$
+
+$$\sigma_{v_{d_x}} = \sqrt{\left(\frac{1}{\Delta{t}}\sigma_{d_{x, i}}\right)^2 + \left(-\frac{1}{\Delta{t}}\sigma_{d_{x, i-1}}\right)^2}$$
+
+### Area:
+
+Calculates the velocity of the area and its uncertainty. This applies to sub-areas too like looking at the upper right area of the mouth using OpenFace
+
+$$v_{a, i} = \frac{a_i - a_{i-1}}{t_i - t_{i-1}}$$
+
+### Area Velocity Uncertainty
+
+#### Partial derivative with respect to $a_i$
+
+$$\frac{\partial{v_a}}{\partial{a_i}} = \frac{1}{\Delta{t}}$$
+
+#### Partial Derivative with respect to $a_{i-1}$
+$$\frac{\partial{v_a}}{\partial{a_{i-1}}} = - \frac{1}{\Delta{t}}$$
+
+#### Uncertainty Propagation
+
+$$\sigma_{v_a} = \sqrt{\left(\frac{1}{\Delta{t}}\sigma_{a_i}\right)^2 + \left(-\frac{1}{\Delta{t}}\sigma_{a_{i-1}}\right)^2}$$
