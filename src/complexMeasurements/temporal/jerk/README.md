@@ -2,6 +2,7 @@
 This section of complexMeasurements calculates jerk (rate of change of acceleration) of measurements.
 ## Landmarks:
 Calculates the jerk of landmarks and the uncertainty of the jerk.
+
 $$a_i =
 \begin{bmatrix}
 a_{x, i} \\
